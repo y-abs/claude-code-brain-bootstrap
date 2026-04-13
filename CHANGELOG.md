@@ -7,6 +7,148 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [0.1.0] — 2026-04-13
+
+### 🔍 Massive Discovery Engine Expansion — 1100+ Frameworks
+
+The biggest single update to `discover.sh` — framework detection expanded from 480 to **1115 unique frameworks** across 25+ languages. Every addition is industry-driven: Language → Industry → Package.
+
+### Added
+
+#### JS/TS (110+ new)
+- **Serverless/Edge**: Cloudflare Workers, Netlify Functions, Vercel Functions, OpenFaaS
+- **CSS/Styling**: Vanilla Extract, Stitches, UnoCSS, WindiCSS, PandaCSS, PicoCSS, DaisyUI, NextUI, Fluent UI, BlueprintJS, Tremor, Ark UI
+- **Animation**: GSAP, React Spring, Lottie, Anime.js, Motion One, AutoAnimate
+- **Data Grids**: TanStack Table, AG Grid, Handsontable
+- **Rich Text Editors**: Tiptap, Lexical, CKEditor, Quill, ProseMirror, Slate, Milkdown, BlockNote
+- **Date/Time**: date-fns, Day.js, Luxon, Moment.js, Temporal Polyfill
+- **DI Containers**: Inversify, TSyringe, Awilix
+- **Workflow/Jobs**: Inngest, Defer, Quirrel, Graphile Worker
+- **Scraping**: Cheerio, Crawlee
+- **Build Tools**: Changesets, Lerna, SWC, unbuild, Parcel
+- **Config**: dotenv, T3-Env, Convex
+- **Drag & Drop**: dnd-kit, react-beautiful-dnd
+- **CLI**: Commander, Oclif, Ink, Citty
+- **Email Templating**: React Email, MJML
+- **Video/Streaming**: HLS.js, Video.js, Remotion
+- **Security**: bcrypt, Helmet, Argon2, CORS, CSRF
+- **Payments**: Coinbase, MercadoPago, Iyzico, Wise, Flutterwave
+- **Plus**: Sonner, React Hot Toast, Bottleneck, Rate Limiter, Bugsnag, Highlight, Honeybadger, PropelAuth, Stytch, FormatJS, Lingui, React Aria, Keyv
+
+#### Python (48+ new)
+- **Security/Crypto**: Cryptography, Passlib, bcrypt, python-multipart
+- **DB Drivers**: Psycopg, PyMySQL, PyMongo, Motor, Cassandra Driver, Neo4j
+- **Data Engineering**: PySpark, Dask, Vaex, Great Expectations, Delta Lake, PyArrow, SQLModel
+- **Config**: python-dotenv, Dynaconf, Hydra
+- **Serialization**: Marshmallow, attrs
+- **API/gRPC**: gRPC-Python, Requests, Tenacity, Pika-RabbitMQ, NATS
+- **ML Deployment**: FastAPI-Users, ONNX, Triton, vLLM, HF-PEFT
+- **CV/Audio**: YOLO, Detectron2, Whisper, Librosa, Pydub
+- **Monitoring**: Prometheus, structlog, Loguru
+- **IaC**: Pulumi-Python, Troposphere
+- **Time Series**: Prophet, Statsmodels, TimeSeries-ML
+
+#### Rust (27+ new)
+- **Networking/Crypto**: Rustls, ring, libp2p, Quinn-QUIC
+- **Database**: rusqlite, MongoDB-Rust, Redis-rs, Sled, RocksDB
+- **Testing**: Proptest, Mockall, Insta, Criterion
+- **Serialization**: Bincode, Prost-Protobuf
+- **CLI/TUI**: Ratatui, Dialoguer, Indicatif
+- **Error Handling**: Anyhow, Thiserror, Eyre
+- **Config**: Config-rs, Figment
+- **Observability**: Metrics-rs, Prometheus
+
+#### Go (29+ new)
+- **Auth/Security**: JWT-Go, OIDC-Go, Casbin
+- **HTTP**: Go-Kit, Resty, Gorilla Schema, WebSocket-Go
+- **Database**: MongoDB-Go, BadgerDB, BoltDB, sqlx-Go, Bun-Go
+- **CLI/TUI**: urfave-cli, BubbleTea, Lipgloss, Glamour
+- **Networking**: DNS-Go, QUIC-Go
+- **Config**: godotenv, Koanf
+- **Testing**: Godog, Mockery, go-sqlmock
+- **API**: OpenAPI-Go
+- **Service Mesh**: Envoy Control Plane
+
+#### Java/Kotlin (40+ new)
+- **Messaging**: ActiveMQ, Apache Pulsar, RabbitMQ, NATS
+- **Security**: Apache Shiro, BouncyCastle
+- **Serialization**: Protobuf, Apache Avro
+- **Search**: Lucene, Elasticsearch
+- **Spring Cloud**: Stream, Gateway, Config
+- **Scheduling**: Quartz
+- **Caching**: Hazelcast, EhCache
+- **Validation**: Bean Validation
+- **Reactive**: RxJava
+- **Service Discovery**: Eureka, Consul, Zuul
+- **Kotlin/Android**: Exposed, SQLDelight, KSP, Detekt, MockK, Kotest, Navigation, WorkManager, Paging, DataStore, Coil, Glide, OkHttp, Moshi, Timber
+
+#### Ruby (17+ new)
+- **Testing**: Shoulda, SimpleCov
+- **API**: Grape Entity, Oj, Pagy
+- **Auth**: Rodauth, Warden
+- **State Machines**: AASM, Statesman
+- **Deployment**: Capistrano, Kamal
+- **Monitoring**: Skylight, Sentry
+- **Caching**: Memcached, Rack-Attack
+
+#### PHP (19+ new)
+- **Laravel Ecosystem**: Breeze, Jetstream, Cashier, Scout, Octane, Pennant, Pulse, Reverb
+- **Admin**: Nova, Backpack, EasyAdmin
+- **Testing**: Mockery, Dusk
+- **Auth**: JWT-PHP
+- **Observability**: Sentry, Bugsnag
+- **Deployment**: Deployer
+
+#### .NET (11+ new)
+- **Identity**: IdentityServer (Duende)
+- **CQRS**: EventFlow, Marten
+- **Database**: Npgsql, MongoDB, MySQL
+- **Jobs**: Quartz
+- **HTTP**: RestSharp, Refit
+
+#### Elixir (12+ new)
+- **Auth**: Guardian, Pow, Ueberauth
+- **HTTP**: Tesla, Finch
+- **Testing**: ExMachina, Wallaby
+- **JSON**: Jason
+- **PDF**: ChromicPDF
+
+#### Dart/Flutter (14+ new)
+- **Testing**: Mockito, Flutter Test, Patrol
+- **State**: MobX, Redux, Signals
+- **Networking**: Retrofit, GraphQL
+- **Storage**: SQFlite, ObjectBox, Appwrite
+
+#### Scala (5+ new)
+- Chimney, Quill, Cats-Effect, sttp, Refined
+
+#### C/C++ (20+ new)
+- **Networking**: Asio, CPR, libcurl, WebSocket++
+- **JSON**: nlohmann-json, RapidJSON
+- **Scientific**: Eigen, Armadillo
+- **Logging**: spdlog, fmt
+- **GUI**: wxWidgets, FLTK
+- **Audio**: PortAudio, FFmpeg
+- **Database**: SQLite, libpq
+- **Testing**: Google Benchmark, Doctest
+
+#### Cross-Language Infrastructure (25+ new)
+- **Observability**: Grafana, Prometheus configs, Distributed Tracing (Jaeger/Zipkin)
+- **Secret Management**: SOPS, Vault configs
+- **Containers**: Docker Compose, DevContainers, Vagrant
+- **API Specs**: OpenAPI Spec files, Protobuf files, GraphQL schema files, Avro Schema files
+- **Documentation**: mdBook, Jekyll configs, Sphinx, Antora
+- **Monorepo Tools**: Moon, Rush, Pants, Buck2
+- **IaC**: Crossplane, Bicep, CDKTF
+- **GitOps**: FluxCD
+
+### Changed
+- `discover.sh` expanded from ~2775 to ~3877 lines (+1102 lines)
+- Framework count: 480 → 1115 unique detections (+633 unique, +935 cross-language detection lines)
+- All documentation updated to reflect new counts
+
+---
+
 ## [0.0.1] — 2026-04-13
 
 ### 🎉 Initial Public Release
@@ -37,7 +179,7 @@ The first public release of ᗺB Brain Bootstrap — a complete AI knowledge arc
 - **`bootstrap/UPGRADE_GUIDE.md`** — Smart Merge guide for existing configs
 
 #### Automation (`claude/scripts/`)
-- **`discover.sh`** — 2700+ line repo scanner: 25+ languages, 480+ frameworks, 21 package managers, 13 CI systems, zero tokens
+- **`discover.sh`** — 3800+ line repo scanner: 25+ languages, 1100+ frameworks, 21 package managers, 13 CI systems, zero tokens
 - **`populate-templates.sh`** — Batch fills 70+ `{{PLACEHOLDER}}` values in one pass
 - **`post-bootstrap-validate.sh`** — Unified post-bootstrap validation (validate + canary + auto-fix)
 - **`validate.sh`** — 120-check template validator (file existence, JSON validity, hook executability, placeholder integrity)
