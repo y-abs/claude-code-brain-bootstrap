@@ -108,7 +108,7 @@ Open Claude Code in your repo and run:
 
 That's it. The discovery engine scans your repo in ~2 seconds — **pure bash, zero AI tokens** — and auto-detects your entire stack:
 
-> 🔍 25+ languages · 📦 21 package managers · 🏗️ Monorepo tools (Nx, Turborepo, Lerna...) · 🎨 15+ formatters/linters · 🧪 Test frameworks · 🗄️ 12+ databases/ORMs · ⚙️ 13 CI systems · 🐳 Docker & Kubernetes · 🧩 100+ frameworks
+> 🔍 25+ languages · 📦 21 package managers · 🏗️ Monorepo tools (Nx, Turborepo, Lerna...) · 🎨 15+ formatters/linters · 🧪 Test frameworks · 🗄️ 12+ databases/ORMs · ⚙️ 13 CI systems · 🐳 Docker & Kubernetes · 🧩 330+ frameworks
 
 Then the AI fills in what requires *reasoning*: architecture docs, domain knowledge, critical patterns specific to *your* codebase.
 
@@ -154,7 +154,7 @@ Brain replaces advisory text with real mechanisms:
 | 🧠 **The AI never makes the same mistake twice** | `lessons.md` persists across sessions, compactions, restarts — read at every session start, impossible to skip |
 | 🔄 **Knowledge never goes stale** | Exit checklist catches drift every turn · `/maintain` audits all docs · self-maintenance rule fires on every knowledge edit |
 | ⚡ **One command replaces 15 min of prompt engineering** | `/review` runs a 10-point protocol · `/mr` generates descriptions · `/debug` traces root causes — 26 commands, pre-built, consistent |
-| 🔍 **Your entire stack understood in 2 seconds, zero tokens** | `discover.sh` — 25+ languages, 100+ frameworks, 21 package managers — pure bash, runs before the AI even wakes up |
+| 🔍 **Your entire stack understood in 2 seconds, zero tokens** | `discover.sh` — 25+ languages, 330+ frameworks, 21 package managers — pure bash, runs before the AI even wakes up |
 | 🤖 **Research doesn't eat your context window** | 5 subagents run in isolated contexts — explore 20+ files, review code, challenge plans — your main conversation stays clean |
 | 🤝 **One brain, three AI tools** | Write knowledge once → Claude Code, GitHub Copilot, and any LLM all read it — switch tools without starting over |
 
@@ -162,9 +162,9 @@ Brain replaces advisory text with real mechanisms:
 
 ---
 
-## 🧪 The Discovery Engine: 2400+ Lines of Pure Bash
+## 🧪 The Discovery Engine: 2500+ Lines of Pure Bash
 
-The discovery engine detects **25+ languages**, **21 package managers**, **100+ frameworks**, **13 CI systems**, **12+ database/ORM tools**, and **15+ formatter/linter combinations**.
+The discovery engine detects **25+ languages**, **21 package managers**, **330+ frameworks**, **13 CI systems**, **12+ database/ORM tools**, and **15+ formatter/linter combinations**.
 No token cost, runs in ~2 seconds, and is the foundation for all subsequent knowledge generation. It populates the initial `claude/architecture.md` and `claude/build.md` with accurate, repo-specific context.
 
 **What the engine outputs (`claude/tasks/.discovery.env`):**
@@ -235,7 +235,7 @@ The system is designed to **minimize token cost** while maximizing context — y
 | 🪝 **Lifecycle hooks** | 14 | Session recovery, config protection, terminal safety gate (3 profiles), commit quality, batch formatting, exit checklist, compaction recovery, identity refresh, permission audit, test reminders |
 | 🤖 **AI subagents** | 5 | **research** (read-only exploration), **reviewer** (10-point MR review), **plan-challenger** (adversarial plan critique), **session-reviewer** (conversation pattern analysis), **security-auditor** (vulnerability scanning) |
 | 🎓 **Skills** | 5 | TDD discipline (auto-loads on test files), root-cause trace, changelog generation, session safety guards, cross-layer consistency check |
-| 🔧 **Brain scripts** | 12 | `discover.sh` (2400-line stack detector), `populate-templates.sh`, `post-bootstrap-validate.sh`, `validate.sh`, `canary-check.sh`, `phase2-verify.sh`, `toggle-claude-mem.sh`, `generate-service-claudes.sh`, `generate-copilot-docs.sh`, `setup-plugins.sh`, `check-creative-work.sh`, `tdd-loop-check.sh` — all in `claude/scripts/` |
+| 🔧 **Brain scripts** | 12 | `discover.sh` (2500-line stack detector), `populate-templates.sh`, `post-bootstrap-validate.sh`, `validate.sh`, `canary-check.sh`, `phase2-verify.sh`, `toggle-claude-mem.sh`, `generate-service-claudes.sh`, `generate-copilot-docs.sh`, `setup-plugins.sh`, `check-creative-work.sh`, `tdd-loop-check.sh` — all in `claude/scripts/` |
 | 🤝 **GitHub Copilot config** | 8 | Root instructions, 3 scoped instruction files (+1 template), 2 reusable prompts (+1 template) |
 | 📏 **Path-scoped rules** | 13 | Terminal safety, self-maintenance, quality gates, memory policy, domain learning, practice capture, agent orchestration, language-specific rules, template for adding your own |
 | 🔌 **Plugins** | 1 | **claude-mem** (persistent cross-session memory) — auto-installed, disabled by default (quota protection) |

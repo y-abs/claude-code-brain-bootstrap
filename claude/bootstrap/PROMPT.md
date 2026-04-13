@@ -75,7 +75,7 @@ bash claude/scripts/discover.sh . > claude/tasks/.discovery.env 2>&1
 cat claude/tasks/.discovery.env
 ```
 
-Auto-detects in ~2 seconds: project name, languages (with file counts), package manager, runtime, formatter/linter, test framework, build/test/lint/serve/migrate/db/deps commands, security scanner, monorepo tools, CI, database/ORM, Docker, 100+ frameworks, installed plugins.
+Auto-detects in ~2 seconds: project name, languages (with file counts), package manager, runtime, formatter/linter, test framework, build/test/lint/serve/migrate/db/deps commands, security scanner, monorepo tools, CI, database/ORM, Docker, 330+ frameworks, installed plugins.
 
 **Read the output.** The `MODE=` line tells you FRESH or UPGRADE. Update `Risk:` in your plan file now.
 
