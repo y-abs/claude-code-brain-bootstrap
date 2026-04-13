@@ -36,13 +36,20 @@
 
 You install Claude Code. You open your 50-service monorepo. You ask it to add a feature.
 
-It doesn't know `yarn turbo build` is the right command, not `npm run build`. It doesn't know you use Biome, not Prettier — so it reformats files in a style that fails CI on every PR. It doesn't know your `@company/utils` package already has a `formatDate()` — so it installs `date-fns` and writes a new one. It doesn't know your team's rule: all DB access goes through repositories, never from controllers — so it writes a raw query, it passes review, and now it's in production setting the wrong precedent. It doesn't know your CI test command is `make test-ci`, not `npm test`.
+It doesn't know `yarn turbo build` is the right command, not `npm run build`. It doesn't know you use Biome, not Prettier — so it reformats files in a style that fails CI on every PR.
+It doesn't know your `@company/utils` package already has a `formatDate()` — so it installs `date-fns` and writes a new one.
+It doesn't know your team's rule: all DB access goes through repositories, never from controllers — so it writes a raw query,
 
 **So it guesses. It hallucinates.**
 
-It suggests `npm install` in a yarn monorepo. It runs `git log` without `--no-pager` and hangs your terminal forever. It modifies `tsconfig.json` to silence a type error instead of fixing it. It creates `UserUtils.ts` — the third one in the codebase, because the other two are in packages it never knew existed. **It breaks conventions your team spent months establishing.**
+It runs `git log` without `--no-pager` and hangs your terminal forever.
+It creates `UserUtils.ts` — the third one in the codebase, because the other two are in packages it never knew existed.
 
-You correct it. *"No, we use yarn workspaces, not npm."* *"No, run make test-ci for tests."* *"No, always use --no-pager."* It says sorry, does it right this time.
+**It breaks conventions your team spent months establishing.**
+
+You correct it. *"No, we use yarn workspaces, not npm."* *"No, run make test-ci for tests."* *"No, always use --no-pager."*
+
+It says sorry, does it right this time.
 
 And tomorrow?
 
@@ -56,11 +63,16 @@ You become a full-time AI babysitter, repeating the same instructions, fixing th
 
 ---
 
-🚫 **GitHub is full of repos that give you a collection of slash commands, skills, and prompt templates to copy into your project. The AI reads them if it feels like it — and forgets them when the session resets.**
+🚫 **GitHub is full of repos that give you a collection of slash commands, skills, and prompt templates to copy into your project.
+The AI reads them if it feels like it — and forgets them when the session resets.**
 
-**Brain is an enforcement system, not a suggestion box.** Corrections become permanent. Forbidden patterns get blocked *before* they run. The knowledge base updates itself as your codebase evolves.
+**Brain is an enforcement system, not a suggestion box.**
 
-You stop re-explaining your stack every morning. You stop fixing the same mistakes twice. **You stop babysitting — the AI just knows.**
+Corrections become permanent. Forbidden patterns get blocked *before* they run. The knowledge base updates itself as your codebase evolves.
+
+You stop re-explaining your stack every morning. You stop fixing the same mistakes twice.
+
+**You stop babysitting — the AI just knows.**
 
 ---
 
