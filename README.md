@@ -120,22 +120,6 @@ The bootstrap is **adaptive** — it runs 8 domain-detection greps and automatic
 
 > 💡 **Already have a Claude Code config?** Bootstrap detects it and enters **upgrade mode** — your domain docs, lessons, tasks, and customizations are preserved. Only missing pieces are added.
 
-### Step 3 — Choose your collaboration mode
-
-The bootstrap report includes two options:
-
-```bash
-# TEAM mode (default) — commit the config, share it with your team
-git add CLAUDE.md .claudeignore claude/ .claude/ .github/
-git commit -m "chore: add Claude Code configuration"
-
-# SOLO mode — personal config, not committed (runs from .gitignore)
-echo -e '\nCLAUDE.md\nclaude/\n.claude/\n.claudeignore\n.mcp.json' >> .gitignore
-# Note: .github/ stays committed — Copilot config benefits the whole team
-```
-
-> 🤝 **Team mode = every developer gets the same AI experience.** Knowledge improvements from one person benefit everyone on the next `git pull`.
-
 ---
 
 ## 🧬 From Instructions to Guarantees
