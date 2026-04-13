@@ -13,7 +13,6 @@
   <a href="#"><img src="https://img.shields.io/badge/Claude_Code-Ready-blueviolet" alt="Claude Code"></a>
   <a href="#"><img src="https://img.shields.io/badge/GitHub_Copilot-Ready-brightgreen" alt="GitHub Copilot"></a>
   <a href="#-one-brain-three-ai-assistants--any-model"><img src="https://img.shields.io/badge/Ollama_%7C_LM_Studio-Local_LLMs_Ready-ff6f00" alt="Local LLMs Ready"></a>
-  <a href="#"><img src="https://img.shields.io/badge/100+_files-Production_Grade-red" alt="100+ files"></a>
 </p>
 
 <p align="center">
