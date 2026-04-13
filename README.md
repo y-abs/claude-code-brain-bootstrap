@@ -40,7 +40,9 @@ It doesn't know `yarn turbo build` is the right command, not `npm run build`. It
 
 **So it guesses. It hallucinates.**
 
-It suggests `npm install` in a yarn monorepo. It runs `git log` without `--no-pager` and hangs your terminal forever. It modifies `tsconfig.json` to silence a type error instead of fixing it. It creates `UserUtils.ts` — the third one in the codebase, because the other two are in packages it never knew existed. It breaks conventions your team spent months establishing.
+It suggests `npm install` in a yarn monorepo. It runs `git log` without `--no-pager` and hangs your terminal forever. It modifies `tsconfig.json` to silence a type error instead of fixing it. It creates `UserUtils.ts` — the third one in the codebase, because the other two are in packages it never knew existed. 
+
+**It breaks conventions your team spent months establishing.**
 
 You correct it. *"No, we use yarn workspaces, not npm."* *"No, run make test-ci for tests."* *"No, always use --no-pager."* It says sorry, does it right this time.
 
