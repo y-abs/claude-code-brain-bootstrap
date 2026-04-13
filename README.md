@@ -4,7 +4,7 @@
   </a>
 </p>
 
-<h1 align="center">ᗺB &nbsp; Brain Bootstrap</h1>
+<h1 align="center">ᗺB - Brain Bootstrap</h1>
 <p align="center"><em>Give your AI coding assistant the one thing it's missing:<br>deep knowledge of your codebase.</em></p>
 <p align="center"><sub>by <a href="https://github.com/y-abs">y-abs</a></sub></p>
 <p align="center">
