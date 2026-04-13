@@ -100,7 +100,7 @@ Task about [domain]?   → 📚 Read claude/[domain].md
 
 | Script | Purpose |
 |--------|---------|
-| `discover.sh` | 🔍 2700-line stack detector — 25+ languages, 480+ frameworks, outputs `KEY=VALUE` env |
+| `discover.sh` | 🔍 3800-line stack detector — 25+ languages, 1100+ frameworks, outputs `KEY=VALUE` env |
 | `populate-templates.sh` | 🔄 Batch placeholder replacement — fills 70+ `{{VARS}}` across all config files |
 | `post-bootstrap-validate.sh` | ✅ Combined validator — runs validate.sh + canary-check.sh + placeholder check + auto-fixes |
 | `validate.sh` | 🔎 120-check template validator — run directly or via post-bootstrap-validate.sh |

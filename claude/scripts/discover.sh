@@ -2167,10 +2167,243 @@ if [ -f "package.json" ]; then
   echo "$DEPS" | grep -q '^sharp$' && FRAMEWORKS="${FRAMEWORKS}Sharp,"
   echo "$DEPS" | grep -q '^multer$' && FRAMEWORKS="${FRAMEWORKS}Multer,"
   echo "$DEPS" | grep -q '^nodemailer$' && FRAMEWORKS="${FRAMEWORKS}Nodemailer,"
-  # Payments (additional)
+  # Payments / Billing / Commerce (JS/TS) — widest provider ecosystem across all languages
+  # JS/TS is used for SaaS frontends+backends, e-commerce, fintech apps, startup APIs
+  echo "$DEPS" | grep -q '^@mollie/api-client$\|^mollie$' && FRAMEWORKS="${FRAMEWORKS}Mollie,"
+  echo "$DEPS" | grep -q '^@gocardless/gocardless-nodejs$\|^gocardless-pro$' && FRAMEWORKS="${FRAMEWORKS}GoCardless,"
+  echo "$DEPS" | grep -q '^@adyen/api-library$\|^@adyen/web$' && FRAMEWORKS="${FRAMEWORKS}Adyen,"
+  echo "$DEPS" | grep -q '^braintree$' && FRAMEWORKS="${FRAMEWORKS}Braintree,"
+  echo "$DEPS" | grep -q '^square$\|^@square/web-sdk$' && FRAMEWORKS="${FRAMEWORKS}Square,"
+  echo "$DEPS" | grep -q '^@checkout.com\|^checkout-sdk$' && FRAMEWORKS="${FRAMEWORKS}Checkout.com,"
+  echo "$DEPS" | grep -q '^@klarna/checkout-sdk$\|^@klarna/react-checkout$' && FRAMEWORKS="${FRAMEWORKS}Klarna,"
+  echo "$DEPS" | grep -q '^@paddle/paddle-js$\|^paddle-js$' && FRAMEWORKS="${FRAMEWORKS}Paddle,"
+  echo "$DEPS" | grep -q '^chargebee$\|^chargebee-js$' && FRAMEWORKS="${FRAMEWORKS}Chargebee,"
+  echo "$DEPS" | grep -q '^recurly$' && FRAMEWORKS="${FRAMEWORKS}Recurly,"
+  echo "$DEPS" | grep -q '^paystack$' && FRAMEWORKS="${FRAMEWORKS}Paystack,"
+  echo "$DEPS" | grep -q '^razorpay$' && FRAMEWORKS="${FRAMEWORKS}Razorpay,"
+  echo "$DEPS" | grep -q '^@lemonsqueezy/lemonsqueezy.js$' && FRAMEWORKS="${FRAMEWORKS}LemonSqueezy,"
+  echo "$DEPS" | grep -q '^plaid$' && FRAMEWORKS="${FRAMEWORKS}Plaid,"
+  echo "$DEPS" | grep -q '^zuora$' && FRAMEWORKS="${FRAMEWORKS}Zuora,"
   echo "$DEPS" | grep -q '^@paypal' && FRAMEWORKS="${FRAMEWORKS}PayPal,"
+  # Communication / Notifications (JS/TS) — always co-deployed with payment systems
+  echo "$DEPS" | grep -q '^twilio$' && FRAMEWORKS="${FRAMEWORKS}Twilio,"
+  echo "$DEPS" | grep -q '^@sendgrid/mail$\|^sendgrid$' && FRAMEWORKS="${FRAMEWORKS}SendGrid,"
+  echo "$DEPS" | grep -q '^resend$' && FRAMEWORKS="${FRAMEWORKS}Resend,"
+  echo "$DEPS" | grep -q '^postmark$' && FRAMEWORKS="${FRAMEWORKS}Postmark,"
+  echo "$DEPS" | grep -q '^mailgun.js$\|^mailgun-js$' && FRAMEWORKS="${FRAMEWORKS}Mailgun,"
+  echo "$DEPS" | grep -q '^@novu/node$\|^novu$' && FRAMEWORKS="${FRAMEWORKS}Novu,"
+  echo "$DEPS" | grep -q '^@onesignal/node-onesignal$' && FRAMEWORKS="${FRAMEWORKS}OneSignal,"
+  # Feature Flags (JS/TS) — critical for phased payment rollouts
+  echo "$DEPS" | grep -q '^launchdarkly-js-client-sdk$\|^launchdarkly-node-server-sdk$' && FRAMEWORKS="${FRAMEWORKS}LaunchDarkly,"
+  echo "$DEPS" | grep -q '^flagsmith$\|^flagsmith-es$' && FRAMEWORKS="${FRAMEWORKS}Flagsmith,"
+  echo "$DEPS" | grep -q '^unleash-client$\|^@unleash/nextjs$' && FRAMEWORKS="${FRAMEWORKS}Unleash,"
+  echo "$DEPS" | grep -q '^posthog-js$\|^posthog-node$' && FRAMEWORKS="${FRAMEWORKS}PostHog,"
+  # Product Analytics (JS/TS) — conversion / funnel / revenue tracking
+  echo "$DEPS" | grep -q '^@segment/analytics-js$\|^analytics-node$' && FRAMEWORKS="${FRAMEWORKS}Segment,"
+  echo "$DEPS" | grep -q '^@amplitude/analytics-browser$\|^amplitude-js$' && FRAMEWORKS="${FRAMEWORKS}Amplitude,"
+  echo "$DEPS" | grep -q '^mixpanel-browser$\|^mixpanel$' && FRAMEWORKS="${FRAMEWORKS}Mixpanel,"
+  # Tax Compliance (JS/TS) — mandatory for global commerce
+  echo "$DEPS" | grep -q '^taxjar$\|^@taxjar/taxjar$' && FRAMEWORKS="${FRAMEWORKS}TaxJar,"
+  echo "$DEPS" | grep -q '^@avalara/avatax$\|^avalara$' && FRAMEWORKS="${FRAMEWORKS}Avalara,"
+  # CMS / Headless CMS (JS/TS) — content-driven SaaS, marketing sites, editorial platforms
+  echo "$DEPS" | grep -q '^strapi$\|^@strapi' && FRAMEWORKS="${FRAMEWORKS}Strapi,"
+  echo "$DEPS" | grep -q '^payload$\|^@payloadcms' && FRAMEWORKS="${FRAMEWORKS}Payload,"
+  echo "$DEPS" | grep -q '^contentful$\|^@contentful' && FRAMEWORKS="${FRAMEWORKS}Contentful,"
+  echo "$DEPS" | grep -q '^@sanity/client$\|^sanity$\|^next-sanity$' && FRAMEWORKS="${FRAMEWORKS}Sanity,"
+  echo "$DEPS" | grep -q '^@directus/sdk$\|^directus$' && FRAMEWORKS="${FRAMEWORKS}Directus,"
+  echo "$DEPS" | grep -q '^@keystonejs/core$\|^@keystone-6' && FRAMEWORKS="${FRAMEWORKS}KeystoneJS,"
+  echo "$DEPS" | grep -q '^ghost-admin-api$\|^@tryghost' && FRAMEWORKS="${FRAMEWORKS}Ghost,"
+  echo "$DEPS" | grep -q '^@builder.io/sdk$\|^@builder.io/react$' && FRAMEWORKS="${FRAMEWORKS}Builder.io,"
+  echo "$DEPS" | grep -q '^@prismic/client$\|^prismic' && FRAMEWORKS="${FRAMEWORKS}Prismic,"
+  echo "$DEPS" | grep -q '^@storyblok/js$\|^@storyblok/react$' && FRAMEWORKS="${FRAMEWORKS}Storyblok,"
+  # E-commerce Platforms (JS/TS) — headless commerce, marketplace backends, D2C
+  echo "$DEPS" | grep -q '^@medusajs/medusa$\|^medusa-interfaces$' && FRAMEWORKS="${FRAMEWORKS}Medusa,"
+  echo "$DEPS" | grep -q '^@saleor/sdk$\|^saleor' && FRAMEWORKS="${FRAMEWORKS}Saleor,"
+  echo "$DEPS" | grep -q '^@shopify/shopify-api$\|^@shopify/hydrogen$' && FRAMEWORKS="${FRAMEWORKS}Shopify,"
+  echo "$DEPS" | grep -q '^@commercetools' && FRAMEWORKS="${FRAMEWORKS}Commercetools,"
+  echo "$DEPS" | grep -q '^@bigcommerce' && FRAMEWORKS="${FRAMEWORKS}BigCommerce,"
+  echo "$DEPS" | grep -q '^@vendure' && FRAMEWORKS="${FRAMEWORKS}Vendure,"
+  # Vector DB / RAG / AI Infra (JS/TS) — retrieval-augmented generation, semantic search, AI apps
+  echo "$DEPS" | grep -q '^@pinecone-database/pinecone$' && FRAMEWORKS="${FRAMEWORKS}Pinecone,"
+  echo "$DEPS" | grep -q '^chromadb$' && FRAMEWORKS="${FRAMEWORKS}ChromaDB,"
+  echo "$DEPS" | grep -q '^weaviate-ts-client$\|^weaviate-client$' && FRAMEWORKS="${FRAMEWORKS}Weaviate,"
+  echo "$DEPS" | grep -q '^@qdrant/js-client-rest$' && FRAMEWORKS="${FRAMEWORKS}Qdrant,"
+  echo "$DEPS" | grep -q '^@upstash/vector$' && FRAMEWORKS="${FRAMEWORKS}Upstash-Vector,"
+  echo "$DEPS" | grep -q '^llamaindex$\|^@llamaindex' && FRAMEWORKS="${FRAMEWORKS}LlamaIndex,"
+  echo "$DEPS" | grep -q '^@huggingface/inference$' && FRAMEWORKS="${FRAMEWORKS}HuggingFace,"
+  echo "$DEPS" | grep -q '^cohere-ai$' && FRAMEWORKS="${FRAMEWORKS}Cohere,"
+  echo "$DEPS" | grep -q '^replicate$' && FRAMEWORKS="${FRAMEWORKS}Replicate,"
+  echo "$DEPS" | grep -q '^@trigger.dev/sdk$' && FRAMEWORKS="${FRAMEWORKS}Trigger.dev,"
+  echo "$DEPS" | grep -q '^@temporalio/client$\|^@temporalio/worker$' && FRAMEWORKS="${FRAMEWORKS}Temporal,"
+  # Blockchain / Web3 (JS/TS) — DeFi, NFT, dApps, wallet integration
+  echo "$DEPS" | grep -q '^ethers$' && FRAMEWORKS="${FRAMEWORKS}Ethers.js,"
+  echo "$DEPS" | grep -q '^web3$' && FRAMEWORKS="${FRAMEWORKS}Web3.js,"
+  echo "$DEPS" | grep -q '^hardhat$' && FRAMEWORKS="${FRAMEWORKS}Hardhat,"
+  echo "$DEPS" | grep -q '^viem$' && FRAMEWORKS="${FRAMEWORKS}Viem,"
+  echo "$DEPS" | grep -q '^@wagmi/core$\|^wagmi$' && FRAMEWORKS="${FRAMEWORKS}Wagmi,"
+  echo "$DEPS" | grep -q '^@solana/web3.js$' && FRAMEWORKS="${FRAMEWORKS}Solana,"
+  echo "$DEPS" | grep -q '^@thirdweb-dev' && FRAMEWORKS="${FRAMEWORKS}Thirdweb,"
+  echo "$DEPS" | grep -q '^@rainbow-me/rainbowkit$' && FRAMEWORKS="${FRAMEWORKS}RainbowKit,"
+  # Gaming / Interactive (JS/TS) — browser games, simulations, interactive media
+  echo "$DEPS" | grep -q '^phaser$' && FRAMEWORKS="${FRAMEWORKS}Phaser,"
+  echo "$DEPS" | grep -q '^pixi.js$\|^@pixi' && FRAMEWORKS="${FRAMEWORKS}PixiJS,"
+  echo "$DEPS" | grep -q '^@babylonjs/core$\|^babylonjs$' && FRAMEWORKS="${FRAMEWORKS}BabylonJS,"
+  echo "$DEPS" | grep -q '^playcanvas$' && FRAMEWORKS="${FRAMEWORKS}PlayCanvas,"
+  echo "$DEPS" | grep -q '^@tauri-apps/api$' && FRAMEWORKS="${FRAMEWORKS}Tauri,"
+  # PDF / Document Generation (JS/TS) — invoicing, reporting, contract generation
+  echo "$DEPS" | grep -q '^pdfkit$' && FRAMEWORKS="${FRAMEWORKS}PDFKit,"
+  echo "$DEPS" | grep -q '^jspdf$' && FRAMEWORKS="${FRAMEWORKS}jsPDF,"
+  echo "$DEPS" | grep -q '^@react-pdf/renderer$' && FRAMEWORKS="${FRAMEWORKS}React-PDF,"
+  echo "$DEPS" | grep -q '^docx$' && FRAMEWORKS="${FRAMEWORKS}docx,"
+  echo "$DEPS" | grep -q '^exceljs$' && FRAMEWORKS="${FRAMEWORKS}ExcelJS,"
+  echo "$DEPS" | grep -q '^papaparse$\|^csv-parse$' && FRAMEWORKS="${FRAMEWORKS}CSV-Parser,"
+  # Geospatial / Mapping (JS/TS) — logistics, delivery, real estate, fleet management
+  echo "$DEPS" | grep -q '^mapbox-gl$\|^@mapbox' && FRAMEWORKS="${FRAMEWORKS}Mapbox,"
+  echo "$DEPS" | grep -q '^leaflet$\|^react-leaflet$' && FRAMEWORKS="${FRAMEWORKS}Leaflet,"
+  echo "$DEPS" | grep -q '^@turf/turf$\|^@turf' && FRAMEWORKS="${FRAMEWORKS}Turf.js,"
+  echo "$DEPS" | grep -q '^ol$' && FRAMEWORKS="${FRAMEWORKS}OpenLayers,"
+  echo "$DEPS" | grep -q '^@googlemaps/js-api-loader$\|^@react-google-maps' && FRAMEWORKS="${FRAMEWORKS}Google-Maps,"
+  # Media / Image Processing (JS/TS) — user-generated content, CDN, video platforms
+  echo "$DEPS" | grep -q '^cloudinary$\|^@cloudinary' && FRAMEWORKS="${FRAMEWORKS}Cloudinary,"
+  echo "$DEPS" | grep -q '^fluent-ffmpeg$\|^@ffmpeg/ffmpeg$' && FRAMEWORKS="${FRAMEWORKS}FFmpeg,"
+  echo "$DEPS" | grep -q '^@uploadthing' && FRAMEWORKS="${FRAMEWORKS}UploadThing,"
+  echo "$DEPS" | grep -q '^@mux/mux-player$\|^@mux' && FRAMEWORKS="${FRAMEWORKS}Mux,"
+  # IoT / MQTT (JS/TS) — smart home, industrial IoT, telemetry
+  echo "$DEPS" | grep -q '^mqtt$\|^async-mqtt$' && FRAMEWORKS="${FRAMEWORKS}MQTT,"
+  echo "$DEPS" | grep -q '^aedes$' && FRAMEWORKS="${FRAMEWORKS}Aedes-MQTT,"
+  # Real-time / Collaboration (JS/TS) — beyond Socket.IO: managed real-time services
+  echo "$DEPS" | grep -q '^pusher$\|^pusher-js$' && FRAMEWORKS="${FRAMEWORKS}Pusher,"
+  echo "$DEPS" | grep -q '^ably$' && FRAMEWORKS="${FRAMEWORKS}Ably,"
+  echo "$DEPS" | grep -q '^livekit-client$\|^@livekit' && FRAMEWORKS="${FRAMEWORKS}LiveKit,"
+  echo "$DEPS" | grep -q '^@yjs/yjs$\|^yjs$' && FRAMEWORKS="${FRAMEWORKS}Yjs,"
+  echo "$DEPS" | grep -q '^@liveblocks' && FRAMEWORKS="${FRAMEWORKS}Liveblocks,"
+  # SSO / Identity (JS/TS) — enterprise auth, SAML, OIDC
+  echo "$DEPS" | grep -q '^passport-saml$\|^@node-saml/passport-saml$' && FRAMEWORKS="${FRAMEWORKS}SAML,"
+  echo "$DEPS" | grep -q '^@ory/client$\|^@ory/kratos-client$' && FRAMEWORKS="${FRAMEWORKS}Ory,"
+  echo "$DEPS" | grep -q '^@descope/web-sdk$\|^@descope' && FRAMEWORKS="${FRAMEWORKS}Descope,"
+  echo "$DEPS" | grep -q '^@frontegg' && FRAMEWORKS="${FRAMEWORKS}Frontegg,"
+  # Testing infrastructure (JS/TS) — contract testing, load testing, visual regression
+  echo "$DEPS" | grep -q '^@pact-foundation/pact$' && FRAMEWORKS="${FRAMEWORKS}Pact,"
+  echo "$DEPS" | grep -q '^artillery$' && FRAMEWORKS="${FRAMEWORKS}Artillery,"
+  echo "$DEPS" | grep -q '^@axe-core/playwright$\|^axe-core$' && FRAMEWORKS="${FRAMEWORKS}axe-core,"
+  echo "$DEPS" | grep -q '^nock$' && FRAMEWORKS="${FRAMEWORKS}Nock,"
+  # Scheduling / Cron (JS/TS) — recurring jobs, task scheduling
+  echo "$DEPS" | grep -q '^node-cron$\|^cron$' && FRAMEWORKS="${FRAMEWORKS}node-cron,"
   # Caching
   echo "$DEPS" | grep -q '^cache-manager$' && FRAMEWORKS="${FRAMEWORKS}CacheManager,"
+  echo "$DEPS" | grep -q '^keyv$' && FRAMEWORKS="${FRAMEWORKS}Keyv,"
+  # Serverless / Edge (JS/TS) — functions-as-a-service, edge compute
+  echo "$DEPS" | grep -q '^@cloudflare/workers-types$\|^wrangler$' && FRAMEWORKS="${FRAMEWORKS}Cloudflare-Workers,"
+  echo "$DEPS" | grep -q '^@netlify/functions$' && FRAMEWORKS="${FRAMEWORKS}Netlify-Functions,"
+  echo "$DEPS" | grep -q '^@vercel/functions$\|^@vercel/edge$' && FRAMEWORKS="${FRAMEWORKS}Vercel-Functions,"
+  echo "$DEPS" | grep -q '^@openfaas/faas-provider$' && FRAMEWORKS="${FRAMEWORKS}OpenFaaS,"
+  echo "$DEPS" | grep -q '^serverless-http$' && FRAMEWORKS="${FRAMEWORKS}Serverless-HTTP,"
+  # CSS / Styling (JS/TS) — beyond Tailwind and styled-components
+  echo "$DEPS" | grep -q '^@vanilla-extract/css$' && FRAMEWORKS="${FRAMEWORKS}Vanilla-Extract,"
+  echo "$DEPS" | grep -q '^@stitches/react$' && FRAMEWORKS="${FRAMEWORKS}Stitches,"
+  echo "$DEPS" | grep -q '^@unocss/core$\|^unocss$' && FRAMEWORKS="${FRAMEWORKS}UnoCSS,"
+  echo "$DEPS" | grep -q '^windicss$' && FRAMEWORKS="${FRAMEWORKS}WindiCSS,"
+  echo "$DEPS" | grep -q '^panda-css$\|^@pandacss' && FRAMEWORKS="${FRAMEWORKS}PandaCSS,"
+  echo "$DEPS" | grep -q '^@picocss/pico$' && FRAMEWORKS="${FRAMEWORKS}PicoCSS,"
+  echo "$DEPS" | grep -q '^daisyui$' && FRAMEWORKS="${FRAMEWORKS}DaisyUI,"
+  echo "$DEPS" | grep -q '^@nextui-org/react$' && FRAMEWORKS="${FRAMEWORKS}NextUI,"
+  echo "$DEPS" | grep -q '^@fluentui/react-components$\|^@fluentui/react$' && FRAMEWORKS="${FRAMEWORKS}Fluent-UI,"
+  echo "$DEPS" | grep -q '^@blueprintjs/core$' && FRAMEWORKS="${FRAMEWORKS}BlueprintJS,"
+  echo "$DEPS" | grep -q '^@tremor/react$' && FRAMEWORKS="${FRAMEWORKS}Tremor,"
+  echo "$DEPS" | grep -q '^@ark-ui/react$\|^@park-ui' && FRAMEWORKS="${FRAMEWORKS}Ark-UI,"
+  # Animation (JS/TS) — interactive UX, onboarding, data viz transitions
+  echo "$DEPS" | grep -q '^gsap$' && FRAMEWORKS="${FRAMEWORKS}GSAP,"
+  echo "$DEPS" | grep -q '^@react-spring/core$\|^react-spring$' && FRAMEWORKS="${FRAMEWORKS}React-Spring,"
+  echo "$DEPS" | grep -q '^lottie-web$\|^lottie-react$' && FRAMEWORKS="${FRAMEWORKS}Lottie,"
+  echo "$DEPS" | grep -q '^animejs$\|^@animejs/anime$' && FRAMEWORKS="${FRAMEWORKS}Anime.js,"
+  echo "$DEPS" | grep -q '^@motionone/dom$\|^motion-one$' && FRAMEWORKS="${FRAMEWORKS}Motion-One,"
+  echo "$DEPS" | grep -q '^@formkit/auto-animate$' && FRAMEWORKS="${FRAMEWORKS}AutoAnimate,"
+  # Table / Data Grid (JS/TS) — enterprise data-intensive UIs
+  echo "$DEPS" | grep -q '^@tanstack/react-table$\|^@tanstack/table-core$' && FRAMEWORKS="${FRAMEWORKS}TanStack-Table,"
+  echo "$DEPS" | grep -q '^ag-grid-community$\|^ag-grid-react$' && FRAMEWORKS="${FRAMEWORKS}AG-Grid,"
+  echo "$DEPS" | grep -q '^@handsontable/react$\|^handsontable$' && FRAMEWORKS="${FRAMEWORKS}Handsontable,"
+  # Rich Text / Editor (JS/TS) — content editing, CMS, documentation
+  echo "$DEPS" | grep -q '^@tiptap/core$\|^@tiptap/react$' && FRAMEWORKS="${FRAMEWORKS}Tiptap,"
+  echo "$DEPS" | grep -q '^@lexical/react$\|^lexical$' && FRAMEWORKS="${FRAMEWORKS}Lexical,"
+  echo "$DEPS" | grep -q '^@ckeditor/ckeditor5-react$\|^ckeditor5$' && FRAMEWORKS="${FRAMEWORKS}CKEditor,"
+  echo "$DEPS" | grep -q '^quill$\|^react-quill$' && FRAMEWORKS="${FRAMEWORKS}Quill,"
+  echo "$DEPS" | grep -q '^prosemirror-state$\|^@remirror' && FRAMEWORKS="${FRAMEWORKS}ProseMirror,"
+  echo "$DEPS" | grep -q '^slate$\|^slate-react$' && FRAMEWORKS="${FRAMEWORKS}Slate,"
+  echo "$DEPS" | grep -q '^@milkdown/core$' && FRAMEWORKS="${FRAMEWORKS}Milkdown,"
+  echo "$DEPS" | grep -q '^@blocknote/core$\|^@blocknote/react$' && FRAMEWORKS="${FRAMEWORKS}BlockNote,"
+  # Date / Time (JS/TS) — universal dependency in business apps
+  echo "$DEPS" | grep -q '^date-fns$' && FRAMEWORKS="${FRAMEWORKS}date-fns,"
+  echo "$DEPS" | grep -q '^dayjs$' && FRAMEWORKS="${FRAMEWORKS}Day.js,"
+  echo "$DEPS" | grep -q '^luxon$' && FRAMEWORKS="${FRAMEWORKS}Luxon,"
+  echo "$DEPS" | grep -q '^moment$' && FRAMEWORKS="${FRAMEWORKS}Moment.js,"
+  echo "$DEPS" | grep -q '^@js-temporal' && FRAMEWORKS="${FRAMEWORKS}Temporal-Polyfill,"
+  # DI / Architecture (JS/TS) — enterprise patterns in Node backends
+  echo "$DEPS" | grep -q '^inversify$' && FRAMEWORKS="${FRAMEWORKS}Inversify,"
+  echo "$DEPS" | grep -q '^tsyringe$' && FRAMEWORKS="${FRAMEWORKS}TSyringe,"
+  echo "$DEPS" | grep -q '^awilix$' && FRAMEWORKS="${FRAMEWORKS}Awilix,"
+  # Process / Workflow (JS/TS) — orchestration, long-running processes
+  echo "$DEPS" | grep -q '^inngest$' && FRAMEWORKS="${FRAMEWORKS}Inngest,"
+  echo "$DEPS" | grep -q '^@defer/client$' && FRAMEWORKS="${FRAMEWORKS}Defer,"
+  echo "$DEPS" | grep -q '^quirrel$' && FRAMEWORKS="${FRAMEWORKS}Quirrel,"
+  echo "$DEPS" | grep -q '^graphile-worker$' && FRAMEWORKS="${FRAMEWORKS}Graphile-Worker,"
+  # Headless browser / Scraping (JS/TS) — data extraction, testing
+  echo "$DEPS" | grep -q '^cheerio$' && FRAMEWORKS="${FRAMEWORKS}Cheerio,"
+  echo "$DEPS" | grep -q '^crawlee$' && FRAMEWORKS="${FRAMEWORKS}Crawlee,"
+  # Monorepo / Build (JS/TS) — workspace management
+  echo "$DEPS" | grep -q '^changesets$\|^@changesets/cli$' && FRAMEWORKS="${FRAMEWORKS}Changesets,"
+  echo "$DEPS" | grep -q '^lerna$' && FRAMEWORKS="${FRAMEWORKS}Lerna,"
+  echo "$DEPS" | grep -q '^@swc/core$\|^swc$' && FRAMEWORKS="${FRAMEWORKS}SWC,"
+  echo "$DEPS" | grep -q '^unbuild$' && FRAMEWORKS="${FRAMEWORKS}unbuild,"
+  echo "$DEPS" | grep -q '^@parcel/core$\|^parcel$' && FRAMEWORKS="${FRAMEWORKS}Parcel,"
+  # Config / Env (JS/TS) — environment management
+  echo "$DEPS" | grep -q '^dotenv$' && FRAMEWORKS="${FRAMEWORKS}dotenv,"
+  echo "$DEPS" | grep -q '^@t3-oss/env-nextjs$\|^@t3-oss/env-core$' && FRAMEWORKS="${FRAMEWORKS}T3-Env,"
+  echo "$DEPS" | grep -q '^convex$\|^@convex-dev' && FRAMEWORKS="${FRAMEWORKS}Convex,"
+  # Accessibility (JS/TS) — inclusive design, compliance
+  echo "$DEPS" | grep -q '^@react-aria/.*$\|^react-aria$' && FRAMEWORKS="${FRAMEWORKS}React-Aria,"
+  # Drag & Drop (JS/TS) — interactive UIs, kanban boards
+  echo "$DEPS" | grep -q '^@dnd-kit/core$' && FRAMEWORKS="${FRAMEWORKS}dnd-kit,"
+  echo "$DEPS" | grep -q '^react-beautiful-dnd$' && FRAMEWORKS="${FRAMEWORKS}react-beautiful-dnd,"
+  # Notifications / Toast (JS/TS) — UX feedback
+  echo "$DEPS" | grep -q '^sonner$' && FRAMEWORKS="${FRAMEWORKS}Sonner,"
+  echo "$DEPS" | grep -q '^react-hot-toast$' && FRAMEWORKS="${FRAMEWORKS}React-Hot-Toast,"
+  # CLI (JS/TS) — building CLI tools
+  echo "$DEPS" | grep -q '^commander$' && FRAMEWORKS="${FRAMEWORKS}Commander,"
+  echo "$DEPS" | grep -q '^@oclif/core$\|^oclif$' && FRAMEWORKS="${FRAMEWORKS}Oclif,"
+  echo "$DEPS" | grep -q '^ink$' && FRAMEWORKS="${FRAMEWORKS}Ink,"
+  echo "$DEPS" | grep -q '^citty$\|^@unjs/citty$' && FRAMEWORKS="${FRAMEWORKS}Citty,"
+  # Cron / Rate Limiting (JS/TS) — API protection
+  echo "$DEPS" | grep -q '^rate-limiter-flexible$' && FRAMEWORKS="${FRAMEWORKS}Rate-Limiter,"
+  echo "$DEPS" | grep -q '^bottleneck$' && FRAMEWORKS="${FRAMEWORKS}Bottleneck,"
+  # Error tracking (JS/TS) — beyond Sentry
+  echo "$DEPS" | grep -q '^@bugsnag/js$\|^bugsnag$' && FRAMEWORKS="${FRAMEWORKS}Bugsnag,"
+  echo "$DEPS" | grep -q '^@highlight-run/node$\|^highlight.run$' && FRAMEWORKS="${FRAMEWORKS}Highlight,"
+  echo "$DEPS" | grep -q '^@honeybadger-io/js$' && FRAMEWORKS="${FRAMEWORKS}Honeybadger,"
+  # Multi-tenancy (JS/TS) — SaaS architecture
+  echo "$DEPS" | grep -q '^@propelauth' && FRAMEWORKS="${FRAMEWORKS}PropelAuth,"
+  echo "$DEPS" | grep -q '^@stytch' && FRAMEWORKS="${FRAMEWORKS}Stytch,"
+  # Internationalization (JS/TS) — beyond i18n
+  echo "$DEPS" | grep -q '^@formatjs/intl$\|^react-intl$' && FRAMEWORKS="${FRAMEWORKS}FormatJS,"
+  echo "$DEPS" | grep -q '^@lingui/core$\|^@lingui/react$' && FRAMEWORKS="${FRAMEWORKS}Lingui,"
+  # Email templating (JS/TS) — transactional email design
+  echo "$DEPS" | grep -q '^@react-email/components$\|^react-email$' && FRAMEWORKS="${FRAMEWORKS}React-Email,"
+  echo "$DEPS" | grep -q '^mjml$' && FRAMEWORKS="${FRAMEWORKS}MJML,"
+  # Video / Streaming (JS/TS) — OTT, live streaming, video editing
+  echo "$DEPS" | grep -q '^hls.js$' && FRAMEWORKS="${FRAMEWORKS}HLS.js,"
+  echo "$DEPS" | grep -q '^video.js$\|^@videojs' && FRAMEWORKS="${FRAMEWORKS}Video.js,"
+  echo "$DEPS" | grep -q '^@remotion/player$\|^remotion$' && FRAMEWORKS="${FRAMEWORKS}Remotion,"
+  # Crypto / Security (JS/TS) — encryption, hashing
+  echo "$DEPS" | grep -q '^bcrypt$\|^bcryptjs$' && FRAMEWORKS="${FRAMEWORKS}bcrypt,"
+  echo "$DEPS" | grep -q '^helmet$' && FRAMEWORKS="${FRAMEWORKS}Helmet,"
+  echo "$DEPS" | grep -q '^@node-rs/argon2$\|^argon2$' && FRAMEWORKS="${FRAMEWORKS}Argon2,"
+  echo "$DEPS" | grep -q '^cors$' && FRAMEWORKS="${FRAMEWORKS}CORS,"
+  echo "$DEPS" | grep -q '^csurf$\|^@nestjs/csrf$' && FRAMEWORKS="${FRAMEWORKS}CSRF,"
+  # Payments — additional (JS/TS)
+  echo "$DEPS" | grep -q '^@coinbase/coinbase-sdk$\|^coinbase-pro-node$' && FRAMEWORKS="${FRAMEWORKS}Coinbase,"
+  echo "$DEPS" | grep -q '^@mercadopago/sdk-js$\|^mercadopago$' && FRAMEWORKS="${FRAMEWORKS}MercadoPago,"
+  echo "$DEPS" | grep -q '^iyzipay$' && FRAMEWORKS="${FRAMEWORKS}Iyzico,"
+  echo "$DEPS" | grep -q '^@wise/api$\|^wise$' && FRAMEWORKS="${FRAMEWORKS}Wise,"
+  echo "$DEPS" | grep -q '^flutterwave-node$\|^flutterwave-node-v3$' && FRAMEWORKS="${FRAMEWORKS}Flutterwave,"
 fi
 
 # FIX 7: Monorepo child package.json scan — root package.json of a monorepo often has ZERO
@@ -2292,6 +2525,175 @@ if [ -f "pyproject.toml" ]; then
   # Auth
   grep -qi 'PyJWT\|python-jose' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}PyJWT,"
   grep -qi 'authlib' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Authlib,"
+  # Payments / Billing (Python)
+  grep -qi '^stripe' pyproject.toml 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Stripe' && FRAMEWORKS="${FRAMEWORKS}Stripe,"
+  grep -qi 'mollie-api-python' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Mollie,"
+  grep -qi 'gocardless.pro\|gocardless_pro' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}GoCardless,"
+  grep -qi 'adyen' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Adyen,"
+  grep -qi 'braintree' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Braintree,"
+  grep -qi 'squareup\|square' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Square,"
+  grep -qi 'chargebee' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Chargebee,"
+  grep -qi 'recurly' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Recurly,"
+  grep -qi 'paystack\|paystackapi' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Paystack,"
+  grep -qi 'razorpay' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Razorpay,"
+  grep -qi 'paypalrestsdk\|paypal-checkout' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}PayPal,"
+  grep -qi '^plaid' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Plaid,"
+  # Communication (Python)
+  grep -qi '^twilio' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Twilio,"
+  grep -qi 'sendgrid' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}SendGrid,"
+  grep -qi '^resend' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Resend,"
+  grep -qi 'postmarker\|postmark' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Postmark,"
+  grep -qi 'mailgun' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Mailgun,"
+  # Feature Flags (Python)
+  grep -qi 'launchdarkly-server-sdk' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}LaunchDarkly,"
+  grep -qi '^flagsmith' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Flagsmith,"
+  grep -qi '^posthog' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}PostHog,"
+  # Product Analytics (Python)
+  grep -qi 'analytics-python\|segment-analytics' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Segment,"
+  grep -qi 'amplitude-analytics' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Amplitude,"
+  grep -qi '^mixpanel' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Mixpanel,"
+  # Tax Compliance (Python)
+  grep -qi '^taxjar' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}TaxJar,"
+  # Vector DB / RAG / AI Infra (Python) — retrieval-augmented generation, semantic search, AI-native apps
+  grep -qi 'pinecone-client\|pinecone' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Pinecone,"
+  grep -qi 'chromadb' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}ChromaDB,"
+  grep -qi 'weaviate-client' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Weaviate,"
+  grep -qi 'qdrant-client' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Qdrant,"
+  grep -qi 'llama-index\|llama_index' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}LlamaIndex,"
+  grep -qi 'haystack-ai\|farm-haystack' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Haystack,"
+  grep -qi 'milvus\|pymilvus' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Milvus,"
+  # LLM / AI SDKs (Python) — the AI development epicenter
+  grep -qi '^anthropic' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Anthropic,"
+  grep -qi '^cohere' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Cohere,"
+  grep -qi '^replicate' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Replicate,"
+  grep -qi 'together\b' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Together-AI,"
+  grep -qi 'instructor' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Instructor,"
+  grep -qi 'crewai' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}CrewAI,"
+  grep -qi 'autogen\|pyautogen' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}AutoGen,"
+  grep -qi 'guidance' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Guidance,"
+  grep -qi 'litellm' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}LiteLLM,"
+  # NLP (Python) — text processing, entity recognition, language understanding
+  grep -qi '^spacy' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}spaCy,"
+  grep -qi '^nltk' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}NLTK,"
+  grep -qi 'gensim' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Gensim,"
+  # MLOps (Python) — experiment tracking, model registry, data versioning
+  grep -qi 'mlflow' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}MLflow,"
+  grep -qi 'wandb' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Weights-Biases,"
+  grep -qi '^dvc' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}DVC,"
+  grep -qi 'optuna' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Optuna,"
+  grep -qi '^ray\b\|ray\[' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Ray,"
+  grep -qi 'bentoml' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}BentoML,"
+  # CMS (Python) — content management platforms
+  grep -qi 'wagtail' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Wagtail,"
+  grep -qi 'django-cms' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Django-CMS,"
+  # E-commerce (Python) — marketplace, D2C backends
+  grep -qi 'django-oscar\|oscar' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Django-Oscar,"
+  grep -qi 'saleor' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Saleor,"
+  # Geospatial (Python) — logistics, mapping, spatial analysis
+  grep -qi 'geopandas' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}GeoPandas,"
+  grep -qi 'shapely' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Shapely,"
+  grep -qi 'fiona' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Fiona,"
+  grep -qi 'rasterio' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Rasterio,"
+  grep -qi 'folium' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Folium,"
+  # PDF / Document Generation (Python) — invoicing, contracts, reports
+  grep -qi 'reportlab' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}ReportLab,"
+  grep -qi 'weasyprint' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}WeasyPrint,"
+  grep -qi 'fpdf2\|fpdf' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}FPDF,"
+  grep -qi 'python-docx\|docx' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}python-docx,"
+  grep -qi 'openpyxl' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}openpyxl,"
+  # Image Processing (Python) — user content, CV, thumbnails
+  grep -qi 'Pillow\|PIL' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Pillow,"
+  grep -qi 'opencv-python\|cv2' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}OpenCV,"
+  # Gaming (Python) — game prototyping, educational games
+  grep -qi 'pygame' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Pygame,"
+  grep -qi 'arcade' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Arcade,"
+  # Desktop GUI (Python) — desktop applications, internal tools
+  grep -qi 'PyQt5\|PyQt6' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}PyQt,"
+  grep -qi 'PySide6\|PySide2' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}PySide,"
+  grep -qi 'kivy' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Kivy,"
+  grep -qi 'textual' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Textual,"
+  grep -qi 'flet' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Flet,"
+  # Blockchain / Web3 (Python) — smart contracts, DeFi analytics
+  grep -qi 'web3' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Web3.py,"
+  grep -qi 'brownie' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Brownie,"
+  grep -qi 'ape\b\|ape-' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Ape,"
+  # IoT / MQTT (Python) — sensor networks, industrial IoT
+  grep -qi 'paho-mqtt' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Paho-MQTT,"
+  # Async (Python) — high-performance async I/O
+  grep -qi 'asyncpg' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}asyncpg,"
+  grep -qi 'aioredis\|redis\[async\]' pyproject.toml 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'aioredis' && FRAMEWORKS="${FRAMEWORKS}aioredis,"
+  grep -qi 'aiofiles' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}aiofiles,"
+  grep -qi 'aiohttp' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}aiohttp,"
+  # Web Scraping (Python) — data extraction, competitive intelligence
+  grep -qi 'beautifulsoup4\|bs4' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}BeautifulSoup,"
+  grep -qi 'selenium' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Selenium,"
+  grep -qi 'playwright' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Playwright,"
+  # Testing (Python) — advanced testing tools
+  grep -qi 'hypothesis' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Hypothesis,"
+  grep -qi 'factory.boy\|factory-boy' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}FactoryBoy,"
+  grep -qi 'locust' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Locust,"
+  grep -qi 'responses' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Responses,"
+  grep -qi 'vcrpy\|vcrpy' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}VCR.py,"
+  # Scheduling (Python) — recurring jobs beyond Celery
+  grep -qi 'apscheduler' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}APScheduler,"
+  grep -qi 'schedule' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Schedule,"
+  # Security / Crypto (Python) — encryption, hashing, signing
+  grep -qi 'cryptography' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Cryptography,"
+  grep -qi 'passlib' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Passlib,"
+  grep -qi 'bcrypt' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}bcrypt,"
+  grep -qi 'python-multipart' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}python-multipart,"
+  # DB Drivers (Python) — database connectivity
+  grep -qi 'psycopg2\|psycopg\[binary\]' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Psycopg,"
+  grep -qi 'mysqlclient\|pymysql' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}PyMySQL,"
+  grep -qi 'pymongo' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}PyMongo,"
+  grep -qi 'motor' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Motor,"
+  grep -qi 'cassandra-driver' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Cassandra-Driver,"
+  grep -qi 'neo4j' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Neo4j,"
+  # Data Engineering (Python) — ETL, data lake, warehousing
+  grep -qi 'apache-spark\|pyspark' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}PySpark,"
+  grep -qi 'dask' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Dask,"
+  grep -qi 'vaex' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Vaex,"
+  grep -qi 'great-expectations\|great_expectations' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Great-Expectations,"
+  grep -qi 'delta-spark\|deltalake' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Delta-Lake,"
+  grep -qi 'pyarrow' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}PyArrow,"
+  grep -qi 'sqlmodel' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}SQLModel,"
+  # Config (Python) — environment/config management
+  grep -qi 'pydantic-settings\|python-dotenv' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}python-dotenv,"
+  grep -qi 'dynaconf' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Dynaconf,"
+  grep -qi 'hydra-core' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Hydra,"
+  # Serialization (Python) — beyond Pydantic
+  grep -qi 'marshmallow' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Marshmallow,"
+  grep -qi 'cattrs\|attrs' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}attrs,"
+  # API Clients / Tools (Python)
+  grep -qi 'grpcio\|grpcio-tools' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}gRPC-Python,"
+  grep -qi 'requests' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Requests,"
+  grep -qi 'tenacity' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Tenacity,"
+  grep -qi 'pika' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Pika-RabbitMQ,"
+  grep -qi 'nats-py\|nats\.py' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}NATS,"
+  # ML Deployment (Python) — model serving
+  grep -qi 'fastapi-users' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}FastAPI-Users,"
+  grep -qi 'onnxruntime\|onnx' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}ONNX,"
+  grep -qi 'triton' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Triton,"
+  grep -qi 'vllm' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}vLLM,"
+  grep -qi 'trl\|peft' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}HF-PEFT,"
+  # Computer Vision (Python) — beyond OpenCV
+  grep -qi 'ultralytics\|yolov' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}YOLO,"
+  grep -qi 'detectron2' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Detectron2,"
+  # Audio (Python) — speech-to-text, audio processing
+  grep -qi 'whisper\|openai-whisper' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Whisper,"
+  grep -qi 'librosa' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Librosa,"
+  grep -qi 'pydub' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Pydub,"
+  # Monitoring (Python) — additional
+  grep -qi 'prometheus-client\|prometheus_client' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Prometheus,"
+  grep -qi 'structlog' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}structlog,"
+  grep -qi 'loguru' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Loguru,"
+  # Infrastructure as Code (Python)
+  grep -qi 'pulumi' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Pulumi-Python,"
+  grep -qi 'troposphere' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Troposphere,"
+  # Time Series (Python) — financial data, forecasting
+  grep -qi 'prophet\|neuralprophet' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Prophet,"
+  grep -qi 'statsmodels' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Statsmodels,"
+  grep -qi 'tslearn\|stumpy' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}TimeSeries-ML,"
 fi
 # Fallback: requirements.txt
 if [ -f "requirements.txt" ]; then
@@ -2329,6 +2731,63 @@ if [ -f "requirements.txt" ]; then
   # Azure specific
   if grep -qi 'azure-servicebus' requirements.txt 2>/dev/null; then FRAMEWORKS="${FRAMEWORKS}Azure-ServiceBus,"; fi
   if grep -qi 'azure-cosmos' requirements.txt 2>/dev/null; then FRAMEWORKS="${FRAMEWORKS}Azure-CosmosDB,"; fi
+  # Payments / Billing (requirements.txt)
+  if grep -qi '^stripe' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Stripe'; then FRAMEWORKS="${FRAMEWORKS}Stripe,"; fi
+  if grep -qi 'mollie-api-python' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Mollie'; then FRAMEWORKS="${FRAMEWORKS}Mollie,"; fi
+  if grep -qi 'gocardless.pro\|gocardless_pro' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'GoCardless'; then FRAMEWORKS="${FRAMEWORKS}GoCardless,"; fi
+  if grep -qi 'braintree' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Braintree'; then FRAMEWORKS="${FRAMEWORKS}Braintree,"; fi
+  if grep -qi 'squareup\|square' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Square'; then FRAMEWORKS="${FRAMEWORKS}Square,"; fi
+  if grep -qi 'chargebee' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Chargebee'; then FRAMEWORKS="${FRAMEWORKS}Chargebee,"; fi
+  if grep -qi 'paystack\|paystackapi' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Paystack'; then FRAMEWORKS="${FRAMEWORKS}Paystack,"; fi
+  if grep -qi 'razorpay' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Razorpay'; then FRAMEWORKS="${FRAMEWORKS}Razorpay,"; fi
+  # Communication (requirements.txt)
+  if grep -qi '^twilio' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Twilio'; then FRAMEWORKS="${FRAMEWORKS}Twilio,"; fi
+  if grep -qi 'sendgrid' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'SendGrid'; then FRAMEWORKS="${FRAMEWORKS}SendGrid,"; fi
+  if grep -qi '^resend' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Resend'; then FRAMEWORKS="${FRAMEWORKS}Resend,"; fi
+  # Feature Flags (requirements.txt)
+  if grep -qi 'launchdarkly-server-sdk' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'LaunchDarkly'; then FRAMEWORKS="${FRAMEWORKS}LaunchDarkly,"; fi
+  if grep -qi '^flagsmith' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Flagsmith'; then FRAMEWORKS="${FRAMEWORKS}Flagsmith,"; fi
+  if grep -qi '^posthog' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'PostHog'; then FRAMEWORKS="${FRAMEWORKS}PostHog,"; fi
+  # Vector DB / AI (requirements.txt)
+  if grep -qi 'pinecone-client\|pinecone' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Pinecone'; then FRAMEWORKS="${FRAMEWORKS}Pinecone,"; fi
+  if grep -qi 'chromadb' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'ChromaDB'; then FRAMEWORKS="${FRAMEWORKS}ChromaDB,"; fi
+  if grep -qi 'weaviate-client' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Weaviate'; then FRAMEWORKS="${FRAMEWORKS}Weaviate,"; fi
+  if grep -qi 'qdrant-client' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Qdrant'; then FRAMEWORKS="${FRAMEWORKS}Qdrant,"; fi
+  if grep -qi 'llama-index\|llama_index' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'LlamaIndex'; then FRAMEWORKS="${FRAMEWORKS}LlamaIndex,"; fi
+  # LLM SDKs (requirements.txt)
+  if grep -qi '^anthropic' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Anthropic'; then FRAMEWORKS="${FRAMEWORKS}Anthropic,"; fi
+  if grep -qi '^cohere' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Cohere'; then FRAMEWORKS="${FRAMEWORKS}Cohere,"; fi
+  if grep -qi '^replicate' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Replicate'; then FRAMEWORKS="${FRAMEWORKS}Replicate,"; fi
+  if grep -qi 'crewai' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'CrewAI'; then FRAMEWORKS="${FRAMEWORKS}CrewAI,"; fi
+  if grep -qi 'litellm' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'LiteLLM'; then FRAMEWORKS="${FRAMEWORKS}LiteLLM,"; fi
+  # NLP (requirements.txt)
+  if grep -qi '^spacy' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'spaCy'; then FRAMEWORKS="${FRAMEWORKS}spaCy,"; fi
+  if grep -qi '^nltk' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'NLTK'; then FRAMEWORKS="${FRAMEWORKS}NLTK,"; fi
+  # MLOps (requirements.txt)
+  if grep -qi 'mlflow' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'MLflow'; then FRAMEWORKS="${FRAMEWORKS}MLflow,"; fi
+  if grep -qi 'wandb' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Weights-Biases'; then FRAMEWORKS="${FRAMEWORKS}Weights-Biases,"; fi
+  if grep -qi '^dvc' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'DVC'; then FRAMEWORKS="${FRAMEWORKS}DVC,"; fi
+  if grep -qi 'optuna' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Optuna'; then FRAMEWORKS="${FRAMEWORKS}Optuna,"; fi
+  # Geospatial (requirements.txt)
+  if grep -qi 'geopandas' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'GeoPandas'; then FRAMEWORKS="${FRAMEWORKS}GeoPandas,"; fi
+  if grep -qi 'shapely' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Shapely'; then FRAMEWORKS="${FRAMEWORKS}Shapely,"; fi
+  # PDF / Docs (requirements.txt)
+  if grep -qi 'reportlab' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'ReportLab'; then FRAMEWORKS="${FRAMEWORKS}ReportLab,"; fi
+  if grep -qi 'weasyprint' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'WeasyPrint'; then FRAMEWORKS="${FRAMEWORKS}WeasyPrint,"; fi
+  if grep -qi 'openpyxl' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'openpyxl'; then FRAMEWORKS="${FRAMEWORKS}openpyxl,"; fi
+  # Image (requirements.txt)
+  if grep -qi 'Pillow\|PIL' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Pillow'; then FRAMEWORKS="${FRAMEWORKS}Pillow,"; fi
+  if grep -qi 'opencv-python' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'OpenCV'; then FRAMEWORKS="${FRAMEWORKS}OpenCV,"; fi
+  # Web3 (requirements.txt)
+  if grep -qi 'web3' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Web3'; then FRAMEWORKS="${FRAMEWORKS}Web3.py,"; fi
+  # IoT (requirements.txt)
+  if grep -qi 'paho-mqtt' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Paho-MQTT'; then FRAMEWORKS="${FRAMEWORKS}Paho-MQTT,"; fi
+  # Testing (requirements.txt)
+  if grep -qi 'hypothesis' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Hypothesis'; then FRAMEWORKS="${FRAMEWORKS}Hypothesis,"; fi
+  if grep -qi 'locust' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Locust'; then FRAMEWORKS="${FRAMEWORKS}Locust,"; fi
+  # Desktop (requirements.txt)
+  if grep -qi 'PyQt5\|PyQt6' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'PyQt'; then FRAMEWORKS="${FRAMEWORKS}PyQt,"; fi
+  if grep -qi 'textual' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Textual'; then FRAMEWORKS="${FRAMEWORKS}Textual,"; fi
 fi
 
 # ── Rust ──
@@ -2360,6 +2819,68 @@ if [ -f "Cargo.toml" ]; then
   grep -q 'eframe\|egui' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}egui,"
   grep -q 'dioxus' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Dioxus,"
   grep -q 'opentelemetry' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}OpenTelemetry,"
+  # WASM (Rust) — WebAssembly is a killer use case for Rust
+  grep -q 'wasm-bindgen' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}wasm-bindgen,"
+  grep -q 'web-sys' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}web-sys,"
+  grep -q 'js-sys' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}js-sys,"
+  grep -q 'wasm-pack\|wasm-wasi' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}wasm-pack,"
+  # Embedded (Rust) — embedded-hal ecosystem for microcontrollers
+  grep -q 'embedded-hal' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}embedded-hal,"
+  grep -q 'cortex-m' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}cortex-m,"
+  grep -q 'embassy' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Embassy,"
+  grep -q 'esp-hal\|esp-idf' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}ESP-HAL,"
+  grep -q 'nrf-hal\|nrf-softdevice' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}nRF-HAL,"
+  # Blockchain (Rust) — Solana, Ethereum, Substrate chains
+  grep -q 'ethers' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Ethers-rs,"
+  grep -q 'alloy' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Alloy,"
+  grep -q 'solana-sdk\|anchor-lang' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Solana,"
+  grep -q 'substrate\|frame-support' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Substrate,"
+  # GPU / Graphics (Rust) — rendering, compute shaders, game engines
+  grep -q 'wgpu' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}wgpu,"
+  grep -q 'vulkano' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Vulkano,"
+  grep -q 'ash' Cargo.toml 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Ash' && FRAMEWORKS="${FRAMEWORKS}Ash-Vulkan,"
+  # Gaming (Rust) — beyond Bevy
+  grep -q 'ggez' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}ggez,"
+  grep -q 'macroquad' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}macroquad,"
+  grep -q 'fyrox' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Fyrox,"
+  # Async (Rust) — async-std alternative runtime
+  grep -q 'async-std' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}async-std,"
+  # PDF (Rust) — document generation
+  grep -q 'printpdf' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}printpdf,"
+  grep -q 'genpdf' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}genpdf,"
+  # Networking / Crypto (Rust) — TLS, crypto primitives, P2P
+  grep -q 'rustls' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Rustls,"
+  grep -q 'ring\b' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}ring-crypto,"
+  grep -q 'libp2p' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}libp2p,"
+  grep -q 'quinn' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Quinn-QUIC,"
+  # Database (Rust) — additional drivers/ORMs
+  grep -q 'rusqlite' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}rusqlite,"
+  grep -q 'mongodb' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}MongoDB-Rust,"
+  grep -q 'redis-rs\|redis =' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Redis-rs,"
+  grep -q 'sled' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Sled,"
+  grep -q 'rocksdb' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}RocksDB,"
+  # Testing (Rust) — property testing, mocking
+  grep -q 'proptest' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Proptest,"
+  grep -q 'mockall' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Mockall,"
+  grep -q 'insta' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Insta,"
+  grep -q 'criterion' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Criterion,"
+  # Serialization (Rust) — beyond Serde
+  grep -q 'bincode' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Bincode,"
+  grep -q 'prost' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Prost-Protobuf,"
+  # CLI (Rust) — terminal UI and CLI frameworks
+  grep -q 'ratatui\|tui-rs' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Ratatui,"
+  grep -q 'dialoguer\|inquire' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Dialoguer,"
+  grep -q 'indicatif' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Indicatif,"
+  # Error Handling (Rust) — idiomatic error patterns
+  grep -q 'anyhow' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Anyhow,"
+  grep -q 'thiserror' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Thiserror,"
+  grep -q 'color-eyre\|eyre' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Eyre,"
+  # Config (Rust) — configuration management
+  grep -q 'config\b' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Config-rs,"
+  grep -q 'figment' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Figment,"
+  # Observability (Rust) — beyond tracing
+  grep -q 'metrics\b' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Metrics-rs,"
+  grep -q 'prometheus\b' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Prometheus,"
 fi
 
 # ── Go ──
@@ -2399,6 +2920,89 @@ if [ -f "go.mod" ]; then
   grep -q 'aws/aws-sdk-go' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}AWS-SDK,"
   grep -q 'cloud.google.com/go' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}GCP-SDK,"
   grep -q 'Azure/azure-sdk-for-go' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Azure-SDK,"
+  # Payments / Communication (Go) — high-performance fintech backends (Monzo, Square use Go)
+  grep -q 'stripe/stripe-go\|stripe-go' go.mod 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Stripe' && FRAMEWORKS="${FRAMEWORKS}Stripe,"
+  grep -q 'adyen-go\|github.com/adyen' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Adyen,"
+  grep -q 'braintree-go\|lionelbarrow/braintree-go' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Braintree,"
+  grep -q 'mollie/mollie-go\|go-mollie' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Mollie,"
+  grep -q 'square/square-go-sdk\|square.go' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Square,"
+  grep -q 'paystack\|rpagliuca/paystackk' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Paystack,"
+  grep -q 'razorpay/razorpay-go' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Razorpay,"
+  grep -q 'plaid/plaid-go' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Plaid,"
+  grep -q 'twilio/twilio-go' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Twilio,"
+  grep -q 'sendgrid/sendgrid-go' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}SendGrid,"
+  grep -q 'resend/resend-go\|resendlabs/resend-go' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Resend,"
+  grep -q 'launchdarkly/go-server-sdk' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}LaunchDarkly,"
+  grep -q 'unleash-client-go\|Unleash/unleash-client-go' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Unleash,"
+  grep -q 'posthog-go\|PostHog/posthog-go' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}PostHog,"
+  grep -q 'segmentio/analytics-go' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Segment,"
+  # Kubernetes operators / controllers (Go) — Go is THE language for K8s controllers
+  grep -q 'sigs.k8s.io/controller-runtime' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}controller-runtime,"
+  grep -q 'k8s.io/client-go' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}client-go,"
+  grep -q 'operator-framework\|operator-sdk' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Operator-SDK,"
+  # Observability (Go) — Prometheus is built in Go
+  grep -q 'prometheus/client_golang' go.mod 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Prometheus' && FRAMEWORKS="${FRAMEWORKS}Prometheus,"
+  grep -q 'getsentry/sentry-go' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Sentry,"
+  # Scheduling / Cron (Go) — recurring job management
+  grep -q 'robfig/cron' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}robfig-cron,"
+  # Validation (Go) — struct validation
+  grep -q 'go-playground/validator' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Validator,"
+  # MQTT / IoT (Go) — high-performance MQTT brokers/clients
+  grep -q 'eclipse/paho.mqtt.golang' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Paho-MQTT,"
+  # Blockchain (Go) — go-ethereum is the reference implementation
+  grep -q 'ethereum/go-ethereum' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Geth,"
+  grep -q 'cosmos-sdk\|cosmos/cosmos-sdk' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Cosmos-SDK,"
+  # Event sourcing / messaging (Go)
+  grep -q 'ThreeDotsLabs/watermill' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Watermill,"
+  grep -q 'EventStore/EventStore-Client-Go' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}EventStoreDB,"
+  # Testing (Go) — BDD-style testing
+  grep -q 'onsi/ginkgo' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Ginkgo,"
+  grep -q 'onsi/gomega' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Gomega,"
+  grep -q 'testcontainers/testcontainers-go' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Testcontainers,"
+  # PDF (Go) — document generation
+  grep -q 'jung-kurt/gofpdf\|go-pdf\|unidoc' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}GoPDF,"
+  # Config (Go) — environment-based config
+  grep -q 'kelseyhightower/envconfig\|caarlos0/env' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Envconfig,"
+  # Embedded / IoT (Go)
+  grep -q 'gobot.io\|periph.io' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Gobot,"
+  # Auth / Security (Go) — OAuth, OIDC, JWT
+  grep -q 'golang-jwt/jwt\|dgrijalva/jwt-go' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}JWT-Go,"
+  grep -q 'ory/fosite\|coreos/go-oidc' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}OIDC-Go,"
+  grep -q 'casbin/casbin' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Casbin,"
+  # HTTP / Web (Go) — additional frameworks and tools
+  grep -q 'go-kit/kit\|go-kit/log' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Go-Kit,"
+  grep -q 'go-resty/resty' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Resty,"
+  grep -q 'go-playground/form\|gorilla/schema' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Gorilla-Schema,"
+  grep -q 'gin-contrib/cors' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Gin-CORS,"
+  grep -q 'gorilla/websocket\|nhooyr.io/websocket' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}WebSocket-Go,"
+  # Database (Go) — additional drivers and tools
+  grep -q 'go.mongodb.org/mongo-driver' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}MongoDB-Go,"
+  grep -q 'dgraph-io/badger' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}BadgerDB,"
+  grep -q 'cockroachdb/pebble\|etcd-io/bbolt' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}BoltDB,"
+  grep -q 'jmoiron/sqlx' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}sqlx-Go,"
+  grep -q 'go-gorm/datatypes' go.mod 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'GORM' && FRAMEWORKS="${FRAMEWORKS}GORM,"
+  grep -q 'uptrace/bun' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Bun-Go,"
+  # CLI (Go) — additional CLI tools
+  grep -q 'urfave/cli' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}urfave-cli,"
+  grep -q 'charmbracelet/bubbletea' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}BubbleTea,"
+  grep -q 'charmbracelet/lipgloss' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Lipgloss,"
+  grep -q 'charmbracelet/glamour' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Glamour,"
+  # File storage (Go) — object storage abstractions
+  grep -q 'graymeta/stow\|rclone' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Stow,"
+  # Networking (Go) — DNS, proxy, tunneling
+  grep -q 'miekg/dns' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}DNS-Go,"
+  grep -q 'quic-go/quic-go' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}QUIC-Go,"
+  # Config (Go) — additional config management
+  grep -q 'joho/godotenv' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}godotenv,"
+  grep -q 'knadh/koanf' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Koanf,"
+  # Testing (Go) — additional testing tools
+  grep -q 'cucumber/godog' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Godog,"
+  grep -q 'vektra/mockery\|stretchr/mockery' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Mockery,"
+  grep -q 'DATA-DOG/go-sqlmock' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}go-sqlmock,"
+  # API / Documentation (Go) — additional
+  grep -q 'getkin/kin-openapi\|go-openapi' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}OpenAPI-Go,"
+  # Service mesh (Go) — Envoy, Istio extensions
+  grep -q 'envoyproxy/go-control-plane' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Envoy-Control-Plane,"
 fi
 
 # ── Java / Kotlin / Scala ──
@@ -2446,6 +3050,73 @@ for _pom in $_POM_FILES; do
   if grep -qiE 'azure-spring|com\.azure' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Azure-SDK'; then FRAMEWORKS="${FRAMEWORKS}Azure-SDK,"; fi
   if grep -qi 'auth0' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Auth0'; then FRAMEWORKS="${FRAMEWORKS}Auth0,"; fi
   if grep -qi 'cognito' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Cognito'; then FRAMEWORKS="${FRAMEWORKS}AWS-Cognito,"; fi
+  # Payments / Communication (Java/Kotlin)
+  if grep -qi 'stripe' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Stripe'; then FRAMEWORKS="${FRAMEWORKS}Stripe,"; fi
+  if grep -qi 'adyen' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Adyen'; then FRAMEWORKS="${FRAMEWORKS}Adyen,"; fi
+  if grep -qi 'braintree' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Braintree'; then FRAMEWORKS="${FRAMEWORKS}Braintree,"; fi
+  if grep -qi 'paypal.*checkout\|paypal-checkout\|com.paypal' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'PayPal'; then FRAMEWORKS="${FRAMEWORKS}PayPal,"; fi
+  if grep -qi 'chargebee' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Chargebee'; then FRAMEWORKS="${FRAMEWORKS}Chargebee,"; fi
+  if grep -qi 'net\.authorize\|authorizenet' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Authorize.net'; then FRAMEWORKS="${FRAMEWORKS}Authorize.net,"; fi
+  if grep -qi 'worldpay\|vantiv' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Worldpay'; then FRAMEWORKS="${FRAMEWORKS}Worldpay,"; fi
+  if grep -qi 'twilio' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Twilio'; then FRAMEWORKS="${FRAMEWORKS}Twilio,"; fi
+  if grep -qi 'sendgrid' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'SendGrid'; then FRAMEWORKS="${FRAMEWORKS}SendGrid,"; fi
+  if grep -qi 'launchdarkly' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'LaunchDarkly'; then FRAMEWORKS="${FRAMEWORKS}LaunchDarkly,"; fi
+  if grep -qi 'unleash.*client\|io\.getunleash' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Unleash'; then FRAMEWORKS="${FRAMEWORKS}Unleash,"; fi
+  # Template engines (Java/Kotlin) — server-side rendering in enterprise apps
+  if grep -qi 'thymeleaf' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Thymeleaf'; then FRAMEWORKS="${FRAMEWORKS}Thymeleaf,"; fi
+  if grep -qi 'freemarker' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Freemarker'; then FRAMEWORKS="${FRAMEWORKS}Freemarker,"; fi
+  # Workflow / CQRS / Event Sourcing (Java/Kotlin) — enterprise process orchestration
+  if grep -qi 'camunda\|zeebe' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Camunda'; then FRAMEWORKS="${FRAMEWORKS}Camunda,"; fi
+  if grep -qi 'axonframework\|axon-spring' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Axon'; then FRAMEWORKS="${FRAMEWORKS}Axon,"; fi
+  if grep -qi 'jbpm' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'jBPM'; then FRAMEWORKS="${FRAMEWORKS}jBPM,"; fi
+  if grep -qi 'flowable' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Flowable'; then FRAMEWORKS="${FRAMEWORKS}Flowable,"; fi
+  if grep -qi 'temporal-sdk\|io\.temporal' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Temporal'; then FRAMEWORKS="${FRAMEWORKS}Temporal,"; fi
+  # PDF / Reporting (Java/Kotlin) — enterprise reporting and invoicing
+  if grep -qi 'itext\|itextpdf' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'iText'; then FRAMEWORKS="${FRAMEWORKS}iText,"; fi
+  if grep -qi 'pdfbox' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'PDFBox'; then FRAMEWORKS="${FRAMEWORKS}PDFBox,"; fi
+  if grep -qi 'jasperreports\|jasper' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'JasperReports'; then FRAMEWORKS="${FRAMEWORKS}JasperReports,"; fi
+  # Testing (Java/Kotlin) — enterprise testing ecosystem
+  if grep -qi 'mockito' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Mockito'; then FRAMEWORKS="${FRAMEWORKS}Mockito,"; fi
+  if grep -qi 'wiremock' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'WireMock'; then FRAMEWORKS="${FRAMEWORKS}WireMock,"; fi
+  if grep -qi 'assertj' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'AssertJ'; then FRAMEWORKS="${FRAMEWORKS}AssertJ,"; fi
+  if grep -qi 'archunit' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'ArchUnit'; then FRAMEWORKS="${FRAMEWORKS}ArchUnit,"; fi
+  # Blockchain (Java) — enterprise DLT
+  if grep -qi 'web3j' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Web3j'; then FRAMEWORKS="${FRAMEWORKS}Web3j,"; fi
+  # Big Data (Java) — Beam / Hadoop
+  if grep -qi 'apache.*beam\|beam-sdks' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Beam'; then FRAMEWORKS="${FRAMEWORKS}Apache-Beam,"; fi
+  if grep -qi 'hadoop' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Hadoop'; then FRAMEWORKS="${FRAMEWORKS}Hadoop,"; fi
+  # Messaging (Java) — JMS, Pulsar, additional queues
+  if grep -qi 'activemq\|artemis' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'ActiveMQ'; then FRAMEWORKS="${FRAMEWORKS}ActiveMQ,"; fi
+  if grep -qi 'pulsar-client\|apache.*pulsar' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Pulsar'; then FRAMEWORKS="${FRAMEWORKS}Apache-Pulsar,"; fi
+  if grep -qi 'spring-amqp\|spring-rabbit' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'RabbitMQ'; then FRAMEWORKS="${FRAMEWORKS}RabbitMQ,"; fi
+  if grep -qi 'nats-io\|nats-client' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'NATS'; then FRAMEWORKS="${FRAMEWORKS}NATS,"; fi
+  # Security (Java) — advanced security frameworks
+  if grep -qi 'shiro' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Shiro'; then FRAMEWORKS="${FRAMEWORKS}Apache-Shiro,"; fi
+  if grep -qi 'bouncycastle\|bcprov' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'BouncyCastle'; then FRAMEWORKS="${FRAMEWORKS}BouncyCastle,"; fi
+  # Serialization (Java) — beyond Jackson
+  if grep -qi 'protobuf-java' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Protobuf'; then FRAMEWORKS="${FRAMEWORKS}Protobuf,"; fi
+  if grep -qi 'avro' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Avro'; then FRAMEWORKS="${FRAMEWORKS}Apache-Avro,"; fi
+  # Search (Java) — Lucene, Solr
+  if grep -qi 'lucene\|apache.*solr' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Lucene'; then FRAMEWORKS="${FRAMEWORKS}Lucene,"; fi
+  if grep -qi 'elasticsearch-java\|co\.elastic' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Elasticsearch'; then FRAMEWORKS="${FRAMEWORKS}Elasticsearch,"; fi
+  # Cloud-native (Java) — Spring Cloud components
+  if grep -qi 'spring-cloud-stream' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Spring-Cloud-Stream'; then FRAMEWORKS="${FRAMEWORKS}Spring-Cloud-Stream,"; fi
+  if grep -qi 'spring-cloud-gateway' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Spring-Cloud-Gateway'; then FRAMEWORKS="${FRAMEWORKS}Spring-Cloud-Gateway,"; fi
+  if grep -qi 'spring-cloud-config' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Spring-Cloud-Config'; then FRAMEWORKS="${FRAMEWORKS}Spring-Cloud-Config,"; fi
+  # Scheduling (Java) — Quartz scheduler
+  if grep -qi 'quartz' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Quartz'; then FRAMEWORKS="${FRAMEWORKS}Quartz,"; fi
+  # Caching (Java) — additional
+  if grep -qi 'hazelcast' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Hazelcast'; then FRAMEWORKS="${FRAMEWORKS}Hazelcast,"; fi
+  if grep -qi 'ehcache' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'EhCache'; then FRAMEWORKS="${FRAMEWORKS}EhCache,"; fi
+  # Data validation (Java)
+  if grep -qi 'javax.validation\|jakarta.validation\|hibernate-validator' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Bean-Validation'; then FRAMEWORKS="${FRAMEWORKS}Bean-Validation,"; fi
+  # Reactive (Java) — additional
+  if grep -qi 'rxjava\|io\.reactivex' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'RxJava'; then FRAMEWORKS="${FRAMEWORKS}RxJava,"; fi
+  # API Gateway (Java) — Zuul, Kong
+  if grep -qi 'zuul\|spring-cloud-netflix' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Zuul'; then FRAMEWORKS="${FRAMEWORKS}Zuul,"; fi
+  # Service Discovery (Java)
+  if grep -qi 'eureka' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Eureka'; then FRAMEWORKS="${FRAMEWORKS}Eureka,"; fi
+  if grep -qi 'consul' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Consul'; then FRAMEWORKS="${FRAMEWORKS}Consul,"; fi
 done
 if [ -f "build.gradle" ] || [ -f "build.gradle.kts" ]; then
   GRADLE_FILE=""; for _f in build.gradle build.gradle.kts; do [ -f "$_f" ] && GRADLE_FILE="$_f" && break; done
@@ -2455,6 +3126,32 @@ if [ -f "build.gradle" ] || [ -f "build.gradle.kts" ]; then
   grep -q 'android' "$GRADLE_FILE" 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Android,"
   grep -q 'flyway' "$GRADLE_FILE" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Flyway' && FRAMEWORKS="${FRAMEWORKS}Flyway,"
   grep -q 'liquibase' "$GRADLE_FILE" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Liquibase' && FRAMEWORKS="${FRAMEWORKS}Liquibase,"
+  grep -q 'kotlinx-coroutines' "$GRADLE_FILE" 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Coroutines,"
+  grep -q 'arrow-' "$GRADLE_FILE" 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Arrow,"
+  grep -q 'compose' "$GRADLE_FILE" 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Jetpack-Compose,"
+  grep -q 'koin' "$GRADLE_FILE" 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Koin,"
+  grep -q 'hilt' "$GRADLE_FILE" 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Hilt,"
+  grep -q 'room' "$GRADLE_FILE" 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Room,"
+  grep -q 'retrofit' "$GRADLE_FILE" 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Retrofit,"
+  grep -q 'multiplatform\|KMP' "$GRADLE_FILE" 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}KMP,"
+  # Kotlin ecosystem (additional)
+  grep -q 'exposed\|org.jetbrains.exposed' "$GRADLE_FILE" 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Exposed,"
+  grep -q 'ktor-client\|ktor-server' "$GRADLE_FILE" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Ktor' && FRAMEWORKS="${FRAMEWORKS}Ktor,"
+  grep -q 'sqldelight\|app.cash.sqldelight' "$GRADLE_FILE" 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}SQLDelight,"
+  grep -q 'ksp\|devtools.ksp' "$GRADLE_FILE" 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}KSP,"
+  grep -q 'detekt' "$GRADLE_FILE" 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Detekt,"
+  grep -q 'mockk' "$GRADLE_FILE" 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}MockK,"
+  grep -q 'kotest' "$GRADLE_FILE" 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Kotest,"
+  # Android (additional)
+  grep -q 'navigation\|androidx.navigation' "$GRADLE_FILE" 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Navigation,"
+  grep -q 'work-runtime\|WorkManager' "$GRADLE_FILE" 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}WorkManager,"
+  grep -q 'paging\|androidx.paging' "$GRADLE_FILE" 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Paging,"
+  grep -q 'datastore\|DataStore' "$GRADLE_FILE" 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}DataStore,"
+  grep -q 'coil' "$GRADLE_FILE" 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Coil,"
+  grep -q 'glide' "$GRADLE_FILE" 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Glide,"
+  grep -q 'okhttp' "$GRADLE_FILE" 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}OkHttp,"
+  grep -q 'moshi' "$GRADLE_FILE" 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Moshi,"
+  grep -q 'timber' "$GRADLE_FILE" 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Timber,"
 fi
 
 # ── Ruby ──
@@ -2484,6 +3181,66 @@ if [ -f "Gemfile" ]; then
   grep -q 'rspec' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}RSpec,"
   grep -q 'omniauth' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}OmniAuth,"
   grep -q 'aws-sdk' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}AWS-SDK,"
+  # Payments / Communication (Ruby)
+  grep -q 'stripe' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Stripe,"
+  grep -q 'mollie' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Mollie,"
+  grep -q 'gocardless-pro' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}GoCardless,"
+  grep -q 'braintree' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Braintree,"
+  grep -q 'square' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Square,"
+  grep -q 'chargebee' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Chargebee,"
+  grep -q 'recurly' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Recurly,"
+  grep -q 'paypal' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}PayPal,"
+  grep -q 'active_merchant' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}ActiveMerchant,"
+  grep -q 'shopify_api' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Shopify-API,"
+  grep -q 'twilio-ruby\|twilio' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Twilio,"
+  grep -q 'sendgrid' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}SendGrid,"
+  grep -q 'postmark' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Postmark,"
+  grep -q 'mailgun' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Mailgun,"
+  grep -q 'ldclient-rb\|launchdarkly' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}LaunchDarkly,"
+  # E-commerce (Ruby) — Shopify ecosystem, marketplaces, D2C
+  grep -q 'solidus' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Solidus,"
+  grep -q 'spree' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Spree,"
+  grep -q 'shopify_app' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Shopify-App,"
+  # PDF / Document (Ruby) — invoicing, contracts
+  grep -q 'prawn' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Prawn,"
+  grep -q 'wicked_pdf' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}WickedPDF,"
+  grep -q 'grover' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Grover,"
+  # Search (Ruby) — Elasticsearch/Meilisearch wrappers
+  grep -q 'searchkick' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Searchkick,"
+  grep -q 'ransack' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Ransack,"
+  grep -q 'pg_search' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}PgSearch,"
+  # Admin (Ruby) — admin panels
+  grep -q 'activeadmin' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}ActiveAdmin,"
+  grep -q 'administrate' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Administrate,"
+  # File uploads (Ruby)
+  grep -q 'shrine' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Shrine,"
+  grep -q 'carrierwave' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}CarrierWave,"
+  # Background jobs (Ruby) — additional
+  grep -q 'delayed_job' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}DelayedJob,"
+  # Testing (Ruby)
+  grep -q 'webmock' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}WebMock,"
+  grep -q 'vcr' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}VCR,"
+  grep -q 'shoulda' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Shoulda,"
+  grep -q 'simplecov' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}SimpleCov,"
+  # API / Serialization (Ruby) — additional
+  grep -q 'grape-entity' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Grape-Entity,"
+  grep -q 'alba\|oj' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Oj,"
+  grep -q 'pagy' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Pagy,"
+  # Caching / Performance (Ruby)
+  grep -q 'dalli' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Memcached,"
+  grep -q 'rack-attack' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Rack-Attack,"
+  # Deployment (Ruby)
+  grep -q 'capistrano' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Capistrano,"
+  grep -q 'kamal\|mrsk' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Kamal,"
+  # Auth (Ruby) — additional
+  grep -q 'rodauth' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Rodauth,"
+  grep -q 'warden' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Warden,"
+  # State machines (Ruby) — business process management
+  grep -q 'aasm' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}AASM,"
+  grep -q 'statesman' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Statesman,"
+  # Monitoring (Ruby)
+  grep -q 'skylight' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Skylight,"
+  grep -q 'scout_apm\|sentry-ruby' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Sentry,"
 fi
 
 # ── PHP ──
@@ -2511,10 +3268,82 @@ if [ -f "composer.json" ]; then
   grep -q 'auth0' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Auth0,"
   grep -q 'aws/aws-sdk-php' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}AWS-SDK,"
   grep -q 'google/cloud' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}GCP-SDK,"
+  # Payments / Billing (PHP) — huge in WooCommerce/Laravel/Magento e-commerce
+  grep -q 'stripe/stripe-php' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Stripe,"
+  grep -q 'mollie/mollie-api-php' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Mollie,"
+  grep -q 'gocardless/payments-api-client-php' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}GoCardless,"
+  grep -q 'adyen/php-http-client' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Adyen,"
+  grep -q 'braintree/braintree_php' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Braintree,"
+  grep -q 'square/square' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Square,"
+  grep -q 'chargebee/chargebee-php' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Chargebee,"
+  grep -q 'recurly/recurly-client' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Recurly,"
+  grep -q 'paypal/paypal-checkout-sdk\|paypal/rest-api-sdk-php' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}PayPal,"
+  grep -q 'authorizenet/sdk-php' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Authorize.net,"
+  grep -q 'omnipay/omnipay' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Omnipay,"
+  # Communication (PHP)
+  grep -q 'twilio/sdk' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Twilio,"
+  grep -q 'sendgrid/sendgrid' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}SendGrid,"
+  grep -q 'mailgun/mailgun-php' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Mailgun,"
+  grep -q 'postmark/postmark-php' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Postmark,"
+  # Feature Flags (PHP)
+  grep -q 'launchdarkly/server-sdk' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}LaunchDarkly,"
+  grep -q 'unleash/client-sdk-php\|php-unleash/client' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Unleash,"
+  # E-commerce platforms (PHP) — WooCommerce, Magento, PrestaShop dominate global e-commerce
+  grep -q 'magento' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Magento,"
+  grep -q 'prestashop' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}PrestaShop,"
+  grep -q 'woocommerce\|automattic/woocommerce' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}WooCommerce,"
+  grep -q 'sylius' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Sylius,"
+  grep -q 'bagisto' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Bagisto,"
+  # CMS additions (PHP)
+  grep -q 'statamic' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Statamic,"
+  grep -q 'october\|octobercms' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}OctoberCMS,"
+  grep -q 'craftcms' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}CraftCMS,"
+  # Static analysis (PHP)
+  grep -q 'phpstan/phpstan' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}PHPStan,"
+  grep -q 'vimeo/psalm' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Psalm,"
+  grep -q 'rector/rector' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Rector,"
+  # PDF (PHP) — invoicing, document generation
+  grep -q 'dompdf/dompdf' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}DomPDF,"
+  grep -q 'mpdf/mpdf' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}mPDF,"
+  grep -q 'tecnickcom/tcpdf' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}TCPDF,"
+  # Search (PHP)
+  grep -q 'meilisearch/meilisearch-php' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Meilisearch,"
+  grep -q 'elasticsearch/elasticsearch' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Elasticsearch,"
+  grep -q 'algolia/algoliasearch' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Algolia,"
+  # Messaging (PHP) — queue systems beyond Horizon
+  grep -q 'php-amqplib/php-amqplib' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}RabbitMQ,"
+  # Admin panels (PHP) — backend admin interfaces
+  grep -q 'nova\|laravel/nova' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Nova,"
+  grep -q 'backpack' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Backpack,"
+  grep -q 'easyadmin\|EasyCorp' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}EasyAdmin,"
+  # Laravel ecosystem (PHP) — additional packages
+  grep -q 'laravel/breeze' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Breeze,"
+  grep -q 'laravel/jetstream' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Jetstream,"
+  grep -q 'laravel/cashier' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Cashier,"
+  grep -q 'laravel/scout' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Scout,"
+  grep -q 'laravel/octane' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Octane,"
+  grep -q 'laravel/pennant' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Pennant,"
+  grep -q 'laravel/pulse' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Pulse,"
+  grep -q 'laravel/reverb' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Reverb,"
+  # Testing (PHP) — additional
+  grep -q 'mockery/mockery' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Mockery,"
+  grep -q 'laravel/dusk' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Dusk,"
+  # Observability (PHP) — monitoring
+  grep -q 'sentry/sentry-laravel\|sentry/sentry' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Sentry,"
+  grep -q 'bugsnag/bugsnag-laravel\|bugsnag' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Bugsnag,"
+  # Auth (PHP) — additional
+  grep -q 'lcobucci/jwt' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}JWT-PHP,"
+  grep -q 'firebase/php-jwt' composer.json 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'JWT-PHP' && FRAMEWORKS="${FRAMEWORKS}JWT-PHP,"
+  # Deployment (PHP)
+  grep -q 'deployer/deployer' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Deployer,"
 fi
 # WordPress: also detect by wp-config.php / wp-includes presence
 if ! echo "$FRAMEWORKS" | grep -q 'WordPress'; then
   if [ -f "wp-config.php" ] || [ -d "wp-includes" ]; then FRAMEWORKS="${FRAMEWORKS}WordPress,"; fi
+fi
+# Magento: also detect by app/etc/env.php or Magento module registration
+if ! echo "$FRAMEWORKS" | grep -q 'Magento'; then
+  if [ -f "app/etc/env.php" ] || [ -f "app/etc/config.php" ]; then FRAMEWORKS="${FRAMEWORKS}Magento,"; fi
 fi
 
 # ── .NET / C# ──
@@ -2547,6 +3376,62 @@ for csproj in $(find . -maxdepth 3 -name '*.csproj' 2>/dev/null | head -5); do
   if grep -q 'AWSSDK\|Amazon\.' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'AWS-SDK'; then FRAMEWORKS="${FRAMEWORKS}AWS-SDK,"; fi
   if grep -q 'Google.Cloud' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'GCP-SDK'; then FRAMEWORKS="${FRAMEWORKS}GCP-SDK,"; fi
   if grep -q 'Azure\.' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Azure-SDK'; then FRAMEWORKS="${FRAMEWORKS}Azure-SDK,"; fi
+  # Payments / Billing (.NET) — dominant in enterprise Windows/SaaS/healthcare fintech
+  if grep -q 'Stripe.net\|Stripe\.Abstractions' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Stripe'; then FRAMEWORKS="${FRAMEWORKS}Stripe,"; fi
+  if grep -q 'Braintree' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Braintree'; then FRAMEWORKS="${FRAMEWORKS}Braintree,"; fi
+  if grep -q 'Adyen\.api-library' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Adyen'; then FRAMEWORKS="${FRAMEWORKS}Adyen,"; fi
+  if grep -q 'AuthorizeNet\|net\.authorize' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Authorize.net'; then FRAMEWORKS="${FRAMEWORKS}Authorize.net,"; fi
+  if grep -q 'PayPalCheckoutSdk\|PayPalHttp' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'PayPal'; then FRAMEWORKS="${FRAMEWORKS}PayPal,"; fi
+  if grep -q 'Square\.Connect\|square\.connect' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Square'; then FRAMEWORKS="${FRAMEWORKS}Square,"; fi
+  if grep -q 'ChargeBee.Net\|ChargeBee\.net' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Chargebee'; then FRAMEWORKS="${FRAMEWORKS}Chargebee,"; fi
+  # Communication (.NET)
+  if grep -q 'Twilio' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Twilio'; then FRAMEWORKS="${FRAMEWORKS}Twilio,"; fi
+  if grep -q 'SendGrid' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'SendGrid'; then FRAMEWORKS="${FRAMEWORKS}SendGrid,"; fi
+  if grep -q 'Mailgun' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Mailgun'; then FRAMEWORKS="${FRAMEWORKS}Mailgun,"; fi
+  # Feature Flags (.NET)
+  if grep -qi 'LaunchDarkly' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'LaunchDarkly'; then FRAMEWORKS="${FRAMEWORKS}LaunchDarkly,"; fi
+  if grep -q 'Unleash\.Client' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Unleash'; then FRAMEWORKS="${FRAMEWORKS}Unleash,"; fi
+  # Desktop GUI (.NET) — WPF, WinForms, Avalonia cross-platform
+  if grep -q 'Microsoft.WindowsDesktop.App.WPF\|UseWPF' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'WPF'; then FRAMEWORKS="${FRAMEWORKS}WPF,"; fi
+  if grep -q 'UseWindowsForms\|WindowsFormsApp' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'WinForms'; then FRAMEWORKS="${FRAMEWORKS}WinForms,"; fi
+  if grep -q 'Avalonia' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Avalonia'; then FRAMEWORKS="${FRAMEWORKS}Avalonia,"; fi
+  # PDF / Reporting (.NET) — enterprise document generation
+  if grep -q 'QuestPDF' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'QuestPDF'; then FRAMEWORKS="${FRAMEWORKS}QuestPDF,"; fi
+  if grep -q 'PdfSharp\|MigraDoc' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'PdfSharp'; then FRAMEWORKS="${FRAMEWORKS}PdfSharp,"; fi
+  if grep -q 'iTextSharp\|itext' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'iText'; then FRAMEWORKS="${FRAMEWORKS}iText,"; fi
+  # Testing (.NET) — enterprise testing ecosystem
+  if grep -q 'FluentAssertions' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'FluentAssertions'; then FRAMEWORKS="${FRAMEWORKS}FluentAssertions,"; fi
+  if grep -q 'Moq' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Moq'; then FRAMEWORKS="${FRAMEWORKS}Moq,"; fi
+  if grep -q 'NSubstitute' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'NSubstitute'; then FRAMEWORKS="${FRAMEWORKS}NSubstitute,"; fi
+  if grep -q 'Bogus' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Bogus'; then FRAMEWORKS="${FRAMEWORKS}Bogus,"; fi
+  if grep -q 'Testcontainers' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Testcontainers'; then FRAMEWORKS="${FRAMEWORKS}Testcontainers,"; fi
+  # gRPC (.NET)
+  if grep -q 'Grpc.AspNetCore\|Grpc.Net.Client' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'gRPC'; then FRAMEWORKS="${FRAMEWORKS}gRPC,"; fi
+  # Workflow (.NET) — long-running process orchestration
+  if grep -q 'Elsa' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Elsa'; then FRAMEWORKS="${FRAMEWORKS}Elsa,"; fi
+  if grep -q 'Temporal' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Temporal'; then FRAMEWORKS="${FRAMEWORKS}Temporal,"; fi
+  # Search (.NET)
+  if grep -q 'NEST\|Elastic.Clients' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Elasticsearch'; then FRAMEWORKS="${FRAMEWORKS}Elasticsearch,"; fi
+  # Orleans (.NET) — Microsoft's virtual actor framework
+  if grep -q 'Orleans' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Orleans'; then FRAMEWORKS="${FRAMEWORKS}Orleans,"; fi
+  # Dapr (.NET) — distributed application runtime
+  if grep -q 'Dapr' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Dapr'; then FRAMEWORKS="${FRAMEWORKS}Dapr,"; fi
+  # Identity (additional .NET) — Duende IdentityServer
+  if grep -q 'Duende.IdentityServer\|IdentityServer' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'IdentityServer'; then FRAMEWORKS="${FRAMEWORKS}IdentityServer,"; fi
+  # CQRS (.NET) — command query separation
+  if grep -q 'EventFlow' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'EventFlow'; then FRAMEWORKS="${FRAMEWORKS}EventFlow,"; fi
+  if grep -q 'Marten' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Marten'; then FRAMEWORKS="${FRAMEWORKS}Marten,"; fi
+  # Database (.NET) — additional providers
+  if grep -q 'Npgsql' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Npgsql'; then FRAMEWORKS="${FRAMEWORKS}Npgsql,"; fi
+  if grep -q 'MongoDB.Driver' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'MongoDB'; then FRAMEWORKS="${FRAMEWORKS}MongoDB,"; fi
+  if grep -q 'MySqlConnector\|MySql.Data' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'MySQL'; then FRAMEWORKS="${FRAMEWORKS}MySQL,"; fi
+  # Job scheduling (.NET) — additional
+  if grep -q 'Quartz' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Quartz'; then FRAMEWORKS="${FRAMEWORKS}Quartz,"; fi
+  # Caching (.NET) — distributed caching
+  if grep -q 'Microsoft.Extensions.Caching.StackExchangeRedis' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Redis'; then FRAMEWORKS="${FRAMEWORKS}Redis,"; fi
+  # HTTP (.NET) — REST clients
+  if grep -q 'RestSharp' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'RestSharp'; then FRAMEWORKS="${FRAMEWORKS}RestSharp,"; fi
+  if grep -q 'Refit' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Refit'; then FRAMEWORKS="${FRAMEWORKS}Refit,"; fi
 done
 
 # ── Elixir ──
@@ -2561,6 +3446,34 @@ if [ -f "mix.exs" ]; then
   grep -q 'ash' mix.exs 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Ash,"
   grep -q 'nerves' mix.exs 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Nerves,"
   grep -q 'phoenix_live_view' mix.exs 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}LiveView,"
+  # Payments / Communication (Elixir) — Phoenix fintech apps, telecoms billing
+  grep -q 'stripity_stripe\|stripe' mix.exs 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Stripe,"
+  grep -q 'ex_twilio\|twilio' mix.exs 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Twilio,"
+  grep -q 'ex_money\|money' mix.exs 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}ExMoney,"
+  grep -q 'bamboo' mix.exs 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Bamboo,"
+  grep -q 'swoosh' mix.exs 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Swoosh,"
+  grep -q 'fun_with_flags\|feature_flagger' mix.exs 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}FunWithFlags,"
+  # Media processing (Elixir) — real-time media pipelines
+  grep -q 'membrane' mix.exs 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Membrane,"
+  # Clustering / Distribution (Elixir) — Elixir's native strength
+  grep -q 'libcluster' mix.exs 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}libcluster,"
+  grep -q 'horde' mix.exs 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Horde,"
+  # Auth (Elixir) — authentication frameworks
+  grep -q 'guardian' mix.exs 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Guardian,"
+  grep -q 'pow' mix.exs 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Pow,"
+  grep -q 'ueberauth' mix.exs 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Ueberauth,"
+  # HTTP (Elixir) — client libraries
+  grep -q 'tesla' mix.exs 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Tesla,"
+  grep -q 'finch\|req' mix.exs 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Finch,"
+  # Testing (Elixir) — additional
+  grep -q 'mox\|ex_machina' mix.exs 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}ExMachina,"
+  grep -q 'wallaby' mix.exs 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Wallaby,"
+  # Config / Env (Elixir)
+  grep -q 'vapor' mix.exs 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Vapor-Config,"
+  # JSON (Elixir) — serialization
+  grep -q 'jason' mix.exs 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Jason,"
+  # PDF (Elixir)
+  grep -q 'pdf_generator\|chromic_pdf' mix.exs 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}ChromicPDF,"
 fi
 
 # ── Scala ──
@@ -2577,6 +3490,15 @@ if [ -f "build.sbt" ]; then
   grep -qi 'circe' build.sbt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Circe,"
   grep -qi 'flink' build.sbt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Flink,"
   grep -qi 'caliban' build.sbt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Caliban,"
+  grep -qi 'fs2' build.sbt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}fs2,"
+  grep -qi 'kafka-streams\|kafka\.streams' build.sbt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Kafka-Streams,"
+  grep -qi 'scio' build.sbt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Scio,"
+  grep -qi 'delta' build.sbt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Delta-Lake,"
+  grep -qi 'chimney' build.sbt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Chimney,"
+  grep -qi 'quill' build.sbt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Quill,"
+  grep -qi 'ce3\|cats-effect' build.sbt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Cats-Effect,"
+  grep -qi 'sttp' build.sbt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}sttp,"
+  grep -qi 'refined' build.sbt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Refined,"
 fi
 
 # ── C / C++ ──
@@ -2599,6 +3521,45 @@ if [ "$PRIMARY_LANG" = "c" ] || [ "$PRIMARY_LANG" = "cpp" ]; then
   # Package managers
   if [ -f "conanfile.txt" ] || [ -f "conanfile.py" ]; then FRAMEWORKS="${FRAMEWORKS}Conan,"; fi
   if [ -f "vcpkg.json" ] || [ -d "vcpkg" ]; then FRAMEWORKS="${FRAMEWORKS}vcpkg,"; fi
+  # GPU / CUDA (C/C++) — HPC, ML training, scientific computing
+  if find . -maxdepth 3 -name '*.cu' 2>/dev/null | head -1 | grep -q '.'; then FRAMEWORKS="${FRAMEWORKS}CUDA,"; fi
+  if [ -f "CMakeLists.txt" ]; then
+    grep -qi 'vulkan' CMakeLists.txt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Vulkan,"
+    grep -qi 'glfw' CMakeLists.txt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}GLFW,"
+    grep -qi 'imgui' CMakeLists.txt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Dear-ImGui,"
+    grep -qi 'opengl' CMakeLists.txt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}OpenGL,"
+    grep -qi 'catch2\|Catch2' CMakeLists.txt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Catch2,"
+    grep -qi 'gtest\|googletest' CMakeLists.txt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}GoogleTest,"
+    grep -qi 'benchmark\|google.*benchmark' CMakeLists.txt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Google-Benchmark,"
+    grep -qi 'doctest' CMakeLists.txt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Doctest,"
+    # Networking (C/C++) — HTTP, async I/O
+    grep -qi 'asio\|boost.asio' CMakeLists.txt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Asio,"
+    grep -qi 'cpp-httplib\|cpr' CMakeLists.txt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}CPR,"
+    grep -qi 'libcurl\|curl' CMakeLists.txt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}libcurl,"
+    grep -qi 'websocketpp\|websocket++' CMakeLists.txt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}WebSocket++,"
+    # JSON (C/C++) — serialization
+    grep -qi 'nlohmann_json\|nlohmann/json' CMakeLists.txt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}nlohmann-json,"
+    grep -qi 'rapidjson' CMakeLists.txt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}RapidJSON,"
+    # Scientific / Math (C/C++)
+    grep -qi 'eigen\|eigen3' CMakeLists.txt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Eigen,"
+    grep -qi 'armadillo' CMakeLists.txt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Armadillo,"
+    # Logging (C/C++)
+    grep -qi 'spdlog' CMakeLists.txt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}spdlog,"
+    grep -qi 'fmt\b' CMakeLists.txt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}fmt,"
+    # GUI (C/C++) — beyond Qt
+    grep -qi 'wxwidgets\|wxWidgets' CMakeLists.txt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}wxWidgets,"
+    grep -qi 'fltk' CMakeLists.txt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}FLTK,"
+    # Audio / Multimedia (C/C++)
+    grep -qi 'portaudio\|rtaudio' CMakeLists.txt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}PortAudio,"
+    grep -qi 'ffmpeg\|libav' CMakeLists.txt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}FFmpeg,"
+    # Database (C/C++)
+    grep -qi 'sqlite\|sqlite3' CMakeLists.txt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}SQLite,"
+    grep -qi 'libpq\|pqxx' CMakeLists.txt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}libpq,"
+  fi
+  # Robotics (C/C++) — ROS/ROS2 ecosystem
+  if [ -f "package.xml" ] && grep -q 'catkin\|ament\|rosidl' package.xml 2>/dev/null; then FRAMEWORKS="${FRAMEWORKS}ROS,"; fi
+  # Unreal Engine
+  if [ -f "*.uproject" ] 2>/dev/null || find . -maxdepth 1 -name '*.uproject' 2>/dev/null | head -1 | grep -q '.'; then FRAMEWORKS="${FRAMEWORKS}Unreal-Engine,"; fi
 fi
 
 # ── Haskell ──
@@ -2649,6 +3610,20 @@ if [ "$PRIMARY_LANG" = "r" ]; then
   if [ -f "app.R" ] || find . -maxdepth 2 -name 'server.R' 2>/dev/null | head -1 | grep -q '.'; then FRAMEWORKS="${FRAMEWORKS}Shiny,"; fi
   if [ -f "plumber.R" ]; then FRAMEWORKS="${FRAMEWORKS}Plumber,"; fi
   if [ -f "renv.lock" ]; then FRAMEWORKS="${FRAMEWORKS}renv,"; fi
+  # Tidyverse ecosystem (R) — the standard R data science stack
+  if [ -f "DESCRIPTION" ]; then
+    grep -qi 'tidyverse\|dplyr\|tidyr' DESCRIPTION 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}tidyverse,"
+    grep -qi 'ggplot2' DESCRIPTION 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}ggplot2,"
+    grep -qi 'targets' DESCRIPTION 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}targets,"
+    grep -qi 'golem' DESCRIPTION 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}golem,"
+    grep -qi 'caret\|tidymodels' DESCRIPTION 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}tidymodels,"
+    # Bioinformatics (R) — Bioconductor ecosystem
+    grep -qi 'BiocManager\|bioconductor\|GenomicRanges\|DESeq2' DESCRIPTION 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Bioconductor,"
+  fi
+  if [ -f "renv.lock" ]; then
+    grep -qi 'tidyverse' renv.lock 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'tidyverse' && FRAMEWORKS="${FRAMEWORKS}tidyverse,"
+    grep -qi 'ggplot2' renv.lock 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'ggplot2' && FRAMEWORKS="${FRAMEWORKS}ggplot2,"
+  fi
 fi
 
 # ── Lua ──
@@ -2657,6 +3632,13 @@ if [ "$PRIMARY_LANG" = "lua" ]; then
   if find . -maxdepth 3 -name 'init.lua' -not -path '*/.git/*' 2>/dev/null | head -1 | grep -q '.'; then FRAMEWORKS="${FRAMEWORKS}Neovim-plugin,"; fi
   if grep -qr 'require.*lapis\|lapis' . 2>/dev/null --include='*.lua' | head -1 | grep -q '.'; then FRAMEWORKS="${FRAMEWORKS}Lapis,"; fi
   if grep -qr 'require.*kong\|kong' . 2>/dev/null --include='*.lua' | head -1 | grep -q '.'; then FRAMEWORKS="${FRAMEWORKS}Kong-plugin,"; fi
+  # Gaming (Lua) — LÖVE is the dominant Lua game framework
+  if [ -f "conf.lua" ] && grep -q 'love' conf.lua 2>/dev/null; then FRAMEWORKS="${FRAMEWORKS}LOVE2D,"; fi
+  if [ -f "game.project" ] && grep -q 'defold' game.project 2>/dev/null; then FRAMEWORKS="${FRAMEWORKS}Defold,"; fi
+  # OpenResty (Lua) — Nginx scripting
+  if grep -qr 'require.*resty\|ngx\.' . 2>/dev/null --include='*.lua' | head -1 | grep -q '.'; then FRAMEWORKS="${FRAMEWORKS}OpenResty,"; fi
+  # Hammerspoon (Lua) — macOS automation
+  if [ -f "init.lua" ] && grep -q 'hs\.\|hammerspoon' init.lua 2>/dev/null; then FRAMEWORKS="${FRAMEWORKS}Hammerspoon,"; fi
 fi
 
 # ── Perl ──
@@ -2675,6 +3657,18 @@ if [ -f "Package.swift" ]; then
   grep -q 'ComposableArchitecture\|TCA' Package.swift 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}TCA,"
   grep -q 'Alamofire' Package.swift 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Alamofire,"
   grep -q 'SwiftNIO' Package.swift 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}SwiftNIO,"
+  # Payments / Communication (Swift SPM) — iOS/macOS apps use payment SDKs
+  grep -q 'StripeIOS\|stripe-ios\|Stripe' Package.swift 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Stripe,"
+  grep -q 'Braintree' Package.swift 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Braintree,"
+  grep -q 'PayPalCheckout\|PayPalNativeCheckout' Package.swift 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}PayPal,"
+  grep -q 'SquarePointOfSaleSDK\|Square' Package.swift 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Square,"
+fi
+# Swift via Podfile (CocoaPods) — iOS payment pods
+if [ -f "Podfile" ]; then
+  grep -q 'Stripe\|StripeUICore' Podfile 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Stripe' && FRAMEWORKS="${FRAMEWORKS}Stripe,"
+  grep -q 'Braintree' Podfile 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Braintree' && FRAMEWORKS="${FRAMEWORKS}Braintree,"
+  grep -q 'AdyenComponents\|Adyen' Podfile 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Adyen' && FRAMEWORKS="${FRAMEWORKS}Adyen,"
+  grep -q 'PayPal' Podfile 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'PayPal' && FRAMEWORKS="${FRAMEWORKS}PayPal,"
 fi
 # SwiftUI: detected from any .swift source file containing SwiftUI import
 if [ "$PRIMARY_LANG" = "swift" ] && find . -maxdepth 5 -name '*.swift' -not -path '*/.git/*' 2>/dev/null | xargs grep -l 'import SwiftUI' 2>/dev/null | head -1 | grep -q '.'; then
@@ -2702,6 +3696,56 @@ if [ -f "pubspec.yaml" ]; then
   grep -qi 'auto_route' pubspec.yaml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}AutoRoute,"
   grep -qi 'firebase_core' pubspec.yaml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Firebase,"
   grep -qi 'supabase' pubspec.yaml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Supabase,"
+  # Payments / Communication (Flutter/Dart) — cross-platform mobile commerce
+  grep -qi 'flutter_stripe\|stripe_sdk' pubspec.yaml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Stripe,"
+  grep -qi 'razorpay_flutter' pubspec.yaml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Razorpay,"
+  grep -qi 'paystack_payment\|paystack_flutter' pubspec.yaml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Paystack,"
+  grep -qi '^  pay:' pubspec.yaml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}PayPlugin,"
+  grep -qi 'braintree' pubspec.yaml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Braintree,"
+  grep -qi 'paytm_allinonesdk\|paytm' pubspec.yaml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Paytm,"
+  grep -qi 'flutter_twilio\|twilio_programmable' pubspec.yaml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Twilio,"
+  grep -qi 'onesignal_flutter\|onesignal' pubspec.yaml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}OneSignal,"
+  grep -qi 'firebase_messaging' pubspec.yaml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}FCM,"
+  # Testing (Dart/Flutter) — additional
+  grep -qi 'mockito\|mocktail' pubspec.yaml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Mockito,"
+  grep -qi 'integration_test\|flutter_test' pubspec.yaml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Flutter-Test,"
+  grep -qi 'patrol' pubspec.yaml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Patrol,"
+  # State management (Dart/Flutter) — additional
+  grep -qi 'mobx:' pubspec.yaml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}MobX,"
+  grep -qi 'redux:' pubspec.yaml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Redux,"
+  grep -qi 'signals:' pubspec.yaml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Signals,"
+  # Networking (Dart) — additional
+  grep -qi 'retrofit:' pubspec.yaml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Retrofit,"
+  grep -qi 'graphql_flutter\|graphql:' pubspec.yaml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}GraphQL,"
+  # UI (Dart/Flutter) — additional
+  grep -qi 'flutter_hooks\|hooks_riverpod' pubspec.yaml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Flutter-Hooks,"
+  grep -qi 'cached_network_image' pubspec.yaml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}CachedImage,"
+  # Storage (Dart) — additional
+  grep -qi 'sqflite\|floor:' pubspec.yaml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}SQFlite,"
+  grep -qi 'objectbox\|objectbox:' pubspec.yaml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}ObjectBox,"
+  grep -qi 'appwrite' pubspec.yaml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Appwrite,"
+fi
+
+# ── Julia ──
+if [ "$PRIMARY_LANG" = "jl" ] || [ -f "Project.toml" ]; then
+  if [ -f "Project.toml" ]; then
+    FRAMEWORKS="${FRAMEWORKS}Julia,"
+    grep -qi 'Flux' Project.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Flux.jl,"
+    grep -qi 'DataFrames' Project.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}DataFrames.jl,"
+    grep -qi 'Plots\|Makie' Project.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Plots.jl,"
+    grep -qi 'DifferentialEquations' Project.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}DiffEq.jl,"
+    grep -qi 'Genie' Project.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Genie,"
+    grep -qi 'Pluto' Project.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Pluto.jl,"
+    grep -qi 'JuMP' Project.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}JuMP,"
+    grep -qi 'Knet\|Lux' Project.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Lux.jl,"
+    grep -qi 'Turing' Project.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Turing.jl,"
+  fi
+fi
+
+# ── Zig ──
+if [ "$PRIMARY_LANG" = "zig" ] || [ -f "build.zig" ]; then
+  FRAMEWORKS="${FRAMEWORKS}Zig,"
+  if [ -f "build.zig.zon" ]; then FRAMEWORKS="${FRAMEWORKS}Zig-Build-System,"; fi
 fi
 
 # ── Infrastructure / DevOps markers ──
@@ -2719,6 +3763,62 @@ if [ -f "netlify.toml" ]; then FRAMEWORKS="${FRAMEWORKS}Netlify,"; fi
 if [ -f "ansible.cfg" ] || [ -f "inventory" ] || find . -maxdepth 2 -name 'playbook*.yml' 2>/dev/null | head -1 | grep -q '.'; then FRAMEWORKS="${FRAMEWORKS}Ansible,"; fi
 if [ -f "skaffold.yaml" ] || [ -f "skaffold.yml" ]; then FRAMEWORKS="${FRAMEWORKS}Skaffold,"; fi
 if [ -f "Tiltfile" ] || [ -f "tilt.yaml" ]; then FRAMEWORKS="${FRAMEWORKS}Tilt,"; fi
+# Build systems (cross-language)
+if [ -f "BUILD" ] || [ -f "WORKSPACE" ] || [ -f "BUILD.bazel" ] || [ -f "WORKSPACE.bazel" ]; then FRAMEWORKS="${FRAMEWORKS}Bazel,"; fi
+if [ -f "flake.nix" ] || [ -f "default.nix" ] || [ -f "shell.nix" ]; then FRAMEWORKS="${FRAMEWORKS}Nix,"; fi
+if [ -f "Earthfile" ]; then FRAMEWORKS="${FRAMEWORKS}Earthly,"; fi
+if [ -f "dagger.json" ] || [ -d "dagger" ]; then FRAMEWORKS="${FRAMEWORKS}Dagger,"; fi
+# K8s deployment tools
+if find . -maxdepth 3 -name 'kustomization.yaml' -o -name 'kustomization.yml' 2>/dev/null | head -1 | grep -q '.'; then FRAMEWORKS="${FRAMEWORKS}Kustomize,"; fi
+if find . -maxdepth 3 -name 'Application.yaml' 2>/dev/null | xargs grep -l 'argoproj.io' 2>/dev/null | head -1 | grep -q '.' 2>/dev/null; then FRAMEWORKS="${FRAMEWORKS}ArgoCD,"; fi
+# Game engines (cross-language)
+if [ -f "project.godot" ]; then FRAMEWORKS="${FRAMEWORKS}Godot,"; fi
+# Unity (.NET game engine — detect by ProjectSettings or Assembly-CSharp)
+if [ -d "ProjectSettings" ] && [ -f "ProjectSettings/ProjectVersion.txt" ]; then FRAMEWORKS="${FRAMEWORKS}Unity,"; fi
+# Static site generators (cross-language)
+if [ -f "hugo.toml" ] || [ -f "hugo.yaml" ] || [ -f "config.toml" ] && grep -q 'baseURL' config.toml 2>/dev/null; then FRAMEWORKS="${FRAMEWORKS}Hugo,"; fi
+if [ -f "mkdocs.yml" ]; then FRAMEWORKS="${FRAMEWORKS}MkDocs,"; fi
+if [ -f "docusaurus.config.js" ] || [ -f "docusaurus.config.ts" ]; then FRAMEWORKS="${FRAMEWORKS}Docusaurus,"; fi
+# SST (Serverless Stack)
+if [ -f "sst.config.ts" ] || [ -f "sst.config.js" ]; then FRAMEWORKS="${FRAMEWORKS}SST,"; fi
+# Nx monorepo (cross-language)
+if [ -f "nx.json" ]; then FRAMEWORKS="${FRAMEWORKS}Nx,"; fi
+# Turborepo
+if [ -f "turbo.json" ]; then FRAMEWORKS="${FRAMEWORKS}Turborepo,"; fi
+# Observability / Monitoring (cross-language) — SaaS products
+if [ -f "grafana" ] || find . -maxdepth 3 -name 'grafana*.json' -o -name 'grafana*.yaml' 2>/dev/null | head -1 | grep -q '.'; then FRAMEWORKS="${FRAMEWORKS}Grafana,"; fi
+if find . -maxdepth 3 -name 'prometheus*.yml' -o -name 'prometheus*.yaml' 2>/dev/null | head -1 | grep -q '.'; then FRAMEWORKS="${FRAMEWORKS}Prometheus,"; fi
+if find . -maxdepth 3 -name 'jaeger*' -o -name 'zipkin*' 2>/dev/null | head -1 | grep -q '.'; then FRAMEWORKS="${FRAMEWORKS}Distributed-Tracing,"; fi
+# Secret management (cross-language)
+if [ -f ".sops.yaml" ] || find . -maxdepth 2 -name '*.enc.yaml' -o -name '*.enc.yml' 2>/dev/null | head -1 | grep -q '.'; then FRAMEWORKS="${FRAMEWORKS}SOPS,"; fi
+if find . -maxdepth 2 -name 'vault*.hcl' -o -name 'vault*.yaml' 2>/dev/null | head -1 | grep -q '.'; then FRAMEWORKS="${FRAMEWORKS}Vault,"; fi
+# Container tools (cross-language)
+if [ -f "docker-compose.yml" ] || [ -f "docker-compose.yaml" ] || [ -f "compose.yaml" ]; then FRAMEWORKS="${FRAMEWORKS}Docker-Compose,"; fi
+if [ -f "devcontainer.json" ] || [ -d ".devcontainer" ]; then FRAMEWORKS="${FRAMEWORKS}DevContainers,"; fi
+if [ -f "Vagrantfile" ]; then FRAMEWORKS="${FRAMEWORKS}Vagrant,"; fi
+# API specs (cross-language)
+if find . -maxdepth 2 -name 'openapi*.yaml' -o -name 'openapi*.json' -o -name 'swagger*.yaml' -o -name 'swagger*.json' 2>/dev/null | head -1 | grep -q '.'; then FRAMEWORKS="${FRAMEWORKS}OpenAPI-Spec,"; fi
+if find . -maxdepth 2 -name '*.proto' -not -path '*/.git/*' 2>/dev/null | head -1 | grep -q '.'; then FRAMEWORKS="${FRAMEWORKS}Protobuf,"; fi
+if find . -maxdepth 2 -name '*.graphql' -o -name '*.gql' 2>/dev/null | head -1 | grep -q '.'; then FRAMEWORKS="${FRAMEWORKS}GraphQL-Schema,"; fi
+if find . -maxdepth 2 -name '*.avsc' 2>/dev/null | head -1 | grep -q '.'; then FRAMEWORKS="${FRAMEWORKS}Avro-Schema,"; fi
+# Documentation (cross-language)
+if [ -f "book.toml" ]; then FRAMEWORKS="${FRAMEWORKS}mdBook,"; fi
+if [ -f "_config.yml" ] && grep -q 'jekyll\|theme' _config.yml 2>/dev/null; then FRAMEWORKS="${FRAMEWORKS}Jekyll,"; fi
+if [ -f "sphinx" ] || [ -f "conf.py" ] && grep -q 'sphinx\|extensions' conf.py 2>/dev/null; then FRAMEWORKS="${FRAMEWORKS}Sphinx,"; fi
+if [ -f "antora.yml" ] || [ -f "antora-playbook.yml" ]; then FRAMEWORKS="${FRAMEWORKS}Antora,"; fi
+# Feature flags (cross-language) — config file presence
+if [ -f "flagr.yaml" ] || [ -f "feature-flags.yaml" ] || [ -f ".featureflags" ]; then FRAMEWORKS="${FRAMEWORKS}Feature-Flags,"; fi
+# Monorepo tools (cross-language) — additional
+if [ -f "moon.yml" ] || [ -f ".moon/workspace.yml" ]; then FRAMEWORKS="${FRAMEWORKS}Moon,"; fi
+if [ -f "rush.json" ]; then FRAMEWORKS="${FRAMEWORKS}Rush,"; fi
+if [ -f "pants.toml" ] || [ -f "pants.ini" ]; then FRAMEWORKS="${FRAMEWORKS}Pants,"; fi
+if [ -f "buck2" ] || [ -f ".buckconfig" ]; then FRAMEWORKS="${FRAMEWORKS}Buck2,"; fi
+# IaC (cross-language) — additional
+if [ -f "crossplane.yaml" ] || find . -maxdepth 3 -name 'crossplane*.yaml' 2>/dev/null | head -1 | grep -q '.'; then FRAMEWORKS="${FRAMEWORKS}Crossplane,"; fi
+if find . -maxdepth 2 -name '*.bicep' 2>/dev/null | head -1 | grep -q '.'; then FRAMEWORKS="${FRAMEWORKS}Bicep,"; fi
+if [ -f "cdktf.json" ]; then FRAMEWORKS="${FRAMEWORKS}CDKTF,"; fi
+# GitOps (cross-language) — additional
+if find . -maxdepth 3 -name 'flux-system' -type d 2>/dev/null | head -1 | grep -q '.'; then FRAMEWORKS="${FRAMEWORKS}FluxCD,"; fi
 
 # Deduplicate (in case of cross-file overlap)
 FRAMEWORKS=$(echo "$FRAMEWORKS" | tr ',' '\n' | sort -u | tr '\n' ',' | sed 's/^,//;s/,$//')
