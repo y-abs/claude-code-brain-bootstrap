@@ -517,7 +517,7 @@ Runs `claude/scripts/discover.sh` — a single script that replaces 15+ individu
 - Detects existing config → chooses **FRESH** or **UPGRADE** mode
 - Scans for languages (with file counts), package manager, runtime
 - Detects formatter/linter with config files, style rules, static analyzers
-- Detects test frameworks (unit + E2E), 100+ frameworks across all ecosystems
+- Detects test frameworks (unit + E2E), 330+ frameworks across all ecosystems
 - Derives build/test/lint/serve/migrate/db/deps commands
 - Outputs structured KEY=VALUE pairs to `claude/tasks/.discovery.env`
 
@@ -1002,7 +1002,7 @@ Brain replaces advisory text with real mechanisms:
 | 🧠 **The AI never makes the same mistake twice** | `lessons.md` persists across sessions, compactions, restarts — read at every session start, impossible to skip |
 | 🔄 **Knowledge never goes stale** | Exit checklist catches drift every turn · `/maintain` audits all docs · self-maintenance rule fires on every knowledge edit |
 | ⚡ **One command replaces 15 min of prompt engineering** | `/review` runs a 10-point protocol · `/mr` generates descriptions · `/debug` traces root causes — 26 commands, pre-built, consistent |
-| 🔍 **Your entire stack understood in 2 seconds, zero tokens** | `discover.sh` — 20 languages, 100+ frameworks, 21 package managers — pure bash, runs before the AI even wakes up |
+| 🔍 **Your entire stack understood in 2 seconds, zero tokens** | `discover.sh` — 25+ languages, 330+ frameworks, 21 package managers — pure bash, runs before the AI even wakes up |
 | 🤖 **Research doesn't eat your context window** | 5 subagents run in isolated contexts — explore 20+ files, review code, challenge plans — your main conversation stays clean |
 | 🤝 **One brain, three AI tools** | Write knowledge once → Claude Code, GitHub Copilot, and any LLM all read it — switch tools without starting over |
 

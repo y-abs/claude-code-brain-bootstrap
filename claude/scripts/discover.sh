@@ -2038,6 +2038,35 @@ if [ -f "package.json" ]; then
   echo "$DEPS" | grep -q '^ioredis$\|^redis$' && FRAMEWORKS="${FRAMEWORKS}Redis-Client,"
   echo "$DEPS" | grep -q '^stripe$' && FRAMEWORKS="${FRAMEWORKS}Stripe,"
   echo "$DEPS" | grep -q '^three$' && FRAMEWORKS="${FRAMEWORKS}Three.js,"
+  # Additional frontend frameworks
+  echo "$DEPS" | grep -q '^@builder.io/qwik\|^@qwik.dev/qwik' && FRAMEWORKS="${FRAMEWORKS}Qwik,"
+  echo "$DEPS" | grep -q '^htmx.org$' && FRAMEWORKS="${FRAMEWORKS}HTMX,"
+  echo "$DEPS" | grep -q '^alpinejs$' && FRAMEWORKS="${FRAMEWORKS}Alpine.js,"
+  echo "$DEPS" | grep -q '^lit$\|^lit-element$' && FRAMEWORKS="${FRAMEWORKS}Lit,"
+  echo "$DEPS" | grep -q '^preact$' && FRAMEWORKS="${FRAMEWORKS}Preact,"
+  echo "$DEPS" | grep -q '^ember-source$\|^@ember/application' && FRAMEWORKS="${FRAMEWORKS}Ember.js,"
+  echo "$DEPS" | grep -q '^@11ty/eleventy$' && FRAMEWORKS="${FRAMEWORKS}Eleventy,"
+  echo "$DEPS" | grep -q '^@stencil/core$' && FRAMEWORKS="${FRAMEWORKS}Stencil,"
+  # GraphQL ecosystem enhancements (Apollo Server v4+, Yoga, TypeGraphQL, schema-first tools)
+  echo "$DEPS" | grep -q '^@apollo/server$\|^graphql-yoga$' && ! echo "$FRAMEWORKS" | grep -q 'GraphQL' && FRAMEWORKS="${FRAMEWORKS}GraphQL,"
+  echo "$DEPS" | grep -q '^type-graphql$' && FRAMEWORKS="${FRAMEWORKS}TypeGraphQL,"
+  echo "$DEPS" | grep -q '^@pothos/core$' && FRAMEWORKS="${FRAMEWORKS}Pothos,"
+  echo "$DEPS" | grep -q '^urql$\|^@urql/core$' && FRAMEWORKS="${FRAMEWORKS}URQL,"
+  # State management additions
+  echo "$DEPS" | grep -q '^pinia$' && FRAMEWORKS="${FRAMEWORKS}Pinia,"
+  echo "$DEPS" | grep -q '^jotai$' && FRAMEWORKS="${FRAMEWORKS}Jotai,"
+  echo "$DEPS" | grep -q '^mobx$' && FRAMEWORKS="${FRAMEWORKS}MobX,"
+  echo "$DEPS" | grep -q '^xstate$\|^@xstate/core$' && FRAMEWORKS="${FRAMEWORKS}XState,"
+  # UI tooling
+  echo "$DEPS" | grep -q '^storybook$\|^@storybook/core' && FRAMEWORKS="${FRAMEWORKS}Storybook,"
+  echo "$DEPS" | grep -q '^styled-components$' && FRAMEWORKS="${FRAMEWORKS}styled-components,"
+  echo "$DEPS" | grep -q '^@emotion/react$' && FRAMEWORKS="${FRAMEWORKS}Emotion,"
+  echo "$DEPS" | grep -q '^swr$' && FRAMEWORKS="${FRAMEWORKS}SWR,"
+  # AI / LLM SDKs
+  echo "$DEPS" | grep -q '^openai$' && FRAMEWORKS="${FRAMEWORKS}OpenAI-SDK,"
+  echo "$DEPS" | grep -q '^@anthropic-ai/sdk$' && FRAMEWORKS="${FRAMEWORKS}Anthropic-SDK,"
+  echo "$DEPS" | grep -q '^ai$' && FRAMEWORKS="${FRAMEWORKS}Vercel-AI,"
+  echo "$DEPS" | grep -q '^@langchain/' && FRAMEWORKS="${FRAMEWORKS}LangChain-JS,"
 fi
 
 # FIX 7: Monorepo child package.json scan — root package.json of a monorepo often has ZERO
@@ -2056,6 +2085,10 @@ if [ "$MONOREPO" = "true" ] && [ -f "package.json" ]; then
   echo "$WORKSPACE_DEPS" | grep -q '^express$' && ! echo "$FRAMEWORKS" | grep -q 'Express' && FRAMEWORKS="${FRAMEWORKS}Express,"
   echo "$WORKSPACE_DEPS" | grep -q '^fastify$' && ! echo "$FRAMEWORKS" | grep -q 'Fastify' && FRAMEWORKS="${FRAMEWORKS}Fastify,"
   echo "$WORKSPACE_DEPS" | grep -q '^kafkajs$' && ! echo "$FRAMEWORKS" | grep -q 'Kafka' && FRAMEWORKS="${FRAMEWORKS}Kafka,"
+  echo "$WORKSPACE_DEPS" | grep -q '^vue$' && ! echo "$FRAMEWORKS" | grep -q 'Vue' && FRAMEWORKS="${FRAMEWORKS}Vue,"
+  echo "$WORKSPACE_DEPS" | grep -q '^nuxt$' && ! echo "$FRAMEWORKS" | grep -q 'Nuxt' && FRAMEWORKS="${FRAMEWORKS}Nuxt,"
+  echo "$WORKSPACE_DEPS" | grep -q '^@angular/core' && ! echo "$FRAMEWORKS" | grep -q 'Angular' && FRAMEWORKS="${FRAMEWORKS}Angular,"
+  echo "$WORKSPACE_DEPS" | grep -q '^graphql$\|^@apollo' && ! echo "$FRAMEWORKS" | grep -q 'GraphQL' && FRAMEWORKS="${FRAMEWORKS}GraphQL,"
 fi
 if [ -f "deno.json" ] || [ -f "deno.jsonc" ]; then
   FRAMEWORKS="${FRAMEWORKS}Deno,"
@@ -2098,6 +2131,14 @@ if [ -f "pyproject.toml" ]; then
   grep -qi 'typer' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Typer,"
   grep -qi 'dbt-' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}dbt,"
   grep -qi 'robotframework' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}RobotFramework,"
+  # Django ecosystem additions
+  grep -qi 'djangorestframework\|rest_framework' pyproject.toml 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'DRF' && FRAMEWORKS="${FRAMEWORKS}DRF,"
+  grep -qi 'django-channels\|^channels' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Django-Channels,"
+  grep -qi 'django-ninja' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Django-Ninja,"
+  # Python GraphQL
+  grep -qi 'strawberry-graphql' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Strawberry-GraphQL,"
+  grep -qiE 'graphene|graphene-django' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Graphene,"
+  grep -qi 'ariadne' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Ariadne,"
 fi
 # Fallback: requirements.txt
 if [ -f "requirements.txt" ]; then
@@ -2120,6 +2161,9 @@ if [ -f "requirements.txt" ]; then
   if grep -qi 'langchain' requirements.txt 2>/dev/null; then FRAMEWORKS="${FRAMEWORKS}LangChain,"; fi
   if grep -qi 'transformers' requirements.txt 2>/dev/null; then FRAMEWORKS="${FRAMEWORKS}Transformers,"; fi
   if grep -qi 'streamlit' requirements.txt 2>/dev/null; then FRAMEWORKS="${FRAMEWORKS}Streamlit,"; fi
+  if grep -qi 'djangorestframework' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'DRF'; then FRAMEWORKS="${FRAMEWORKS}DRF,"; fi
+  if grep -qi 'strawberry-graphql' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Strawberry'; then FRAMEWORKS="${FRAMEWORKS}Strawberry-GraphQL,"; fi
+  if grep -qiE 'graphene' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Graphene'; then FRAMEWORKS="${FRAMEWORKS}Graphene,"; fi
 fi
 
 # ── Rust ──
@@ -2165,6 +2209,10 @@ if [ -f "go.mod" ]; then
   grep -q 'cosmtrek/air\|air' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Air,"
   grep -q 'connectrpc\|connect-go' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}ConnectRPC,"
   grep -q 'pressly/goose' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Goose,"
+  grep -q '99designs/gqlgen\|graphql-go/graphql' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}GraphQL-Go,"
+  grep -q 'go.opentelemetry.io' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}OpenTelemetry,"
+  grep -q 'nats-io/nats' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}NATS,"
+  grep -q 'temporalio/sdk-go\|temporal-sdk-go' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Temporal,"
 fi
 
 # ── Java / Kotlin / Scala ──
@@ -2193,6 +2241,10 @@ for _pom in $_POM_FILES; do
   if grep -qiE 'grpc-java|protobuf-java|io\.grpc' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'gRPC-Java'; then FRAMEWORKS="${FRAMEWORKS}gRPC-Java,"; fi
   if grep -qiE 'reactor-core|spring-webflux' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Reactor'; then FRAMEWORKS="${FRAMEWORKS}Reactor,"; fi
   if grep -qiE 'springdoc|springfox|swagger' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'OpenAPI'; then FRAMEWORKS="${FRAMEWORKS}OpenAPI,"; fi
+  if grep -qiE 'netflix.*dgs|dgs-framework|com\.netflix\.graphql' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'DGS'; then FRAMEWORKS="${FRAMEWORKS}DGS,"; fi
+  if grep -qi 'spring-graphql' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Spring-GraphQL'; then FRAMEWORKS="${FRAMEWORKS}Spring-GraphQL,"; fi
+  if grep -qi 'micrometer' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Micrometer'; then FRAMEWORKS="${FRAMEWORKS}Micrometer,"; fi
+  if grep -qi 'opentelemetry' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'OpenTelemetry'; then FRAMEWORKS="${FRAMEWORKS}OpenTelemetry,"; fi
 done
 if [ -f "build.gradle" ] || [ -f "build.gradle.kts" ]; then
   GRADLE_FILE=""; for _f in build.gradle build.gradle.kts; do [ -f "$_f" ] && GRADLE_FILE="$_f" && break; done
@@ -2258,6 +2310,12 @@ for csproj in $(find . -maxdepth 3 -name '*.csproj' 2>/dev/null | head -5); do
   if grep -q 'Dapper' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Dapper'; then FRAMEWORKS="${FRAMEWORKS}Dapper,"; fi
   if grep -q 'xunit\|NUnit\|MSTest' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'xUnit\|NUnit'; then FRAMEWORKS="${FRAMEWORKS}xUnit/NUnit,"; fi
   if grep -q 'FluentValidation' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'FluentValidation'; then FRAMEWORKS="${FRAMEWORKS}FluentValidation,"; fi
+  if grep -q 'HotChocolate' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'HotChocolate'; then FRAMEWORKS="${FRAMEWORKS}HotChocolate,"; fi
+  if grep -qiE 'GraphQL.NET|graphql-dotnet' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'GraphQL.NET'; then FRAMEWORKS="${FRAMEWORKS}GraphQL.NET,"; fi
+  if grep -q 'Carter' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Carter'; then FRAMEWORKS="${FRAMEWORKS}Carter,"; fi
+  if grep -q 'FastEndpoints' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'FastEndpoints'; then FRAMEWORKS="${FRAMEWORKS}FastEndpoints,"; fi
+  if grep -q 'Rebus' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Rebus'; then FRAMEWORKS="${FRAMEWORKS}Rebus,"; fi
+  if grep -qi 'OpenTelemetry' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'OpenTelemetry'; then FRAMEWORKS="${FRAMEWORKS}OpenTelemetry,"; fi
 done
 
 # ── Elixir ──
