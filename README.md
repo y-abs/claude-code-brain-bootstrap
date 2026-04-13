@@ -102,10 +102,21 @@ The install script **auto-detects** whether your repo is a fresh install or an u
 
 ### Step 2 — Let the AI configure itself
 
-Open Claude Code in your repo and run:
-
+**With Claude Code** (recommended — full automation):
 ```
 /bootstrap
+```
+
+**With GitHub Copilot** (no Claude Code needed):
+The `.github/` config works immediately after Step 1 — Copilot reads `copilot-instructions.md`, scoped instructions, and prompts automatically. For deeper setup, open Copilot Chat and paste:
+```
+Read claude/architecture.md and claude/build.md, then fill in the {{PLACEHOLDERS}} based on this repo's actual stack.
+```
+
+**With any other LLM** (Cursor, Windsurf, Aider, local models…):
+The `claude/*.md` knowledge docs are plain Markdown — any AI can read them. Point your tool at `claude/architecture.md` and `claude/build.md` and ask it to fill in the `{{PLACEHOLDERS}}` for your stack. Or run the discovery engine manually:
+```bash
+bash your-repo/claude/scripts/discover.sh your-repo/ > your-repo/claude/tasks/.discovery.env
 ```
 
 That's it. The discovery engine scans your repo in ~2 seconds — **pure bash, zero AI tokens** — and auto-detects your entire stack:
