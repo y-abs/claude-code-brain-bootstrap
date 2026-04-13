@@ -36,35 +36,35 @@
 
 You install Claude Code. You open your 50-service monorepo. You ask it to add a feature.
 
-It doesn't know `yarn turbo build` is the right command, not `npm run build`. It doesn't know you use Biome, not Prettier — so it reformats files in a style that fails CI on every PR.
+It doesn't know `yarn turbo build` is the right command, not `npm run build`. It doesn't know you use Biome, not Prettier.
 It doesn't know your `@company/utils` package already has a `formatDate()` — so it installs `date-fns` and writes a new one.
-It doesn't know your team's rule: all DB access goes through repositories, never from controllers — so it writes a raw query,
+It doesn't know your team's rule: all DB access goes through repositories, never from controllers — so it writes a raw query...
 
-**So it guesses. It hallucinates.**
-
-It runs `git log` without `--no-pager` and hangs your terminal forever.
-It creates `UserUtils.ts` — the third one in the codebase, because the other two are in packages it never knew existed.
+**It guesses. It hallucinates.**
 
 **It breaks conventions your team spent months establishing.**
 
-You correct it. *"No, we use yarn workspaces, not npm."* *"No, run make test-ci for tests."* *"No, always use --no-pager."*
-
-It says sorry, does it right this time.
+You correct it. It says sorry, does it right this time.
 
 And tomorrow?
 
 **You correct it again. The exact same things.**
 
-Every session starts from zero. Every correction you made yesterday — gone.
+Every session starts from zero. Every correction you made: gone.
 
-You become a full-time AI babysitter, repeating the same instructions, fixing the same mistakes, re-explaining the same architecture — session after session after session.
+You become a full-time AI babysitter 🍼, repeating the same instructions, fixing the same mistakes, re-explaining the same architectur.
+
+Session after session after session...
 
 **What if you could teach it once, and it would remember forever?**
 
 ---
 
-🚫 **GitHub is full of repos that give you a collection of slash commands, skills, and prompt templates to copy into your project.
-The AI reads them if it feels like it — and forgets them when the session resets.**
+## ❗️ This is NOT another collection
+
+GitHub is full of repos that give you a collection of slash commands, skills, and prompt templates to copy into your project.
+
+The AI reads them if it feels like it — and forgets them when the session resets.
 
 **Brain is an enforcement system, not a suggestion box.**
 
@@ -127,7 +127,7 @@ The install script **auto-detects** whether your repo is a fresh install or an u
 | **Existing Brain** (previous bootstrap) | Updates infrastructure (scripts, bootstrap process), adds missing components — **never overwrites** your `CLAUDE.md`, `lessons.md`, architecture docs, settings, or any user file |
 | **Hand-crafted config** (your own `CLAUDE.md`, `claude/`, `.claude/`) | Adds Brain structure **around** your existing files — every file you created stays untouched |
 
-> 💡 **Your knowledge is sacred.** The installer never overwrites, never `rm -rf`s, never guesses. It preserves every lesson, every domain doc, every custom rule — then adds only what's missing. See the output summary for exactly what was preserved vs. added.
+> 💡 **Your knowledge is sacred.** The installer never overwrites, never `rm -rf`, never guesses. It preserves every lesson, every domain doc, every custom rule — then adds only what's missing. See the output summary for exactly what was preserved vs. added.
 
 > 🔒 **Pre-upgrade safety**: the installer auto-creates a full backup (`claude/tasks/.pre-upgrade-backup.tar.gz`) before touching anything. Restore at any time: `tar xzf claude/tasks/.pre-upgrade-backup.tar.gz`.
 
@@ -258,7 +258,7 @@ Brain replaces advisory text with real mechanisms:
 
 ---
 
-## 🧪 The Discovery Engine: 3800+ Lines of Pure Bash
+## 🧪 The Discovery Engine: Pure Bash
 
 The discovery engine detects **25+ languages**, **21 package managers**, **1100+ frameworks**, **13 CI systems**, **12+ database/ORM tools**, and **15+ formatter/linter combinations**.
 No token cost, runs in ~2 seconds, and is the foundation for all subsequent knowledge generation. It populates the initial `claude/architecture.md` and `claude/build.md` with accurate, repo-specific context.
