@@ -10,35 +10,30 @@ permissions:
   contents: read
 
 jobs:
-  validate:
-    name: Template Validation (120 checks)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Verify jq is available
-        run: jq --version
-
-      - name: Run validate.sh
-        run: bash claude/scripts/validate.sh
-
+  # ── Static Analysis (fast, ubuntu-only) ─────────────────────────
   shellcheck:
     name: ShellCheck
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - name: Run ShellCheck
         uses: ludeeus/action-shellcheck@2.0.0
         with:
           severity: warning
+
+  portability:
+    name: Portability Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for non-portable patterns
+        run: bash claude/scripts/portability-lint.sh
 
   links:
     name: Documentation Links
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - name: Check markdown links
         uses: lycheeverse/lychee-action@v2
         with:
@@ -50,3 +45,84 @@ jobs:
             'claude/**/*.md'
             '.github/**/*.md'
           fail: true
+
+  # ── Cross-Platform Validation (all 3 OS) ────────────────────────
+  validate:
+    name: Validate (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install jq (Windows)
+        if: runner.os == 'Windows'
+        run: choco install jq -y
+        shell: powershell
+
+      - name: Verify tools
+        shell: bash
+        run: |
+          echo "bash: $(bash --version | head -1)"
+          echo "jq:   $(jq --version 2>&1)"
+          echo "git:  $(git --version)"
+
+      - name: Syntax check all scripts
+        shell: bash
+        run: |
+          FAIL=0
+          while IFS= read -r f; do
+            if ! bash -n "$f" 2>/dev/null; then
+              echo "FAIL: $f"
+              bash -n "$f"
+              FAIL=1
+            fi
+          done < <(find . -name '*.sh' -not -path './.git/*')
+          exit $FAIL
+
+      - name: Run validate.sh
+        shell: bash
+        run: bash claude/scripts/validate.sh
+
+      - name: Verify _platform.sh sources correctly
+        shell: bash
+        run: |
+          PLATFORM=$(bash -c 'source claude/scripts/_platform.sh && echo $BRAIN_PLATFORM')
+          echo "Detected platform: $PLATFORM"
+          if [ -z "$PLATFORM" ]; then
+            echo "FAIL: BRAIN_PLATFORM is empty"
+            exit 1
+          fi
+
+      - name: Verify install.sh --check
+        shell: bash
+        run: bash install.sh --check
+
+  # ── Integration Test (FRESH + UPGRADE, all 3 OS) ────────────────
+  integration:
+    name: Integration (${{ matrix.os }})
+    needs: [shellcheck, portability]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install jq (Windows)
+        if: runner.os == 'Windows'
+        run: choco install jq -y
+        shell: powershell
+
+      - name: Configure git
+        shell: bash
+        run: |
+          git config --global user.email "ci@test.com"
+          git config --global user.name "CI"
+
+      - name: Run integration tests
+        shell: bash
+        run: bash claude/scripts/integration-test.sh

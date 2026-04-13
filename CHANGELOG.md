@@ -7,6 +7,38 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [0.2.0] — 2026-04-13
+
+### 🖥️ Cross-Platform Hardening — Linux, macOS, Windows
+
+Full portability pass ensuring the installer and all scripts work identically on Linux, macOS (bash 3.2 system shell), and Windows (Git Bash / MSYS2).
+
+### Added
+
+- **`_platform.sh`** — Portable shell helper library sourced by all scripts: `sed_inplace()` (macOS `-i ''` vs Linux `-i`), `safe_pgrep()` (fallback for Git Bash), `require_tool()` (actionable install instructions per OS), `supports_unicode()`, emoji symbol fallback (`PASS_SYM`, `FAIL_SYM`, `WARN_SYM`), Windows path normalization
+- **`install.sh --check`** — Pre-flight mode: verifies platform, git, jq, bash version before any install operation
+- **`portability-lint.sh`** — Extensible GNU-only pattern detector (catches `head -n -N`, `grep -P`, process substitutions, etc.)
+- **`integration-test.sh`** — 17 end-to-end integration tests: FRESH install, UPGRADE idempotency, self-bootstrap guard, non-git-root guard, non-existent target guard, `_platform.sh` sourceable check, file count check
+- **3-platform CI matrix** — `validate` and `integration` jobs now run on `ubuntu-latest`, `macos-latest`, and `windows-latest`
+- **Platform Support section** in README — compatibility table for all supported environments
+
+### Fixed
+
+- **`install.sh` Check 3** — Replaced `--show-toplevel` path string comparison (fails on macOS symlinks `/var` vs `/private/var` and Windows MSYS vs native paths) with `--show-cdup` (empty at repo root — no path format dependency)
+- **`integration-test.sh` cleanup** — `CLEANUP_DIRS+=()` was inside a `$()` subshell (modifications silently lost); moved to caller scope. Empty-array guard `${arr[@]+"${arr[@]}"}` prevents `unbound variable` crash on bash 3.2 (macOS system shell) with `set -u`
+- **`pre-compact.sh`** — Replaced GNU-only `head -n -20` with portable count-then-head pattern
+- **`cross-layer-check.sh`** — Replaced `grep -P` (PCRE, not available on macOS) with `grep -wE` (POSIX)
+- **`setup-plugins.sh`, `toggle-claude-mem.sh`** — Replaced `pgrep`/`pkill` with `safe_pgrep()` fallback for Git Bash/Windows
+- **`install.sh` (UPGRADE)** — Replaced 7 process substitutions `< <(find)` with tmpfile pattern for macOS bash 3.2 compatibility
+
+### Changed
+
+- `install.sh` now sources `_platform.sh` at startup — banner shows `Platform: linux/macos/windows`
+- CI expanded from 3 jobs to 5: added `portability` lint and `integration` test matrix (all 3 platforms)
+- `_platform.sh` DRY-consolidates 3 duplicate `sed_inplace()` definitions that previously lived in separate scripts
+
+---
+
 ## [0.1.0] — 2026-04-13
 
 ### 🔍 Massive Discovery Engine Expansion — 1100+ Frameworks

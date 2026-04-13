@@ -11,14 +11,14 @@ EXACT="${2:-}"
 if [ -z "$SYMBOL" ]; then
   echo "Usage: cross-layer-check.sh <symbol> [--exact]"
   echo "  <symbol>   Field name, enum value, or status code to search"
-  printf '  --exact    Use word-boundary matching (\\bSYMBOL\\b)\n'
+  printf '  --exact    Use word-boundary matching (-w flag)\n'
   exit 1
 fi
 
 if [ "$EXACT" = "--exact" ]; then
-  PATTERN="\b${SYMBOL}\b"
+  GREP_FLAGS="-rnwE"
 else
-  PATTERN="$SYMBOL"
+  GREP_FLAGS="-rnE"
 fi
 
 TOTAL_LAYERS=0
@@ -68,7 +68,7 @@ for entry in "${LAYERS[@]}"; do
   for dir in "${DIRS[@]}"; do
     dir=$(echo "$dir" | xargs)  # trim whitespace
     if [ -d "$dir" ]; then
-      HITS=$(grep -rnP "$PATTERN" "$dir" --include='*.ts' --include='*.tsx' --include='*.js' --include='*.jsx' --include='*.java' --include='*.py' --include='*.go' --include='*.rs' --include='*.rb' --include='*.sql' --include='*.md' 2>/dev/null | wc -l || true)
+      HITS=$(grep $GREP_FLAGS "$SYMBOL" "$dir" --include='*.ts' --include='*.tsx' --include='*.js' --include='*.jsx' --include='*.java' --include='*.py' --include='*.go' --include='*.rs' --include='*.rb' --include='*.sql' --include='*.md' 2>/dev/null | wc -l || true)
       COUNT=$((COUNT + HITS))
     fi
   done

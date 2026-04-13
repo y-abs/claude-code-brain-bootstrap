@@ -4,5 +4,5 @@
 
 # Disable warnings for template placeholder braces
 # Disable xargs -print0 warnings — source file paths don't contain special chars
-disable=SC1083,SC2038
+disable=SC1083,SC2038,SC2317
 

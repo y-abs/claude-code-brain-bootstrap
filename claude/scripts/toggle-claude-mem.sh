@@ -18,6 +18,9 @@ fi
 
 set -euo pipefail
 
+# ─── Portable helpers (sed_inplace, safe_pgrep, platform detection)
+source "$(dirname "$0")/_platform.sh"
+
 PLUGIN="claude-mem@thedotmack"
 WORKER_PATTERN="claude-mem.*worker-service"
 
@@ -62,7 +65,7 @@ disable_plugin() {
     exit 1
   fi
   local pids
-  pids=$(pgrep -f "$WORKER_PATTERN" 2>/dev/null || true)
+  pids=$(safe_pgrep "$WORKER_PATTERN")
   if [ -n "$pids" ]; then
     echo "   Stopping worker service (PIDs: $pids)..."
     kill "$pids" 2>/dev/null || true
@@ -75,8 +78,10 @@ show_status() {
   local state
   state=$(get_status)
   local worker_running="no"
-  if pgrep -f "$WORKER_PATTERN" >/dev/null 2>&1; then
-    worker_running="yes (PID: $(pgrep -f "$WORKER_PATTERN" | head -1))"
+  local _pids
+  _pids=$(safe_pgrep "$WORKER_PATTERN")
+  if [ -n "$_pids" ]; then
+    worker_running="yes (PID: $(echo "$_pids" | head -1))"
   fi
   echo "claude-mem plugin: $state"
   echo "worker service:    $worker_running"
