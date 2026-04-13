@@ -1,0 +1,86 @@
+---
+name: ✨ Feature Request
+description: Suggest a new feature, command, hook, or improvement
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Got an idea to make Brain Bootstrap better? We'd love to hear it! 💡
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: 🤔 What problem does this solve?
+      description: |
+        Describe the pain point or missing capability.
+        The best feature requests start with a real frustration.
+      placeholder: "I keep having to manually run formatting after every session because..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: 💡 Proposed solution
+      description: |
+        How would you solve it? Be as specific as you'd like — file names, hook events, command syntax.
+      placeholder: |
+        Add a `/format` slash command that:
+        1. Detects the project's formatter (Biome, Prettier, Black...)
+        2. Runs it on all modified files
+        3. Reports what changed
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: 📂 Category
+      options:
+        - 🔍 Stack detection (discover.sh)
+        - ⚡ Slash command
+        - 🪝 Lifecycle hook
+        - 📏 Path-scoped rule
+        - 🤖 Subagent / Skill
+        - 📚 Documentation
+        - 🔧 Scripts / Tooling
+        - 🤝 Multi-tool support (Copilot, other LLMs)
+        - 🔌 Plugin ecosystem
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: willing
+    attributes:
+      label: 🙋 Would you be willing to submit a PR?
+      options:
+        - "Yes — I'd like to implement this myself!"
+        - "Maybe — I'd need some guidance"
+        - "No — just suggesting the idea"
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 🔄 Alternatives considered
+      description: Have you tried any workarounds? Are there other approaches?
+
+  - type: textarea
+    id: context
+    attributes:
+      label: 💬 Additional context
+      description: Anything else — screenshots, links to similar tools, use cases.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission checklist
+      options:
+        - label: I searched existing issues/discussions and this hasn't been requested before
+          required: true
+        - label: This feature is domain-agnostic (benefits any project, not just mine)
+          required: true
+

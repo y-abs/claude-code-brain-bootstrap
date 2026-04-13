@@ -1,0 +1,37 @@
+---
+description: Full MR review protocol — 10-point checklist, diff analysis, cross-layer verification
+disable-model-invocation: true
+effort: high
+---
+
+Perform a full MR review on the current branch.
+
+> ultrathink — use extended reasoning for thorough cross-layer analysis.
+
+## Pre-loaded context
+
+**Branch:** !`git branch --show-current`
+**Diff stat:** !`git --no-pager diff $(git merge-base main HEAD)..HEAD --stat 2>/dev/null || echo "Not on a feature branch"`
+**Commits:** !`git --no-pager log $(git merge-base main HEAD)..HEAD --oneline 2>/dev/null || echo "N/A"`
+
+## Instructions
+
+Read these files first:
+- `claude/rules.md` (review protocol)
+- `claude/architecture.md` (system context)
+- `claude/tasks/lessons.md` (past mistakes to avoid)
+
+Then execute the review protocol:
+
+1. **Ticket re-read** — If a ticket reference exists in the branch name, find and read it. Verify every scenario is addressed.
+2. **Diff analysis** — Run `git diff $(git merge-base main HEAD)..HEAD --stat` to identify all changed files. Then read the full diff.
+3. **Cross-layer consistency** — For every new field/constant, grep across all layers. Report any gaps.
+4. **Enum completeness** — For any modified switch/case, verify all enum values are handled.
+5. **Transaction safety** — Trace every write caller. Confirm read callers don't write.
+6. **Race condition analysis** — Trace concurrent flows.
+7. **Test scenario completeness** — Verify every new branch/case has a dedicated test.
+8. **Pre-existing vs introduced** — Run linter on changed files. Distinguish pre-existing from introduced warnings.
+9. **Cross-branch merge safety** — Check if other branches are in flight that touch the same files.
+10. **100/100 confidence gate** — Present a confidence score for each item. Do NOT generate MR description until all pass.
+11. **Generate MR description** — Write to `claude/tasks/mr-description-<branch>.md` using the template from `claude/templates.md`.
+

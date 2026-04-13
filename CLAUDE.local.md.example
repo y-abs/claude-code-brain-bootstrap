@@ -1,0 +1,23 @@
+# {{PROJECT_NAME}} — Personal Claude Code Overrides
+
+> This file is auto-gitignored by Claude Code. Use it for personal preferences
+> that should NOT be shared with the team.
+
+<!-- Examples of personal overrides:
+
+## Personal Preferences
+- I prefer verbose explanations over terse ones
+- Always show the full diff before committing
+- Run tests after every code change, not just at the end
+
+## IDE Notes
+- I use [IntelliJ/VS Code/Neovim]
+- My terminal is [iTerm2/Warp/default]
+- My shell is [zsh/bash/fish]
+
+## Hook Profile
+- Set `export CLAUDE_HOOK_PROFILE=strict` for maximum safety (blocks curl|sh, eval, etc.)
+- Default is `standard` (blocks DROP TABLE, rm -rf, force push)
+
+-->
+

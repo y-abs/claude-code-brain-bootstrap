@@ -1,0 +1,9 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Ask a Question
+    url: https://github.com/y-abs/claude-code-brain-bootstrap/discussions/new?category=q-a
+    about: Got a question? Ask in Discussions — not an issue.
+  - name: 📖 Read the Docs
+    url: https://github.com/y-abs/claude-code-brain-bootstrap/blob/main/claude/docs/DETAILED_GUIDE.md
+    about: Check the full guide before opening an issue — your answer might be there.
+
