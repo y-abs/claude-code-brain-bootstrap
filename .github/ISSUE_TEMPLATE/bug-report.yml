@@ -1,0 +1,77 @@
+---
+name: 🐛 Bug Report
+description: Something isn't working as expected
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug! 🙏
+        Please fill in the details below so we can reproduce and fix it.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: 🐛 What happened?
+      description: A clear description of the bug.
+      placeholder: "When I run `/bootstrap`, the discovery engine crashes with..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: ✅ What did you expect?
+      description: What should have happened instead?
+      placeholder: "The discovery engine should detect Python and populate build.md..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 🔄 Steps to reproduce
+      description: Minimal steps to trigger the bug.
+      placeholder: |
+        1. Clone the template into a fresh Python repo
+        2. Run `/bootstrap`
+        3. See error in terminal...
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: 🖥️ Environment
+      description: Your setup details.
+      value: |
+        - **OS:** (e.g., macOS 15, Ubuntu 24.04, Windows 11 + WSL2)
+        - **Shell:** (e.g., zsh, bash)
+        - **Claude Code version:** (e.g., 1.0.12)
+        - **Node version:** (e.g., 22.x)
+        - **AI tool:** (Claude Code / GitHub Copilot / Other)
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: 📋 Relevant logs or output
+      description: Paste any error messages, terminal output, or `claude/scripts/validate.sh` results.
+      render: shell
+
+  - type: textarea
+    id: context
+    attributes:
+      label: 💡 Additional context
+      description: Anything else that might help — screenshots, related issues, workarounds you've tried.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission checklist
+      options:
+        - label: I ran `bash claude/scripts/validate.sh` and included the results (if relevant)
+        - label: I searched existing issues and this hasn't been reported before
+          required: true
+

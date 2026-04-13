@@ -1,0 +1,8 @@
+# shellcheck configuration for Brain Bootstrap template
+# Template files use {{PLACEHOLDER}} syntax which triggers SC1083 (literal braces)
+# These are populated by populate-templates.sh during bootstrap — not shell syntax errors
+
+# Disable warnings for template placeholder braces
+# Disable xargs -print0 warnings — source file paths don't contain special chars
+disable=SC1083,SC2038
+

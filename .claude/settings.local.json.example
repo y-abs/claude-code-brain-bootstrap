@@ -1,0 +1,26 @@
+{
+  "$schema": "https://docs.anthropic.com/claude-code/settings-schema.json",
+  "_comment": "Copy this file to .claude/settings.local.json for personal overrides. It is auto-gitignored.",
+
+  "hooks": {
+    "_comment_hooks": "Add personal hooks here. They merge with team hooks in settings.json.",
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '💡 Personal hook example — replace or remove this'"
+          }
+        ]
+      }
+    ]
+  },
+
+  "permissions": {
+    "_comment_permissions": "Add personal allow/deny overrides. They merge with team permissions.",
+    "allow": [],
+    "deny": []
+  }
+}
+
