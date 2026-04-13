@@ -40,9 +40,7 @@ It doesn't know `yarn turbo build` is the right command, not `npm run build`. It
 
 **So it guesses. It hallucinates.**
 
-It suggests `npm install` in a yarn monorepo. It runs `git log` without `--no-pager` and hangs your terminal forever. It modifies `tsconfig.json` to silence a type error instead of fixing it. It creates `UserUtils.ts` — the third one in the codebase, because the other two are in packages it never knew existed. 
-
-**It breaks conventions your team spent months establishing.**
+It suggests `npm install` in a yarn monorepo. It runs `git log` without `--no-pager` and hangs your terminal forever. It modifies `tsconfig.json` to silence a type error instead of fixing it. It creates `UserUtils.ts` — the third one in the codebase, because the other two are in packages it never knew existed. **It breaks conventions your team spent months establishing.**
 
 You correct it. *"No, we use yarn workspaces, not npm."* *"No, run make test-ci for tests."* *"No, always use --no-pager."* It says sorry, does it right this time.
 
@@ -55,6 +53,11 @@ Every session starts from zero. Every correction you made yesterday — gone.
 You become a full-time AI babysitter, repeating the same instructions, fixing the same mistakes, re-explaining the same architecture — session after session after session.
 
 **What if you could teach it once, and it would remember forever?**
+
+> GitHub is full of repos that give you a neat collection of slash commands, skills, and prompt templates to copy into your project.
+> That's not this. **Brain is an enforcement system** — corrections become permanent, forbidden patterns get blocked *before* they run, and the knowledge base updates itself as your codebase evolves.
+> You stop re-explaining your stack every morning. You stop fixing the same mistakes twice.
+> **You stop babysitting. The AI just knows.**
 
 ---
 
