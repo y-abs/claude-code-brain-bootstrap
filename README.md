@@ -36,11 +36,11 @@
 
 You install Claude Code. You open your 50-service monorepo. You ask it to add a feature.
 
-It doesn't know `yarn turbo build` is the right command, not `npm run build`. It doesn't know you use Biome, not Prettier.
+It doesn't know `yarn turbo build` is the right command, not `npm run build`, that you use Biome, not Prettier.
 It doesn't know your `@company/utils` package already has a `formatDate()` — so it installs `date-fns` and writes a new one.
-It doesn't know your team's rule: all DB access goes through repositories, never from controllers — so it writes a raw query...
+It doesn't know your team's rules. None.
 
-**It guesses. It hallucinates.**
+**So, it guesses. It hallucinates.**
 
 **It breaks conventions your team spent months establishing.**
 
@@ -66,9 +66,11 @@ GitHub is full of repos that give you a collection of slash commands, skills, an
 
 The AI reads them if it feels like it — and forgets them when the session resets.
 
-**Brain is an enforcement system, not a suggestion box.**
+**Brain is an enforcement system, not a suggestion box.** 
 
-Corrections become permanent. Forbidden patterns get blocked *before* they run. The knowledge base updates itself as your codebase evolves.
+Corrections become permanent. Forbidden patterns get blocked *before* they run. 
+
+The knowledge base updates itself as your codebase evolves.
 
 You stop re-explaining your stack every morning. You stop fixing the same mistakes twice.
 
