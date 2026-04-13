@@ -8,16 +8,27 @@
 <p align="center"><em>Give your AI coding assistant the one thing it's missing:<br>deep knowledge of your codebase.</em></p>
 <p align="center"><sub>by <a href="https://github.com/y-abs">y-abs</a></sub></p>
 <p align="center">
-  <a href="#-get-started-in-5-minutes">Quick Start</a> · <a href="#-from-instructions-to-guarantees">Why It Exists</a> · <a href="claude/docs/DETAILED_GUIDE.md">Full Guide</a> · <a href="#-how-it-works-under-the-hood">How It Works</a> · <a href="#-contributing">Contribute</a>
-  <!-- Anchors use GitHub's emoji-heading format: emoji → hyphen prefix -->
-</p>
-<p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT License"></a>
   <a href="https://github.com/y-abs/claude-code-brain-bootstrap/actions/workflows/ci.yml"><img src="https://github.com/y-abs/claude-code-brain-bootstrap/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="#"><img src="https://img.shields.io/badge/Claude_Code-Ready-blueviolet" alt="Claude Code"></a>
   <a href="#"><img src="https://img.shields.io/badge/GitHub_Copilot-Ready-brightgreen" alt="GitHub Copilot"></a>
   <a href="#"><img src="https://img.shields.io/badge/Any_LLM-Compatible-orange" alt="Any LLM"></a>
   <a href="#"><img src="https://img.shields.io/badge/100+_files-Production_Grade-red" alt="100+ files"></a>
+</p>
+
+<p align="center">
+  <a href="#-sound-familiar">The Problem</a> &nbsp;·&nbsp;
+  <a href="#-what-changes-when-you-add-a-brain">What Changes</a> &nbsp;·&nbsp;
+  <a href="#-get-started-in-5-minutes">Quick Start</a> &nbsp;·&nbsp;
+  <a href="#-from-instructions-to-guarantees">Why It Exists</a> &nbsp;·&nbsp;
+  <a href="#-how-it-works-under-the-hood">How It Works</a> &nbsp;·&nbsp;
+  <a href="#-whats-inside">What's Inside</a> &nbsp;·&nbsp;
+  <a href="#-it-gets-smarter-over-time">Gets Smarter</a> &nbsp;·&nbsp;
+  <a href="#-safety-defense-in-depth">Safety</a> &nbsp;·&nbsp;
+  <a href="#-plugin-ecosystem">Plugins</a> &nbsp;·&nbsp;
+  <a href="#-make-it-yours">Extend It</a> &nbsp;·&nbsp;
+  <a href="#-faq">FAQ</a> &nbsp;·&nbsp;
+  <a href="#-contributing">Contribute</a>
 </p>
 
 ---
@@ -65,30 +76,6 @@ That's exactly what this does. You teach it once — it remembers, enforces, and
 
 ---
 
-## 🧬 From Instructions to Guarantees
-
-Every AI coding tool reads instructions. None of them can enforce those instructions on themselves.
-
-You write *"never edit tsconfig.json"* in your config. The AI reads it. Then context pressure builds, and it edits `tsconfig.json` anyway. You write *"always use --no-pager."* It triggers a pager and hangs your terminal. You correct it — it apologizes. Next session? Same mistake, same apology.
-
-**This isn't a bug. It's an architectural gap.** Instructions are text. Text is advisory. Advisory gets overridden.
-
-Brain replaces advisory text with real mechanisms:
-
-| What you get | How it actually works |
-|:---|:---|
-| 🔒 **Dangerous actions are blocked, not just discouraged** | Safety hooks intercept *before* execution — blocking dangerous commands before they run. 14 lifecycle hooks total across all events: bash scripts, deterministic, zero-token, unforgeable |
-| 🧠 **The AI never makes the same mistake twice** | `lessons.md` persists across sessions, compactions, restarts — read at every session start, impossible to skip |
-| 🔄 **Knowledge never goes stale** | Exit checklist catches drift every turn · `/maintain` audits all docs · self-maintenance rule fires on every knowledge edit |
-| ⚡ **One command replaces 15 min of prompt engineering** | `/review` runs a 10-point protocol · `/mr` generates descriptions · `/debug` traces root causes — 26 commands, pre-built, consistent |
-| 🔍 **Your entire stack understood in 2 seconds, zero tokens** | `discover.sh` — 20 languages, 100+ frameworks, 21 package managers — pure bash, runs before the AI even wakes up |
-| 🤖 **Research doesn't eat your context window** | 5 subagents run in isolated contexts — explore 20+ files, review code, challenge plans — your main conversation stays clean |
-| 🤝 **One brain, three AI tools** | Write knowledge once → Claude Code, GitHub Copilot, and any LLM all read it — switch tools without starting over |
-
-> 🎯 **100+ files isn't complexity. It's the minimum architecture where instructions become guarantees.**
-
----
-
 ## 🚀 Get Started in 5 Minutes
 
 ### Step 1 — Install the template
@@ -121,7 +108,7 @@ Open Claude Code in your repo and run:
 
 That's it. The discovery engine scans your repo in ~2 seconds — **pure bash, zero AI tokens** — and auto-detects your entire stack:
 
-> 🔍 20 languages · 📦 21 package managers · 🏗️ Monorepo tools (Nx, Turborepo, Lerna...) · 🎨 15+ formatters/linters · 🧪 Test frameworks · 🗄️ 12+ databases/ORMs · ⚙️ 13 CI systems · 🐳 Docker & Kubernetes · 🧩 100+ frameworks
+> 🔍 25+ languages · 📦 21 package managers · 🏗️ Monorepo tools (Nx, Turborepo, Lerna...) · 🎨 15+ formatters/linters · 🧪 Test frameworks · 🗄️ 12+ databases/ORMs · ⚙️ 13 CI systems · 🐳 Docker & Kubernetes · 🧩 100+ frameworks
 
 Then the AI fills in what requires *reasoning*: architecture docs, domain knowledge, critical patterns specific to *your* codebase.
 
@@ -151,9 +138,33 @@ echo -e '\nCLAUDE.md\nclaude/\n.claude/\n.claudeignore\n.mcp.json' >> .gitignore
 
 ---
 
+## 🧬 From Instructions to Guarantees
+
+Every AI coding tool reads instructions. None of them can enforce those instructions on themselves.
+
+You write *"never edit tsconfig.json"* in your config. The AI reads it. Then context pressure builds, and it edits `tsconfig.json` anyway. You write *"always use --no-pager."* It triggers a pager and hangs your terminal. You correct it — it apologizes. Next session? Same mistake, same apology.
+
+**This isn't a bug. It's an architectural gap.** Instructions are text. Text is advisory. Advisory gets overridden.
+
+Brain replaces advisory text with real mechanisms:
+
+| What you get | How it actually works |
+|:---|:---|
+| 🔒 **Dangerous actions are blocked, not just discouraged** | Safety hooks intercept *before* execution — blocking dangerous commands before they run. 14 lifecycle hooks total across all events: bash scripts, deterministic, zero-token, unforgeable |
+| 🧠 **The AI never makes the same mistake twice** | `lessons.md` persists across sessions, compactions, restarts — read at every session start, impossible to skip |
+| 🔄 **Knowledge never goes stale** | Exit checklist catches drift every turn · `/maintain` audits all docs · self-maintenance rule fires on every knowledge edit |
+| ⚡ **One command replaces 15 min of prompt engineering** | `/review` runs a 10-point protocol · `/mr` generates descriptions · `/debug` traces root causes — 26 commands, pre-built, consistent |
+| 🔍 **Your entire stack understood in 2 seconds, zero tokens** | `discover.sh` — 25+ languages, 100+ frameworks, 21 package managers — pure bash, runs before the AI even wakes up |
+| 🤖 **Research doesn't eat your context window** | 5 subagents run in isolated contexts — explore 20+ files, review code, challenge plans — your main conversation stays clean |
+| 🤝 **One brain, three AI tools** | Write knowledge once → Claude Code, GitHub Copilot, and any LLM all read it — switch tools without starting over |
+
+> 🎯 **100+ files isn't complexity. It's the minimum architecture where instructions become guarantees.**
+
+---
+
 ## 🧪 The Discovery Engine: 2400+ Lines of Pure Bash
 
-The discovery engine detects **20 languages**, **21 package managers**, **100+ frameworks**, **13 CI systems**, **12+ database/ORM tools**, and **15+ formatter/linter combinations**.
+The discovery engine detects **25+ languages**, **21 package managers**, **100+ frameworks**, **13 CI systems**, **12+ database/ORM tools**, and **15+ formatter/linter combinations**.
 No token cost, runs in ~2 seconds, and is the foundation for all subsequent knowledge generation. It populates the initial `claude/architecture.md` and `claude/build.md` with accurate, repo-specific context.
 
 **What the engine outputs (`claude/tasks/.discovery.env`):**
@@ -341,6 +352,8 @@ Extending the Brain is simple — one file, one registration:
 | 📏 Path-scoped rule | `.claude/rules/<domain>.md` | Automatic (matched by file path) |
 | ⚡ Slash command | `.claude/commands/<name>.md` | Automatic (discovered by Claude Code) |
 | 🪝 Lifecycle hook | `.claude/hooks/<name>.sh` | Register in `.claude/settings.json` |
+| 🤖 AI subagent | `.claude/agents/<name>.md` | Automatic (discovered by Claude Code) |
+| 🎓 Skill | `.claude/skills/<name>.md` | Automatic (discovered by Claude Code) |
 | 🤝 Copilot instruction | `.github/instructions/<name>.instructions.md` | Automatic (matched by glob) |
 | 💬 Copilot prompt | `.github/prompts/<name>.prompt.md` | Automatic (discovered by Copilot) |
 
@@ -355,7 +368,7 @@ Three worked examples in `claude/_examples/` — API domain, database domain, me
 <details>
 <summary><strong>🌍 Does this work with languages other than JavaScript?</strong></summary>
 
-Yes! The discovery engine detects 20 languages: TypeScript, JavaScript, Python, Rust, Go, Java, Kotlin, Scala, Ruby, PHP, C#, C++, C, Swift, Elixir, OCaml, F#, Clojure, R, and shell scripts. The knowledge docs and golden rules are language-agnostic. Stack-specific details (build commands, test runner, formatter) are auto-detected and populated.
+Yes! The discovery engine detects **25+ languages**: TypeScript, JavaScript, Python, Go, Rust, Java, Kotlin, Scala, Groovy, Ruby, PHP, C#, C, C++, Objective-C, Swift, Dart, Shell/Bash, Elixir, Lua, Zig, Julia, Perl, OCaml, F#, Clojure, R, and more. The knowledge docs and golden rules are language-agnostic. Stack-specific details (build commands, test runner, formatter) are auto-detected and populated for your language automatically.
 </details>
 
 <details>
