@@ -64,11 +64,8 @@ You stop re-explaining your stack every morning. You stop fixing the same mistak
 
 ---
 
----
-
 ## ✨ What Changes When You Add a Brain
 
-That's exactly what this does. You teach it once — it remembers, enforces, and improves:
 
 | 🔁 Every session today | 🧠 With Brain — once, forever |
 |:---|:---|
