@@ -16,7 +16,12 @@ mkdir -p "$LOG_DIR"
 TRANSCRIPT=$(cat)
 if [ -n "$TRANSCRIPT" ]; then
   echo "$TRANSCRIPT" > "$LOG_DIR/session-$TIMESTAMP.json"
-  find "$LOG_DIR" -maxdepth 1 -name 'session-*.json' 2>/dev/null | sort | head -n -20 | xargs rm -f 2>/dev/null
+  # Prune old sessions — keep newest 20 (portable: no head -n -N which is GNU-only)
+  TOTAL=$(find "$LOG_DIR" -maxdepth 1 -name 'session-*.json' 2>/dev/null | wc -l | tr -d ' ')
+  KEEP=20
+  if [ "$TOTAL" -gt "$KEEP" ]; then
+    find "$LOG_DIR" -maxdepth 1 -name 'session-*.json' 2>/dev/null | sort | head -n "$((TOTAL - KEEP))" | xargs rm -f 2>/dev/null
+  fi
 fi
 
 # ─── 2. Append compaction marker to todo.md ───

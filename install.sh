@@ -24,6 +24,28 @@ fi
 
 set -euo pipefail
 
+# ── Platform helpers ───────────────────────────────────────────────
+source "$(dirname "$0")/claude/scripts/_platform.sh"
+
+# ── Pre-flight check mode ─────────────────────────────────────────
+if [ "${1:-}" = "--check" ]; then
+  echo ""
+  echo "🔍 Brain Bootstrap — Pre-flight Check"
+  echo ""
+  echo "  Platform: $BRAIN_PLATFORM"
+  require_tool git "required for repo detection" && echo "  ✅ git $(git --version 2>/dev/null | head -1)" || true
+  require_tool jq "optional — settings.json merge" && echo "  ✅ jq $(jq --version 2>/dev/null)" || echo "  ⚠️  jq not found (optional — settings merge will be skipped)"
+  bash_ver="${BASH_VERSINFO[0]:-0}"
+  if [ "$bash_ver" -ge 4 ]; then
+    echo "  ✅ bash $BASH_VERSION (≥4 — full support)"
+  else
+    echo "  ⚠️  bash $BASH_VERSION (<4 — discover.sh and populate-templates.sh need Bash 4+)"
+    echo "     macOS: brew install bash"
+  fi
+  echo ""
+  exit 0
+fi
+
 # ── Resolve paths ──────────────────────────────────────────────────
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 TARGET="${1:?Usage: bash install.sh /path/to/your-repo}"
@@ -99,8 +121,9 @@ echo "╔═══════════════════════�
 echo "║  ᗺB  Brain Bootstrap — Smart Installer               ║"
 echo "╚══════════════════════════════════════════════════════╝"
 echo ""
-echo "  Source:  $SCRIPT_DIR"
-echo "  Target:  $TARGET"
+echo "  Source:    $SCRIPT_DIR"
+echo "  Target:    $TARGET"
+echo "  Platform:  $BRAIN_PLATFORM"
 echo ""
 
 # ── Self-bootstrap guard ──────────────────────────────────────────
@@ -179,7 +202,11 @@ add_missing_files() {
   local added=0
   [ -d "$src_dir" ] || { echo 0; return; }
   mkdir -p "$dest_dir"
-  while IFS= read -r -d '' src_file; do
+  local _tmplist
+  _tmplist=$(mktemp)
+  find "$src_dir" -type f > "$_tmplist" 2>/dev/null
+  while IFS= read -r src_file; do
+    [ -z "$src_file" ] && continue
     local rel="${src_file#"$src_dir/"}"
     local dest_file="$dest_dir/$rel"
     if [ ! -e "$dest_file" ]; then
@@ -187,7 +214,8 @@ add_missing_files() {
       cp "$src_file" "$dest_file"
       added=$((added + 1))
     fi
-  done < <(find "$src_dir" -type f -print0 2>/dev/null)
+  done < "$_tmplist"
+  rm -f "$_tmplist"
   echo "$added"
 }
 
@@ -202,7 +230,11 @@ sync_dir() {
   mkdir -p "$dest_dir"
 
   # Pass 1: Sync from template → dest (update existing + add new)
-  while IFS= read -r -d '' src_file; do
+  local _tmplist1
+  _tmplist1=$(mktemp)
+  find "$src_dir" -type f > "$_tmplist1" 2>/dev/null
+  while IFS= read -r src_file; do
+    [ -z "$src_file" ] && continue
     local rel="${src_file#"$src_dir/"}"
     local dest_file="$dest_dir/$rel"
     mkdir -p "$(dirname "$dest_file")"
@@ -215,17 +247,23 @@ sync_dir() {
       cp "$src_file" "$dest_file"
       added=$((added + 1))
     fi
-  done < <(find "$src_dir" -type f -print0 2>/dev/null)
+  done < "$_tmplist1"
+  rm -f "$_tmplist1"
 
   # Pass 2: Count user-only files (exist in dest but not in source — NEVER touched)
   if [ -d "$dest_dir" ]; then
-    while IFS= read -r -d '' dest_file; do
+    local _tmplist2
+    _tmplist2=$(mktemp)
+    find "$dest_dir" -type f > "$_tmplist2" 2>/dev/null
+    while IFS= read -r dest_file; do
+      [ -z "$dest_file" ] && continue
       local rel="${dest_file#"$dest_dir/"}"
       local src_file="$src_dir/$rel"
       if [ ! -e "$src_file" ]; then
         preserved=$((preserved + 1))
       fi
-    done < <(find "$dest_dir" -type f -print0 2>/dev/null)
+    done < "$_tmplist2"
+    rm -f "$_tmplist2"
   fi
 
   echo "$updated:$added:$preserved"
@@ -323,7 +361,10 @@ done
 # ALL user files in claude/ EXCEPT infrastructure dirs
 # (infrastructure dirs handled by sync_dir in Phase B — user-only files preserved there too)
 if [ -d "$TARGET/claude" ]; then
-  while IFS= read -r -d '' f; do
+  _tmpinv1=$(mktemp)
+  find "$TARGET/claude" -type f ! -name '.gitkeep' > "$_tmpinv1" 2>/dev/null
+  while IFS= read -r f; do
+    [ -z "$f" ] && continue
     rel="${f#"$TARGET/"}"
     # Skip infrastructure dirs — Phase B handles them with sync_dir
     case "$rel" in
@@ -336,12 +377,16 @@ if [ -d "$TARGET/claude" ]; then
         echo "  🔒 $rel" ;;
     esac
     PRESERVED_COUNT=$((PRESERVED_COUNT + 1))
-  done < <(find "$TARGET/claude" -type f ! -name '.gitkeep' -print0 2>/dev/null)
+  done < "$_tmpinv1"
+  rm -f "$_tmpinv1"
 fi
 
 # ALL user files in .claude/
 if [ -d "$TARGET/.claude" ]; then
-  while IFS= read -r -d '' f; do
+  _tmpinv2=$(mktemp)
+  find "$TARGET/.claude" -type f > "$_tmpinv2" 2>/dev/null
+  while IFS= read -r f; do
+    [ -z "$f" ] && continue
     rel="${f#"$TARGET/"}"
     case "$rel" in
       .claude/settings.json)
@@ -350,7 +395,8 @@ if [ -d "$TARGET/.claude" ]; then
         echo "  🔒 $rel" ;;
     esac
     PRESERVED_COUNT=$((PRESERVED_COUNT + 1))
-  done < <(find "$TARGET/.claude" -type f -print0 2>/dev/null)
+  done < "$_tmpinv2"
+  rm -f "$_tmpinv2"
 fi
 
 # .github/ Copilot files
@@ -360,10 +406,14 @@ if [ -f "$TARGET/.github/copilot-instructions.md" ]; then
 fi
 for dir in "$TARGET/.github/instructions" "$TARGET/.github/prompts"; do
   [ -d "$dir" ] || continue
-  while IFS= read -r -d '' f; do
+  _tmpinv3=$(mktemp)
+  find "$dir" -type f > "$_tmpinv3" 2>/dev/null
+  while IFS= read -r f; do
+    [ -z "$f" ] && continue
     echo "  🔒 ${f#"$TARGET/"}"
     PRESERVED_COUNT=$((PRESERVED_COUNT + 1))
-  done < <(find "$dir" -type f -print0 2>/dev/null)
+  done < "$_tmpinv3"
+  rm -f "$_tmpinv3"
 done
 
 echo ""
@@ -472,13 +522,17 @@ done
 # Task template files (add missing — NEVER overwrite)
 # Uses find instead of glob to catch dotfiles (.gitignore, .gitkeep)
 mkdir -p "$TARGET/claude/tasks"
-while IFS= read -r -d '' f; do
+_tmptasks=$(mktemp)
+find "$SCRIPT_DIR/claude/tasks" -maxdepth 1 -type f > "$_tmptasks" 2>/dev/null
+while IFS= read -r f; do
+  [ -z "$f" ] && continue
   fname="$(basename "$f")"
   if copy_if_missing "$f" "$TARGET/claude/tasks/$fname"; then
     echo "  ➕ claude/tasks/$fname (new)"
     phase_d_added=$((phase_d_added + 1))
   fi
-done < <(find "$SCRIPT_DIR/claude/tasks" -maxdepth 1 -type f -print0 2>/dev/null)
+done < "$_tmptasks"
+rm -f "$_tmptasks"
 
 # .claude/settings.json — add if missing; if exists, merge permissions.allow NOW
 # Why: Claude Code loads permissions at session start. Phase 2's deep-merge runs

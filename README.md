@@ -122,6 +122,20 @@ The bootstrap is **adaptive** — it runs 8 domain-detection greps and automatic
 
 ---
 
+## 🖥️ Platform Support
+
+| Platform | Status | Shell | Notes |
+|:---------|:-------|:------|:------|
+| **Linux** | ✅ Native | bash 4+ | Zero configuration needed |
+| **macOS** | ✅ Native | bash 3.2+ (system) / bash 5 (Homebrew) | `discover.sh` + `populate-templates.sh` require Bash 4+ (`brew install bash`) — all other scripts work with system bash |
+| **Windows (WSL2)** | ✅ Recommended | bash 5 (Ubuntu) | Full Linux environment — everything works natively |
+| **Windows (Git Bash)** | ✅ Supported | bash 4.4+ (MSYS2) | Works with default Git for Windows installation |
+| **Windows (CMD/PowerShell)** | ❌ Not supported | — | Claude Code itself requires a Unix shell |
+
+> **Required tools:** `git`, `bash` ≥ 3.2 (≥ 4 for `/bootstrap`). **Recommended:** `jq` (auto-merges settings).
+
+---
+
 ## 🧬 From Instructions to Guarantees
 
 Every AI coding tool reads instructions. None of them can enforce those instructions on themselves.

@@ -1028,6 +1028,45 @@ Brain replaces advisory text with real mechanisms:
 
 ---
 
+## 🖥️ Cross-Platform Compatibility
+
+Brain Bootstrap works on **Linux, macOS, and Windows** (WSL2 / Git Bash).
+
+### Bash Version Requirements
+
+| Scripts | Minimum Bash | Reason |
+|:--------|:-------------|:-------|
+| `discover.sh`, `populate-templates.sh` | **4.0+** | Associative arrays (`declare -A`) |
+| All other scripts (25+) | **3.2+** | Standard bash features only |
+
+> macOS ships with Bash 3.2. Install Bash 5 via `brew install bash` for full `/bootstrap` support. All hook scripts work with system bash.
+
+### How `_platform.sh` Works
+
+The `claude/scripts/_platform.sh` library is sourced by scripts that need platform-specific behavior:
+
+- **`BRAIN_PLATFORM`** — detected as `linux`, `macos`, or `windows` (MINGW/MSYS/Cygwin)
+- **`sed_inplace()`** — portable `sed -i` (BSD on macOS requires `sed -i ''`, GNU uses `sed -i`)
+- **`safe_pgrep()`** — falls back to `ps aux | awk` when `pgrep` is unavailable (Git Bash)
+- **`require_tool()`** — checks for a tool and prints platform-specific install instructions
+- **`supports_unicode()`** — detects emoji support for graceful degradation
+- **`PASS_SYM` / `FAIL_SYM` / `WARN_SYM`** — `✅`/`❌`/`⚠️` or `[OK]`/`[FAIL]`/`[WARN]`
+
+### CI Coverage
+
+The GitHub Actions CI runs on all 3 platforms:
+- **ubuntu-latest** — primary validation + ShellCheck + portability lint
+- **macos-latest** — catches BSD tool differences
+- **windows-latest** — catches Git Bash / MSYS2 differences
+
+### Known Limitations
+
+- **Windows CMD/PowerShell** is not supported — Claude Code itself requires a Unix shell
+- **`discover.sh`** and **`populate-templates.sh`** require Bash 4+ (associative arrays). All other scripts work with Bash 3.2+
+- **`jq`** is recommended but optional — without it, `settings.json` permission merging is deferred to the AI's `/bootstrap` Phase 2
+
+---
+
 ## 🤝 Contributing
 
 We love contributions! The most impactful areas:

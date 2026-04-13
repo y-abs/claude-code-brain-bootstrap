@@ -14,12 +14,9 @@ set -eo pipefail
 PROJECT_DIR="${1:-.}"
 cd "$PROJECT_DIR"
 
-# ─── Portable sed -i ──────────────────────────────────────────────
-if [[ "$(uname)" == "Darwin" ]]; then
-  sed_inplace() { sed -i '' "$@"; }
-else
-  sed_inplace() { sed -i "$@"; }
-fi
+
+# ─── Portable helpers (sed_inplace, safe_pgrep, platform detection)
+source "$(dirname "$0")/_platform.sh"
 
 # ─── Pre-check: claude CLI available? ─────────────────────────────
 if ! command -v claude &>/dev/null; then
@@ -54,7 +51,8 @@ claude plugin disable claude-mem@thedotmack > claude/tasks/.plugin-disable.log 2
 
 # 5. Kill any running worker process
 # [c] = anti-self-match pattern (prevents pgrep from matching its own command line)
-kill $(pgrep -f '[c]laude-mem.*worker-service' 2>/dev/null) 2>/dev/null || true
+WORKER_PIDS=$(safe_pgrep '[c]laude-mem.*worker-service')
+if [ -n "$WORKER_PIDS" ]; then kill $WORKER_PIDS 2>/dev/null || true; fi
 
 # 6. Verify final state
 claude plugin list > claude/tasks/.plugin-list.log 2>&1 || true
