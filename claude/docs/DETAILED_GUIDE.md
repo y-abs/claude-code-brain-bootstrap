@@ -393,8 +393,8 @@ The automation backbone — pure bash, zero token cost:
 | ✅ `check-creative-work.sh` | Creative work gate check — architecture, placeholders, domain docs, IDE section | ~1s |
 | 🔁 `tdd-loop-check.sh` | TDD enforcement Stop hook — fails the loop if tests were skipped after code changes | ~1s |
 | 🖥️ `_platform.sh` | Portable shell helper library — detects `BRAIN_PLATFORM`, provides `sed_inplace()`, `safe_pgrep()`, `require_tool()`, `supports_unicode()` | instant |
-| 🔍 `portability-lint.sh` | GNU-only pattern detector — catches `sed -i` without `''`, `date -d`, `readlink -f`, `mktemp -d --suffix`, `grep -P` and more. Extensible: add patterns to the table at the top | ~1s |
-| 🧪 `integration-test.sh` | 17 end-to-end tests — FRESH install, UPGRADE merge, and 4 guard scenarios (non-git, subdirectory, non-existent dir, self-bootstrap). Runs on all 3 platforms in CI | ~10s |
+| 🔍 `portability-lint.sh` | GNU-only pattern detector — 9 checks: `head -n -N`, `grep -P`, `readlink -f`, `stat --format/stat -c`, `date -d`, bare `sed -i`, awk `\\s`/`\\w`, `< <()`. Extensible: add patterns to the top of the script | ~1s |
+| 🧪 `integration-test.sh` | 17 assertions: FRESH install (9), UPGRADE (4), --check mode (1), and 3 guard scenarios: self-bootstrap, subdirectory, non-existent dir. Runs on all 3 platforms in CI | ~10s |
 
 ---
 
@@ -1101,15 +1101,19 @@ The portability linter catches GNU-only shell patterns that fail on macOS (BSD) 
 bash claude/scripts/portability-lint.sh [directory]   # defaults to claude/scripts/
 ```
 
-**Patterns detected:**
+**Patterns detected** (all 9 checks from `portability-lint.sh`):
 
-| Pattern | Problem | Portable alternative |
-|:--------|:--------|:--------------------|
-| `sed -i` (no `''`) | GNU-only; BSD `sed` requires `sed -i ''` | Use `sed_inplace()` from `_platform.sh` |
-| `date -d` | GNU-only; BSD `date` uses `-j -f` | Use `date -r` for timestamps or `python3` |
-| `readlink -f` | GNU-only; macOS lacks `-f` | Use `realpath` or `python3 -c "import os,sys; print(os.path.realpath(sys.argv[1]))"` |
-| `mktemp -d --suffix` | GNU-only; BSD `mktemp` ignores `--suffix` | Drop `--suffix`, or use temp dir + rename |
-| `grep -P` | GNU-only (PCRE); macOS `grep` is BSD | Use `grep -E` with POSIX ERE instead |
+| Pattern | Severity | Problem | Portable alternative |
+|:--------|:--------:|:--------|:--------------------|
+| `head -n -N` (negative count) | ❌ | GNU-only; BSD `head` rejects negative N | Use `tail -N` to get last N lines |
+| `grep -P` (PCRE flag) | ❌ | GNU-only; macOS `grep` is BSD (no PCRE) | Use `grep -E` with POSIX ERE |
+| `readlink -f` | ❌ | GNU-only; macOS has no `readlink -f` | Use `realpath` or `python3 -c "import os,sys; print(os.path.realpath(sys.argv[1]))"` |
+| `stat --format` / `stat -c` | ❌ | GNU stat; macOS uses `stat -f` | Use `wc -c` for file size, avoid stat |
+| `date --date=` / `date -d` | ❌ | GNU date parsing; BSD `date` uses `-j -f` | Use `python3` for date arithmetic |
+| `sed -i` (bare, not via wrapper) | ❌ | GNU-only; BSD requires `sed -i ''` | Use `sed_inplace()` from `_platform.sh` |
+| `\s` in awk expressions | ❌ | gawk-only; POSIX awk doesn't support `\s` | Use `[[:space:]]` |
+| `\w` in awk expressions | ❌ | gawk-only; POSIX awk doesn't support `\w` | Use `[[:alnum:]_]` |
+| `< <()` process substitution | ⚠️ | Works in bash 3.2+ but not in all Git Bash builds | Use tmpfile: `cmd > tmp; while IFS= read...` |
 
 The linter is **extensible** — add new patterns to the table at the top of the script.
 
@@ -1121,16 +1125,18 @@ The linter is **extensible** — add new patterns to the table at the top of the
 bash claude/scripts/integration-test.sh
 ```
 
-**Test scenarios:**
+**Test scenarios** (17 total assertions):
 
-| Category | Tests | What they verify |
-|:---------|:-----:|:----------------|
-| FRESH install | 5 | Copies all files, sets executable bits, correct FRESH output message |
-| UPGRADE mode | 4 | Detects existing config, enters UPGRADE, preserves user files |
-| Guard: non-git dir | 2 | Rejects non-git directories with clear error |
-| Guard: subdirectory | 2 | Rejects install into a subdirectory (not repo root) |
-| Guard: non-existent dir | 2 | Rejects missing target directories |
-| Guard: self-bootstrap | 2 | Rejects installing into the template repo itself |
+| Category | Assertions | What they verify |
+|:---------|:----------:|:----------------|
+| `--check` pre-flight | 1 | Pre-flight mode exits 0, reports platform |
+| FRESH install | 9 | Exits 0; CLAUDE.md + .claudeignore + settings.json + discover.sh present; scripts executable; hooks executable; `_platform.sh` sourceable; ≥50 files installed |
+| UPGRADE mode | 4 | Exits 0; `lessons.md` preserved (not overwritten); `architecture.md` preserved; backup `.pre-upgrade-backup.tar.gz` created |
+| Guard: self-bootstrap | 1 | Rejects installing into the template repo itself |
+| Guard: subdirectory | 1 | Rejects install into a subdirectory (must be repo root) |
+| Guard: non-existent dir | 1 | Rejects missing target directories |
+
+> **Note:** install.sh Check 2 (non-git directory) is enforced in code but not yet covered by integration tests.
 
 **Cross-platform correctness notes:**
 - **macOS symlinks** — `/var` → `/private/var`: fixed by using `--show-cdup` (empty at root) instead of `--show-toplevel` path comparison
@@ -1166,15 +1172,15 @@ Every push to `main` and every pull request runs **5 automated checks** via GitH
 
 | Job | Platforms | What it verifies | Why it matters |
 |:----|:---------:|:----------------|:---------------|
-| ✅ **Template Validation** | Linux | Runs `validate.sh` — 120 checks for file existence, hook executability, JSON validity, placeholder integrity, domain-free verification | If this fails, the template is broken. This is the test suite. |
-| 🐚 **ShellCheck** | Linux | Lints all 31 `.sh` scripts (hooks, discover.sh, utilities, platform helpers) at `warning` severity | These scripts run on **end-user machines** during Claude Code sessions. A bug in `terminal-safety-gate.sh` silently skips protection. ShellCheck catches it before users do. |
-| 🔗 **Documentation Links** | Linux | Checks all internal/relative links across every `.md` file (offline, including `#fragment` anchors) | README → CONTRIBUTING → DETAILED_GUIDE have 20+ cross-references. A broken link in the public README means a confused first-time user. |
-| 🖥️ **Portability Lint + Platform Validation** | Linux, macOS, Windows | Runs `portability-lint.sh` (GNU-only pattern detector) + `validate.sh` on all 3 platforms | Catches BSD vs GNU tool differences that only surface on macOS/Windows (e.g., `sed -i` without `''`, `date -d`, `grep -P`) |
-| 🧪 **Integration Tests** | Linux, macOS, Windows | Runs `integration-test.sh` — 17 tests covering FRESH install, UPGRADE merge, and 4 guard scenarios | Proves `install.sh` works end-to-end on the exact platforms your users run. macOS symlink paths, Windows MSYS paths, bash 3.2 edge cases. |
+| 🐚 **ShellCheck** | Linux | Lints all 31 `.sh` scripts at `warning` severity | These scripts run on **end-user machines**. A bug in `terminal-safety-gate.sh` silently skips protection. ShellCheck catches it before users do. |
+| 🔍 **Portability Lint** | Linux | Runs `portability-lint.sh` — 9 checks for GNU-only patterns (`head -n -N`, `grep -P`, `readlink -f`, `stat -c`, `date -d`, bare `sed -i`, awk `\s`/`\w`, `< <()`) | Catches BSD vs GNU differences at static analysis time, before they hit macOS/Windows users |
+| 🔗 **Documentation Links** | Linux | Checks all internal/relative links in every `.md` file (offline, including `#fragment` anchors) | README → CONTRIBUTING → DETAILED_GUIDE have 20+ cross-references. A broken link in the public README means a confused first-time user. |
+| ✅ **Cross-Platform Validation** | Linux, macOS, Windows | Syntax-checks all 31 scripts + `validate.sh` (120 checks) + `_platform.sh` sourcing + `install.sh --check` | Proves the template is structurally sound and install works on all 3 platforms — not just the developer's Linux box. |
+| 🧪 **Integration Tests** | Linux, macOS, Windows | Runs `integration-test.sh` — 17 assertions: FRESH install, UPGRADE, `--check` mode, and 3 guard scenarios | Proves `install.sh` works end-to-end on user platforms. Catches macOS symlink paths, Windows MSYS paths, bash 3.2 edge cases. |
 
 All five must pass before a PR can be merged. The CI badge on the README shows the current status.
 
-> 💡 **Run locally before pushing:** `bash claude/scripts/validate.sh` covers the template checks. `bash claude/scripts/integration-test.sh` covers end-to-end scenarios. Install [ShellCheck](https://github.com/koalaman/shellcheck#installing) for local script linting.
+> 💡 **Run locally before pushing:** `bash claude/scripts/validate.sh` covers the template checks. `bash claude/scripts/portability-lint.sh` catches GNU-only patterns. `bash claude/scripts/integration-test.sh` covers end-to-end scenarios. Install [ShellCheck](https://github.com/koalaman/shellcheck#installing) for local script linting.
 
 ---
 

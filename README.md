@@ -236,7 +236,7 @@ The system is designed to **minimize token cost** while maximizing context — y
 | 🪝 **Lifecycle hooks** | 14 | Session recovery, config protection, terminal safety gate (3 profiles), commit quality, batch formatting, exit checklist, compaction recovery, identity refresh, permission audit, test reminders |
 | 🤖 **AI subagents** | 5 | **research** (read-only exploration), **reviewer** (10-point MR review), **plan-challenger** (adversarial plan critique), **session-reviewer** (conversation pattern analysis), **security-auditor** (vulnerability scanning) — each declares its optimal model, falls back to session model for local/alternative providers |
 | 🎓 **Skills** | 5 | TDD discipline (auto-loads on test files), root-cause trace, changelog generation, session safety guards, cross-layer consistency check |
-| 🔧 **Brain scripts** | 15 | `discover.sh` (3800-line stack detector), `populate-templates.sh`, `post-bootstrap-validate.sh`, `validate.sh`, `canary-check.sh`, `_platform.sh` (portable shell helpers — Linux/macOS/Windows), `portability-lint.sh` (GNU-only pattern detector), `integration-test.sh` (17 end-to-end tests, 3 platforms), `phase2-verify.sh`, `toggle-claude-mem.sh`, `generate-service-claudes.sh`, `generate-copilot-docs.sh`, `setup-plugins.sh`, `check-creative-work.sh`, `tdd-loop-check.sh` — all in `claude/scripts/` |
+| 🔧 **Brain scripts** | 15 | `discover.sh` (3800-line stack detector), `populate-templates.sh`, `post-bootstrap-validate.sh`, `validate.sh`, `canary-check.sh`, `_platform.sh` (portable shell helpers — Linux/macOS/Windows), `portability-lint.sh` (GNU-only pattern detector), `integration-test.sh` (17 assertions: FRESH/UPGRADE/--check/3 guards, 3 platforms), `phase2-verify.sh`, `toggle-claude-mem.sh`, `generate-service-claudes.sh`, `generate-copilot-docs.sh`, `setup-plugins.sh`, `check-creative-work.sh`, `tdd-loop-check.sh` — all in `claude/scripts/` |
 | 🤝 **GitHub Copilot config** | 8 | Root instructions, 3 scoped instruction files (+1 template), 2 reusable prompts (+1 template) |
 | 📏 **Path-scoped rules** | 13 | Terminal safety, self-maintenance, quality gates, memory policy, domain learning, practice capture, agent orchestration, language-specific rules, template for adding your own |
 | 🔌 **Plugins** | 1 | **claude-mem** (persistent cross-session memory) — auto-installed, disabled by default (quota protection) |
@@ -435,7 +435,7 @@ All contributions must be **domain-agnostic** (no project-specific content).
 
 🐛 **Found a bug?** → [Open an issue](https://github.com/y-abs/claude-code-brain-bootstrap/issues/new/choose) — structured templates for bug reports and feature requests.
 
-🔄 **CI runs 5 checks on every PR** — template validation (120 checks), ShellCheck on all scripts, portability lint (GNU-only pattern detector), cross-platform validation (Linux / macOS / Windows), and integration tests (FRESH + UPGRADE + 4 guard scenarios, all 3 platforms). All must pass to merge.
+🔄 **CI runs 5 checks on every PR** — ShellCheck on all scripts, portability lint (GNU-only pattern detector), documentation links (all .md cross-references), cross-platform validation (Linux / macOS / Windows — validate.sh + install --check), and integration tests (FRESH install, UPGRADE, --check mode, and 3 guard scenarios, all 3 platforms). All must pass to merge.
 
 > 🚀 **Maintainers:** See [CONTRIBUTING.md — Release Process](CONTRIBUTING.md#-release-process-maintainers-only) for the full step-by-step release workflow (PR → tag → GitHub Release).
 
