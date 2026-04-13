@@ -29,6 +29,14 @@
 5. **Mark progress** — check items in `claude/tasks/todo.md`
 6. **Maintain knowledge** — update `claude/*.md` when you discover stale info
 
+## Model Selection (enforced)
+- **Planning, review, architecture, debugging** → require the **most capable model** available (Claude Opus / GPT-4o / Gemini 2.5 Pro). If the current model is a "mini", "flash", or "lite" variant, **stop and tell the user**: _"⚠️ Current model is [model]. Planning tasks require the most capable model. Please switch to [Opus/GPT-4o/Gemini 2.5 Pro] in the model picker (top of chat panel) and re-ask."_ Do NOT proceed with a weaker model for planning — the output quality is unacceptable.
+- **Quick tasks** (build, lint, test, grep, simple edits) → any model is fine.
+- **Subagent delegation** → the subagent inherits your current model. Verify the model is appropriate BEFORE calling `run_subagent` for plan/review tasks.
+
+## Meta-Cognition
+Complex problems: sub-questions → confidence-weight → combine → if <0.8 retry.
+
 ## 🚨 Exit Checklist (MANDATORY before ending turn)
 
 1. User corrected me? → Update `claude/tasks/lessons.md` + relevant `claude/*.md`
