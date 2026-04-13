@@ -86,7 +86,7 @@ bash /tmp/brain/install.sh your-repo/
 rm -rf /tmp/brain
 ```
 
-> 🔍 **Pre-flight check:** `bash /tmp/brain/install.sh --check` — verifies git, bash version, and optional `jq` before touching your repo. Runs in 1 second, no side effects.
+> 🔍 **Pre-flight check:** `bash /tmp/brain/install.sh --check` — verifies git, bash version, and `jq` before touching your repo. Runs in 1 second, no side effects.
 
 The install script **auto-detects** whether your repo is a fresh install or an upgrade:
 
@@ -194,7 +194,11 @@ The bootstrap is **adaptive** — it runs 8 domain-detection greps and automatic
 | **Windows (Git Bash)** | ✅ Supported | bash 4.4+ (MSYS2) | Works with default Git for Windows installation |
 | **Windows (CMD/PowerShell)** | ❌ Not supported | — | Claude Code itself requires a Unix shell |
 
-> **Required tools:** `git`, `bash` ≥ 3.2 (≥ 4 for `/bootstrap`). **Recommended:** `jq` (auto-merges settings).
+> **Required tools:** `git`, `bash` ≥ 3.2 (≥ 4 for `/bootstrap`), `jq` (safety hooks + discovery engine depend on it).
+>
+> Without `jq`: install works (settings merge skipped), but **lifecycle hooks can't parse Claude Code's JSON input** — config protection, terminal safety gate, and commit quality checks silently pass through. Discovery is degraded for JS/TS projects (can't read `package.json` fields). `awk` is POSIX-standard and always available.
+>
+> Install: `brew install jq` (macOS) · `sudo apt install jq` (Linux) · included in Git Bash (Windows).
 
 ---
 
@@ -445,7 +449,7 @@ Yes — Linux, macOS, and Windows (WSL2 / Git Bash) are all supported. Three lay
 2. **`portability-lint.sh`** — CI check that scans every `.sh` file for 9 known GNU-only patterns and fails the build if any slip through (e.g., `sed -i ''` without platform guard, `readlink -f` without fallback).
 3. **`integration-test.sh`** — 17 assertions covering FRESH install, UPGRADE, `--check` mode, and 3 guard scenarios, run on all 3 platforms in CI.
 
-macOS note: `discover.sh` and `populate-templates.sh` require Bash 4+ (`brew install bash`) — all other scripts work with the system bash 3.2. Run `bash install.sh --check` to verify your environment before installing.
+macOS note: `discover.sh` and `populate-templates.sh` require Bash 4+ (`brew install bash`) — all other scripts work with the system bash 3.2. `jq` is needed for safety hooks and JS/TS discovery (`brew install jq` on macOS, pre-installed on most Linux distros and Git Bash). `awk` is POSIX-standard — always available. Run `bash install.sh --check` to verify your environment before installing.
 </details>
 
 <details>

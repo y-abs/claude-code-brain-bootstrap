@@ -34,7 +34,18 @@ if [ "${1:-}" = "--check" ]; then
   echo ""
   echo "  Platform: $BRAIN_PLATFORM"
   require_tool git "required for repo detection" && echo "  ✅ git $(git --version 2>/dev/null | head -1)" || true
-  require_tool jq "optional — settings.json merge" && echo "  ✅ jq $(jq --version 2>/dev/null)" || echo "  ⚠️  jq not found (optional — settings merge will be skipped)"
+  if command -v jq &>/dev/null; then
+    echo "  ✅ jq $(jq --version 2>/dev/null)"
+  else
+    echo "  ❌ jq not found — STRONGLY RECOMMENDED"
+    echo "     Without jq: safety hooks (config protection, terminal safety gate,"
+    echo "     commit quality) silently pass through. JS/TS discovery is degraded."
+    case "$BRAIN_PLATFORM" in
+      macos)   echo "     Install: brew install jq" ;;
+      windows) echo "     Install: scoop install jq  OR  choco install jq" ;;
+      linux)   echo "     Install: sudo apt install jq  OR  sudo dnf install jq" ;;
+    esac
+  fi
   bash_ver="${BASH_VERSINFO[0]:-0}"
   if [ "$bash_ver" -ge 4 ]; then
     echo "  ✅ bash $BASH_VERSION (≥4 — full support)"
@@ -633,5 +644,20 @@ echo "│     • Deep-merge settings.json (your values win)     │"
 echo "│     • Union-merge .claudeignore patterns             │"
 echo "│     All additive. Never destructive.                 │"
 echo "└──────────────────────────────────────────────────────┘"
+
+if ! command -v jq &>/dev/null; then
+  echo ""
+  echo "⚠️  jq is not installed — safety hooks will be degraded."
+  echo "   Without jq, config-protection, terminal-safety-gate, and commit-quality"
+  echo "   hooks cannot parse Claude Code's JSON input and will silently pass through."
+  echo "   JS/TS project discovery (package.json parsing) will also be incomplete."
+  echo ""
+  case "$BRAIN_PLATFORM" in
+    macos)   echo "   Install now:  brew install jq" ;;
+    windows) echo "   Install now:  scoop install jq  OR  choco install jq" ;;
+    linux)   echo "   Install now:  sudo apt install jq  OR  sudo dnf install jq" ;;
+  esac
+  echo ""
+fi
 echo ""
 

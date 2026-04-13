@@ -8,7 +8,12 @@ PROFILE="${CLAUDE_HOOK_PROFILE:-standard}"
 
 INPUT=$(cat)
 FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // .tool_input.path // empty' 2>/dev/null)
-[ -z "$FILE_PATH" ] && exit 0
+if [ -z "$FILE_PATH" ]; then
+  if ! command -v jq &>/dev/null; then
+    echo "⚠️ warn-missing-test: jq not installed — cannot parse file path. Install jq to enable."
+  fi
+  exit 0
+fi
 
 # Skip non-code files (check extension first — cheapest guard)
 if ! echo "$FILE_PATH" | grep -qE '\.(py|ts|tsx|js|jsx|go|rs|java|rb|swift)$'; then

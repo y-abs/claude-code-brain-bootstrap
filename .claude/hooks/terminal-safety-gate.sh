@@ -8,6 +8,10 @@ INPUT=$(cat)
 CMD=$(echo "$INPUT" | jq -r '.tool_input.command // empty' 2>/dev/null)
 
 if [ -z "$CMD" ]; then
+  # If jq is not installed, warn the user (don't silently pass)
+  if ! command -v jq &>/dev/null; then
+    echo "⚠️ terminal-safety-gate: jq not installed — cannot parse command input. Safety checks skipped. Install jq to enable."
+  fi
   exit 0
 fi
 

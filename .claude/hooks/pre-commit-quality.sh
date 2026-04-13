@@ -8,6 +8,9 @@ INPUT=$(cat)
 CMD=$(echo "$INPUT" | jq -r '.tool_input.command // empty' 2>/dev/null)
 
 if [ -z "$CMD" ]; then
+  if ! command -v jq &>/dev/null; then
+    echo "⚠️ pre-commit-quality: jq not installed — cannot parse command. Quality checks skipped. Install jq to enable."
+  fi
   exit 0
 fi
 

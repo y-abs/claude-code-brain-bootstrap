@@ -8,6 +8,10 @@ INPUT=$(cat)
 FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // .tool_input.filePath // empty' 2>/dev/null)
 
 if [ -z "$FILE_PATH" ]; then
+  # If jq is not installed, warn the user (don't silently pass)
+  if ! command -v jq &>/dev/null; then
+    echo "⚠️ config-protection: jq not installed — cannot parse file path. Protection skipped. Install jq to enable."
+  fi
   exit 0
 fi
 
