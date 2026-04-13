@@ -37,7 +37,7 @@ The first public release of ᗺB Brain Bootstrap — a complete AI knowledge arc
 - **`bootstrap/UPGRADE_GUIDE.md`** — Smart Merge guide for existing configs
 
 #### Automation (`claude/scripts/`)
-- **`discover.sh`** — 2500+ line repo scanner: 25+ languages, 330+ frameworks, 21 package managers, 13 CI systems, zero tokens
+- **`discover.sh`** — 2700+ line repo scanner: 25+ languages, 480+ frameworks, 21 package managers, 13 CI systems, zero tokens
 - **`populate-templates.sh`** — Batch fills 70+ `{{PLACEHOLDER}}` values in one pass
 - **`post-bootstrap-validate.sh`** — Unified post-bootstrap validation (validate + canary + auto-fix)
 - **`validate.sh`** — 120-check template validator (file existence, JSON validity, hook executability, placeholder integrity)

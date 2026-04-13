@@ -2026,6 +2026,13 @@ if [ -f "package.json" ]; then
   echo "$DEPS" | grep -q '^passport$\|^@nestjs/passport' && FRAMEWORKS="${FRAMEWORKS}Passport,"
   echo "$DEPS" | grep -q '^next-auth$\|^@auth' && FRAMEWORKS="${FRAMEWORKS}NextAuth,"
   echo "$DEPS" | grep -q '^keycloak' && FRAMEWORKS="${FRAMEWORKS}Keycloak,"
+  echo "$DEPS" | grep -q '^auth0$\|^@auth0' && FRAMEWORKS="${FRAMEWORKS}Auth0,"
+  echo "$DEPS" | grep -q '^@clerk' && FRAMEWORKS="${FRAMEWORKS}Clerk,"
+  echo "$DEPS" | grep -q '^lucia$\|^@lucia-auth' && FRAMEWORKS="${FRAMEWORKS}Lucia,"
+  echo "$DEPS" | grep -q '^supertokens-node$\|^supertokens-auth-react$' && FRAMEWORKS="${FRAMEWORKS}SuperTokens,"
+  echo "$DEPS" | grep -q '^@workos' && FRAMEWORKS="${FRAMEWORKS}WorkOS,"
+  echo "$DEPS" | grep -q '^@casl' && FRAMEWORKS="${FRAMEWORKS}CASL,"
+  echo "$DEPS" | grep -q '^jsonwebtoken$\|^jose$' && FRAMEWORKS="${FRAMEWORKS}JWT,"
   # Desktop / Mobile
   echo "$DEPS" | grep -q '^electron$' && FRAMEWORKS="${FRAMEWORKS}Electron,"
   echo "$DEPS" | grep -q '^react-native$' && FRAMEWORKS="${FRAMEWORKS}React-Native,"
@@ -2067,6 +2074,103 @@ if [ -f "package.json" ]; then
   echo "$DEPS" | grep -q '^@anthropic-ai/sdk$' && FRAMEWORKS="${FRAMEWORKS}Anthropic-SDK,"
   echo "$DEPS" | grep -q '^ai$' && FRAMEWORKS="${FRAMEWORKS}Vercel-AI,"
   echo "$DEPS" | grep -q '^@langchain/' && FRAMEWORKS="${FRAMEWORKS}LangChain-JS,"
+  # HTTP clients
+  echo "$DEPS" | grep -q '^axios$' && FRAMEWORKS="${FRAMEWORKS}Axios,"
+  echo "$DEPS" | grep -q '^got$' && FRAMEWORKS="${FRAMEWORKS}Got,"
+  echo "$DEPS" | grep -q '^node-fetch$\|^undici$' && FRAMEWORKS="${FRAMEWORKS}Undici,"
+  # Validation
+  echo "$DEPS" | grep -q '^class-validator$' && FRAMEWORKS="${FRAMEWORKS}class-validator,"
+  echo "$DEPS" | grep -q '^class-transformer$' && FRAMEWORKS="${FRAMEWORKS}class-transformer,"
+  echo "$DEPS" | grep -q '^joi$\|^@hapi/joi$' && FRAMEWORKS="${FRAMEWORKS}Joi,"
+  echo "$DEPS" | grep -q '^yup$' && FRAMEWORKS="${FRAMEWORKS}Yup,"
+  echo "$DEPS" | grep -q '^ajv$' && FRAMEWORKS="${FRAMEWORKS}Ajv,"
+  # Forms
+  echo "$DEPS" | grep -q '^react-hook-form$' && FRAMEWORKS="${FRAMEWORKS}React-Hook-Form,"
+  echo "$DEPS" | grep -q '^formik$' && FRAMEWORKS="${FRAMEWORKS}Formik,"
+  # Testing / E2E
+  echo "$DEPS" | grep -q '^cypress$' && FRAMEWORKS="${FRAMEWORKS}Cypress,"
+  echo "$DEPS" | grep -q '^@playwright/test$\|^playwright$' && FRAMEWORKS="${FRAMEWORKS}Playwright,"
+  echo "$DEPS" | grep -q '^puppeteer' && FRAMEWORKS="${FRAMEWORKS}Puppeteer,"
+  echo "$DEPS" | grep -q '^@testing-library' && FRAMEWORKS="${FRAMEWORKS}Testing-Library,"
+  echo "$DEPS" | grep -q '^msw$' && FRAMEWORKS="${FRAMEWORKS}MSW,"
+  # Logging / Observability
+  echo "$DEPS" | grep -q '^winston$' && FRAMEWORKS="${FRAMEWORKS}Winston,"
+  echo "$DEPS" | grep -q '^pino$' && FRAMEWORKS="${FRAMEWORKS}Pino,"
+  echo "$DEPS" | grep -q '^@sentry' && FRAMEWORKS="${FRAMEWORKS}Sentry,"
+  echo "$DEPS" | grep -q '^@opentelemetry' && FRAMEWORKS="${FRAMEWORKS}OpenTelemetry,"
+  echo "$DEPS" | grep -q '^@datadog' && FRAMEWORKS="${FRAMEWORKS}Datadog,"
+  echo "$DEPS" | grep -q '^newrelic$' && FRAMEWORKS="${FRAMEWORKS}New-Relic,"
+  # Messaging (additional)
+  echo "$DEPS" | grep -q '^nats$\|^nats.ws$' && FRAMEWORKS="${FRAMEWORKS}NATS,"
+  echo "$DEPS" | grep -q '^agenda$\|^@agenda/' && FRAMEWORKS="${FRAMEWORKS}Agenda,"
+  echo "$DEPS" | grep -q '^bee-queue$' && FRAMEWORKS="${FRAMEWORKS}Bee-Queue,"
+  # NestJS ecosystem
+  echo "$DEPS" | grep -q '^@nestjs/swagger$' && FRAMEWORKS="${FRAMEWORKS}NestJS-Swagger,"
+  echo "$DEPS" | grep -q '^@nestjs/graphql$' && FRAMEWORKS="${FRAMEWORKS}NestJS-GraphQL,"
+  echo "$DEPS" | grep -q '^@nestjs/schedule$' && FRAMEWORKS="${FRAMEWORKS}NestJS-Schedule,"
+  echo "$DEPS" | grep -q '^@nestjs/config$' && FRAMEWORKS="${FRAMEWORKS}NestJS-Config,"
+  echo "$DEPS" | grep -q '^@nestjs/bull$\|^@nestjs/bullmq$' && FRAMEWORKS="${FRAMEWORKS}NestJS-Bull,"
+  echo "$DEPS" | grep -q '^@nestjs/cache-manager$\|^@nestjs/caching$' && FRAMEWORKS="${FRAMEWORKS}NestJS-Cache,"
+  # i18n
+  echo "$DEPS" | grep -q '^i18next$\|^next-intl$\|^react-i18next$' && FRAMEWORKS="${FRAMEWORKS}i18n,"
+  # Cloud SDKs
+  echo "$DEPS" | grep -q '^@aws-sdk' && FRAMEWORKS="${FRAMEWORKS}AWS-SDK,"
+  echo "$DEPS" | grep -q '^@google-cloud' && FRAMEWORKS="${FRAMEWORKS}GCP-SDK,"
+  echo "$DEPS" | grep -q '^@azure' && FRAMEWORKS="${FRAMEWORKS}Azure-SDK,"
+  # AWS specific products
+  echo "$DEPS" | grep -q '^@aws-sdk/client-s3$' && FRAMEWORKS="${FRAMEWORKS}AWS-S3,"
+  echo "$DEPS" | grep -q '^@aws-sdk/client-sqs$' && FRAMEWORKS="${FRAMEWORKS}AWS-SQS,"
+  echo "$DEPS" | grep -q '^@aws-sdk/client-sns$' && FRAMEWORKS="${FRAMEWORKS}AWS-SNS,"
+  echo "$DEPS" | grep -q '^@aws-sdk/client-dynamodb$\|^@aws-sdk/lib-dynamodb$' && FRAMEWORKS="${FRAMEWORKS}AWS-DynamoDB,"
+  echo "$DEPS" | grep -q '^@aws-sdk/client-lambda$' && FRAMEWORKS="${FRAMEWORKS}AWS-Lambda,"
+  echo "$DEPS" | grep -q '^@aws-sdk/client-cognito' && FRAMEWORKS="${FRAMEWORKS}AWS-Cognito,"
+  echo "$DEPS" | grep -q '^@aws-sdk/client-ses$\|^@aws-sdk/client-sesv2$' && FRAMEWORKS="${FRAMEWORKS}AWS-SES,"
+  echo "$DEPS" | grep -q '^@aws-sdk/client-secrets-manager$' && FRAMEWORKS="${FRAMEWORKS}AWS-SecretsManager,"
+  echo "$DEPS" | grep -q '^@aws-sdk/client-eventbridge$' && FRAMEWORKS="${FRAMEWORKS}AWS-EventBridge,"
+  echo "$DEPS" | grep -q '^@aws-sdk/client-ecs$\|^@aws-sdk/client-sts$' && FRAMEWORKS="${FRAMEWORKS}AWS-ECS,"
+  echo "$DEPS" | grep -q '^@aws-sdk/client-cloudwatch$' && FRAMEWORKS="${FRAMEWORKS}AWS-CloudWatch,"
+  echo "$DEPS" | grep -q '^@aws-sdk/client-kinesis$' && FRAMEWORKS="${FRAMEWORKS}AWS-Kinesis,"
+  echo "$DEPS" | grep -q '^@aws-sdk/client-stepfunctions$' && FRAMEWORKS="${FRAMEWORKS}AWS-StepFunctions,"
+  # GCP specific products
+  echo "$DEPS" | grep -q '^@google-cloud/pubsub$' && FRAMEWORKS="${FRAMEWORKS}GCP-PubSub,"
+  echo "$DEPS" | grep -q '^@google-cloud/firestore$' && FRAMEWORKS="${FRAMEWORKS}GCP-Firestore,"
+  echo "$DEPS" | grep -q '^@google-cloud/bigquery$' && FRAMEWORKS="${FRAMEWORKS}GCP-BigQuery,"
+  echo "$DEPS" | grep -q '^@google-cloud/storage$' && FRAMEWORKS="${FRAMEWORKS}GCP-Storage,"
+  echo "$DEPS" | grep -q '^@google-cloud/functions-framework$' && FRAMEWORKS="${FRAMEWORKS}GCP-Functions,"
+  echo "$DEPS" | grep -q '^@google-cloud/tasks$' && FRAMEWORKS="${FRAMEWORKS}GCP-Tasks,"
+  echo "$DEPS" | grep -q '^@google-cloud/secret-manager$' && FRAMEWORKS="${FRAMEWORKS}GCP-SecretManager,"
+  echo "$DEPS" | grep -q '^@google-cloud/spanner$' && FRAMEWORKS="${FRAMEWORKS}GCP-Spanner,"
+  # Azure specific products
+  echo "$DEPS" | grep -q '^@azure/service-bus$' && FRAMEWORKS="${FRAMEWORKS}Azure-ServiceBus,"
+  echo "$DEPS" | grep -q '^@azure/cosmos$' && FRAMEWORKS="${FRAMEWORKS}Azure-CosmosDB,"
+  echo "$DEPS" | grep -q '^@azure/storage-blob$' && FRAMEWORKS="${FRAMEWORKS}Azure-Blob,"
+  echo "$DEPS" | grep -q '^@azure/identity$' && FRAMEWORKS="${FRAMEWORKS}Azure-Identity,"
+  echo "$DEPS" | grep -q '^@azure/functions$' && FRAMEWORKS="${FRAMEWORKS}Azure-Functions,"
+  echo "$DEPS" | grep -q '^@azure/keyvault' && FRAMEWORKS="${FRAMEWORKS}Azure-KeyVault,"
+  echo "$DEPS" | grep -q '^@azure/event-hubs$' && FRAMEWORKS="${FRAMEWORKS}Azure-EventHubs,"
+  echo "$DEPS" | grep -q '^@azure/msal' && FRAMEWORKS="${FRAMEWORKS}Azure-AD,"
+  # UI libraries (additional)
+  echo "$DEPS" | grep -q '^@radix-ui' && FRAMEWORKS="${FRAMEWORKS}Radix-UI,"
+  echo "$DEPS" | grep -q '^@headlessui' && FRAMEWORKS="${FRAMEWORKS}Headless-UI,"
+  echo "$DEPS" | grep -q '^framer-motion$\|^motion$' && FRAMEWORKS="${FRAMEWORKS}Framer-Motion,"
+  echo "$DEPS" | grep -q '^@mantine' && FRAMEWORKS="${FRAMEWORKS}Mantine,"
+  echo "$DEPS" | grep -q '^antd$\|^@ant-design' && FRAMEWORKS="${FRAMEWORKS}Ant-Design,"
+  # Data / Visualization
+  echo "$DEPS" | grep -q '^d3$\|^@visx' && FRAMEWORKS="${FRAMEWORKS}D3,"
+  echo "$DEPS" | grep -q '^chart.js$\|^react-chartjs' && FRAMEWORKS="${FRAMEWORKS}Chart.js,"
+  echo "$DEPS" | grep -q '^recharts$' && FRAMEWORKS="${FRAMEWORKS}Recharts,"
+  # Search
+  echo "$DEPS" | grep -q '^@elastic/elasticsearch$' && FRAMEWORKS="${FRAMEWORKS}Elasticsearch,"
+  echo "$DEPS" | grep -q '^meilisearch$\|^@meilisearch' && FRAMEWORKS="${FRAMEWORKS}Meilisearch,"
+  echo "$DEPS" | grep -q '^@algolia' && FRAMEWORKS="${FRAMEWORKS}Algolia,"
+  # File / Media
+  echo "$DEPS" | grep -q '^sharp$' && FRAMEWORKS="${FRAMEWORKS}Sharp,"
+  echo "$DEPS" | grep -q '^multer$' && FRAMEWORKS="${FRAMEWORKS}Multer,"
+  echo "$DEPS" | grep -q '^nodemailer$' && FRAMEWORKS="${FRAMEWORKS}Nodemailer,"
+  # Payments (additional)
+  echo "$DEPS" | grep -q '^@paypal' && FRAMEWORKS="${FRAMEWORKS}PayPal,"
+  # Caching
+  echo "$DEPS" | grep -q '^cache-manager$' && FRAMEWORKS="${FRAMEWORKS}CacheManager,"
 fi
 
 # FIX 7: Monorepo child package.json scan — root package.json of a monorepo often has ZERO
@@ -2121,6 +2225,25 @@ if [ -f "pyproject.toml" ]; then
   grep -qiE 'google-cloud|google-api-python-client' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}GCP-SDK,"
   grep -qi 'azure-' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Azure-SDK,"
   grep -qiE 'openstacksdk|keystoneauth' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}OpenStackClient,"
+  # AWS specific Python products
+  grep -qi 'aws-lambda-powertools' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}AWS-Lambda-Powertools,"
+  grep -qi 'aws-cdk' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}AWS-CDK-Python,"
+  grep -qi 'moto' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Moto,"
+  # GCP specific Python products
+  grep -qi 'google-cloud-pubsub' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}GCP-PubSub,"
+  grep -qi 'google-cloud-bigquery' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}GCP-BigQuery,"
+  grep -qi 'google-cloud-storage' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}GCP-Storage,"
+  grep -qi 'google-cloud-firestore' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}GCP-Firestore,"
+  grep -qi 'functions-framework' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}GCP-Functions,"
+  # Azure specific Python products
+  grep -qi 'azure-servicebus' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Azure-ServiceBus,"
+  grep -qi 'azure-cosmos' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Azure-CosmosDB,"
+  grep -qi 'azure-storage-blob' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Azure-Blob,"
+  grep -qi 'azure-functions' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Azure-Functions,"
+  grep -qi 'azure-identity' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Azure-Identity,"
+  # Auth providers (Python)
+  grep -qi 'auth0' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Auth0,"
+  grep -qi 'python-social-auth\|social-auth' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Social-Auth,"
   # Additional Python frameworks
   grep -qi 'scrapy' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Scrapy,"
   grep -qi 'pandas' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Pandas,"
@@ -2139,6 +2262,36 @@ if [ -f "pyproject.toml" ]; then
   grep -qi 'strawberry-graphql' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Strawberry-GraphQL,"
   grep -qiE 'graphene|graphene-django' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Graphene,"
   grep -qi 'ariadne' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Ariadne,"
+  # ASGI / WSGI servers
+  grep -qi 'uvicorn' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Uvicorn,"
+  grep -qi 'gunicorn' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Gunicorn,"
+  grep -qi 'hypercorn' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Hypercorn,"
+  # Job queues / Task processing
+  grep -qi '^rq\b\|python-rq\|redis-queue' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}RQ,"
+  grep -qi 'dramatiq' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Dramatiq,"
+  grep -qi 'huey' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Huey,"
+  # ML / Data Science (additional)
+  grep -qi 'scikit-learn\|sklearn' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}scikit-learn,"
+  grep -qi 'scipy' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}SciPy,"
+  grep -qi 'matplotlib' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Matplotlib,"
+  grep -qi 'plotly' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Plotly,"
+  grep -qi 'seaborn' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Seaborn,"
+  grep -qi 'keras' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Keras,"
+  # Orchestration / Pipelines
+  grep -qi 'prefect' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Prefect,"
+  grep -qi 'dagster' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Dagster,"
+  grep -qi 'apache-airflow\|airflow' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Airflow,"
+  grep -qi 'luigi' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Luigi,"
+  # Redis / Caching
+  grep -qi 'redis' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Redis-Py,"
+  # Observability
+  grep -qi 'opentelemetry' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}OpenTelemetry,"
+  grep -qi 'sentry-sdk' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Sentry,"
+  # Docker
+  grep -qi 'docker' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Docker-Py,"
+  # Auth
+  grep -qi 'PyJWT\|python-jose' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}PyJWT,"
+  grep -qi 'authlib' pyproject.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Authlib,"
 fi
 # Fallback: requirements.txt
 if [ -f "requirements.txt" ]; then
@@ -2164,6 +2317,18 @@ if [ -f "requirements.txt" ]; then
   if grep -qi 'djangorestframework' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'DRF'; then FRAMEWORKS="${FRAMEWORKS}DRF,"; fi
   if grep -qi 'strawberry-graphql' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Strawberry'; then FRAMEWORKS="${FRAMEWORKS}Strawberry-GraphQL,"; fi
   if grep -qiE 'graphene' requirements.txt 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Graphene'; then FRAMEWORKS="${FRAMEWORKS}Graphene,"; fi
+  # Auth
+  if grep -qi 'auth0' requirements.txt 2>/dev/null; then FRAMEWORKS="${FRAMEWORKS}Auth0,"; fi
+  if grep -qi 'PyJWT\|python-jose' requirements.txt 2>/dev/null; then FRAMEWORKS="${FRAMEWORKS}PyJWT,"; fi
+  # AWS specific
+  if grep -qi 'aws-lambda-powertools' requirements.txt 2>/dev/null; then FRAMEWORKS="${FRAMEWORKS}AWS-Lambda-Powertools,"; fi
+  # GCP specific
+  if grep -qi 'google-cloud-pubsub' requirements.txt 2>/dev/null; then FRAMEWORKS="${FRAMEWORKS}GCP-PubSub,"; fi
+  if grep -qi 'google-cloud-bigquery' requirements.txt 2>/dev/null; then FRAMEWORKS="${FRAMEWORKS}GCP-BigQuery,"; fi
+  if grep -qi 'google-cloud-storage' requirements.txt 2>/dev/null; then FRAMEWORKS="${FRAMEWORKS}GCP-Storage,"; fi
+  # Azure specific
+  if grep -qi 'azure-servicebus' requirements.txt 2>/dev/null; then FRAMEWORKS="${FRAMEWORKS}Azure-ServiceBus,"; fi
+  if grep -qi 'azure-cosmos' requirements.txt 2>/dev/null; then FRAMEWORKS="${FRAMEWORKS}Azure-CosmosDB,"; fi
 fi
 
 # ── Rust ──
@@ -2186,6 +2351,15 @@ if [ -f "Cargo.toml" ]; then
   grep -q 'tower' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Tower,"
   grep -q 'reqwest' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Reqwest,"
   grep -q 'bevy' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Bevy,"
+  grep -q 'poem' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Poem,"
+  grep -q 'async-graphql' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}async-graphql,"
+  grep -q 'rdkafka' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}rdkafka,"
+  grep -q 'lapin' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Lapin,"
+  grep -q 'deadpool' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Deadpool,"
+  grep -q 'tera\|askama' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Template-Engine,"
+  grep -q 'eframe\|egui' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}egui,"
+  grep -q 'dioxus' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Dioxus,"
+  grep -q 'opentelemetry' Cargo.toml 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}OpenTelemetry,"
 fi
 
 # ── Go ──
@@ -2213,6 +2387,18 @@ if [ -f "go.mod" ]; then
   grep -q 'go.opentelemetry.io' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}OpenTelemetry,"
   grep -q 'nats-io/nats' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}NATS,"
   grep -q 'temporalio/sdk-go\|temporal-sdk-go' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Temporal,"
+  grep -q 'jackc/pgx' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}pgx,"
+  grep -q 'redis/go-redis\|gomodule/redigo' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Go-Redis,"
+  grep -q 'golang-migrate/migrate' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Go-Migrate,"
+  grep -q 'swaggo/swag' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Swag,"
+  grep -q 'hashicorp/consul' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Consul,"
+  grep -q 'hashicorp/vault' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Vault,"
+  grep -q 'elastic/go-elasticsearch' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Elasticsearch,"
+  grep -q 'minio/minio-go' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}MinIO,"
+  grep -q 'segmentio/kafka-go\|Shopify/sarama' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Kafka,"
+  grep -q 'aws/aws-sdk-go' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}AWS-SDK,"
+  grep -q 'cloud.google.com/go' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}GCP-SDK,"
+  grep -q 'Azure/azure-sdk-for-go' go.mod 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Azure-SDK,"
 fi
 
 # ── Java / Kotlin / Scala ──
@@ -2245,6 +2431,21 @@ for _pom in $_POM_FILES; do
   if grep -qi 'spring-graphql' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Spring-GraphQL'; then FRAMEWORKS="${FRAMEWORKS}Spring-GraphQL,"; fi
   if grep -qi 'micrometer' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Micrometer'; then FRAMEWORKS="${FRAMEWORKS}Micrometer,"; fi
   if grep -qi 'opentelemetry' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'OpenTelemetry'; then FRAMEWORKS="${FRAMEWORKS}OpenTelemetry,"; fi
+  if grep -qi 'jooq' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'jOOQ'; then FRAMEWORKS="${FRAMEWORKS}jOOQ,"; fi
+  if grep -qi 'testcontainers' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Testcontainers'; then FRAMEWORKS="${FRAMEWORKS}Testcontainers,"; fi
+  if grep -qi 'resilience4j' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Resilience4j'; then FRAMEWORKS="${FRAMEWORKS}Resilience4j,"; fi
+  if grep -qi 'caffeine' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Caffeine'; then FRAMEWORKS="${FRAMEWORKS}Caffeine,"; fi
+  if grep -qi 'camel' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Camel'; then FRAMEWORKS="${FRAMEWORKS}Apache-Camel,"; fi
+  if grep -qi 'spring-batch' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Spring-Batch'; then FRAMEWORKS="${FRAMEWORKS}Spring-Batch,"; fi
+  if grep -qi 'keycloak' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Keycloak'; then FRAMEWORKS="${FRAMEWORKS}Keycloak,"; fi
+  if grep -qi 'jackson' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Jackson'; then FRAMEWORKS="${FRAMEWORKS}Jackson,"; fi
+  if grep -qi 'spring-data-redis\|jedis\|lettuce' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Redis'; then FRAMEWORKS="${FRAMEWORKS}Redis,"; fi
+  if grep -qiE 'aws-java-sdk|software\.amazon\.awssdk' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'AWS-SDK'; then FRAMEWORKS="${FRAMEWORKS}AWS-SDK,"; fi
+  if grep -qi 'spring-cloud-aws\|aws-lambda-java' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'AWS-Lambda'; then FRAMEWORKS="${FRAMEWORKS}AWS-Lambda-Java,"; fi
+  if grep -qiE 'google-cloud|gcloud|com\.google\.cloud' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'GCP-SDK'; then FRAMEWORKS="${FRAMEWORKS}GCP-SDK,"; fi
+  if grep -qiE 'azure-spring|com\.azure' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Azure-SDK'; then FRAMEWORKS="${FRAMEWORKS}Azure-SDK,"; fi
+  if grep -qi 'auth0' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Auth0'; then FRAMEWORKS="${FRAMEWORKS}Auth0,"; fi
+  if grep -qi 'cognito' "$_pom" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Cognito'; then FRAMEWORKS="${FRAMEWORKS}AWS-Cognito,"; fi
 done
 if [ -f "build.gradle" ] || [ -f "build.gradle.kts" ]; then
   GRADLE_FILE=""; for _f in build.gradle build.gradle.kts; do [ -f "$_f" ] && GRADLE_FILE="$_f" && break; done
@@ -2274,6 +2475,15 @@ if [ -f "Gemfile" ]; then
   grep -q 'sorbet' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Sorbet,"
   grep -q 'dry-' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}dry-rb,"
   grep -q 'graphql-ruby\|graphql' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}GraphQL-Ruby,"
+  grep -q 'hotwire-rails\|turbo-rails' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Hotwire,"
+  grep -q 'stimulus-rails\|stimulus' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Stimulus,"
+  grep -q 'good_job' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}GoodJob,"
+  grep -q 'doorkeeper' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Doorkeeper,"
+  grep -q 'redis' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Redis,"
+  grep -q 'active_model_serializers\|jsonapi-serializer' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}AMS,"
+  grep -q 'rspec' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}RSpec,"
+  grep -q 'omniauth' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}OmniAuth,"
+  grep -q 'aws-sdk' Gemfile 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}AWS-SDK,"
 fi
 
 # ── PHP ──
@@ -2290,6 +2500,17 @@ if [ -f "composer.json" ]; then
   grep -q 'cakephp' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}CakePHP,"
   grep -q 'inertiajs' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Inertia,"
   grep -q 'pestphp' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Pest,"
+  grep -q 'phpunit' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}PHPUnit,"
+  grep -q 'api-platform' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}API-Platform,"
+  grep -q 'laravel/sanctum' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Sanctum,"
+  grep -q 'laravel/horizon' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Horizon,"
+  grep -q 'laravel/socialite' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Socialite,"
+  grep -q 'spatie/' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Spatie,"
+  grep -q 'guzzlehttp' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Guzzle,"
+  grep -q 'league/oauth2' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}OAuth2-Server,"
+  grep -q 'auth0' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Auth0,"
+  grep -q 'aws/aws-sdk-php' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}AWS-SDK,"
+  grep -q 'google/cloud' composer.json 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}GCP-SDK,"
 fi
 # WordPress: also detect by wp-config.php / wp-includes presence
 if ! echo "$FRAMEWORKS" | grep -q 'WordPress'; then
@@ -2316,6 +2537,16 @@ for csproj in $(find . -maxdepth 3 -name '*.csproj' 2>/dev/null | head -5); do
   if grep -q 'FastEndpoints' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'FastEndpoints'; then FRAMEWORKS="${FRAMEWORKS}FastEndpoints,"; fi
   if grep -q 'Rebus' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Rebus'; then FRAMEWORKS="${FRAMEWORKS}Rebus,"; fi
   if grep -qi 'OpenTelemetry' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'OpenTelemetry'; then FRAMEWORKS="${FRAMEWORKS}OpenTelemetry,"; fi
+  if grep -q 'MassTransit' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'MassTransit'; then FRAMEWORKS="${FRAMEWORKS}MassTransit,"; fi
+  if grep -q 'Polly' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Polly'; then FRAMEWORKS="${FRAMEWORKS}Polly,"; fi
+  if grep -qiE 'Swashbuckle|NSwag' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Swagger'; then FRAMEWORKS="${FRAMEWORKS}Swagger,"; fi
+  if grep -q 'StackExchange.Redis' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Redis'; then FRAMEWORKS="${FRAMEWORKS}Redis,"; fi
+  if grep -q 'Wolverine' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Wolverine'; then FRAMEWORKS="${FRAMEWORKS}Wolverine,"; fi
+  if grep -q 'AspNetCore.HealthChecks\|HealthChecks' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'HealthChecks'; then FRAMEWORKS="${FRAMEWORKS}HealthChecks,"; fi
+  if grep -q 'Auth0' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Auth0'; then FRAMEWORKS="${FRAMEWORKS}Auth0,"; fi
+  if grep -q 'AWSSDK\|Amazon\.' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'AWS-SDK'; then FRAMEWORKS="${FRAMEWORKS}AWS-SDK,"; fi
+  if grep -q 'Google.Cloud' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'GCP-SDK'; then FRAMEWORKS="${FRAMEWORKS}GCP-SDK,"; fi
+  if grep -q 'Azure\.' "$csproj" 2>/dev/null && ! echo "$FRAMEWORKS" | grep -q 'Azure-SDK'; then FRAMEWORKS="${FRAMEWORKS}Azure-SDK,"; fi
 done
 
 # ── Elixir ──
@@ -2326,6 +2557,10 @@ if [ -f "mix.exs" ]; then
   grep -q 'oban' mix.exs 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Oban,"
   grep -q 'broadway' mix.exs 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Broadway,"
   grep -q 'commanded' mix.exs 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Commanded,"
+  grep -q 'nx' mix.exs 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Nx-ML,"
+  grep -q 'ash' mix.exs 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Ash,"
+  grep -q 'nerves' mix.exs 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Nerves,"
+  grep -q 'phoenix_live_view' mix.exs 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}LiveView,"
 fi
 
 # ── Scala ──
@@ -2340,6 +2575,8 @@ if [ -f "build.sbt" ]; then
   grep -qi 'slick' build.sbt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Slick,"
   grep -qi 'tapir' build.sbt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Tapir,"
   grep -qi 'circe' build.sbt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Circe,"
+  grep -qi 'flink' build.sbt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Flink,"
+  grep -qi 'caliban' build.sbt 2>/dev/null && FRAMEWORKS="${FRAMEWORKS}Caliban,"
 fi
 
 # ── C / C++ ──
