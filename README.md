@@ -12,7 +12,7 @@
   <a href="https://github.com/y-abs/claude-code-brain-bootstrap/actions/workflows/ci.yml"><img src="https://github.com/y-abs/claude-code-brain-bootstrap/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="#"><img src="https://img.shields.io/badge/Claude_Code-Ready-blueviolet" alt="Claude Code"></a>
   <a href="#"><img src="https://img.shields.io/badge/GitHub_Copilot-Ready-brightgreen" alt="GitHub Copilot"></a>
-  <a href="#"><img src="https://img.shields.io/badge/Any_LLM-Compatible-orange" alt="Any LLM"></a>
+  <a href="#-one-brain-three-ai-assistants--any-model"><img src="https://img.shields.io/badge/Ollama_%7C_LM_Studio-Local_LLMs_Ready-ff6f00" alt="Local LLMs Ready"></a>
   <a href="#"><img src="https://img.shields.io/badge/100+_files-Production_Grade-red" alt="100+ files"></a>
 </p>
 
@@ -71,6 +71,7 @@ That's exactly what this does. You teach it once — it remembers, enforces, and
 | Code reviews vary wildly depending on how you prompt | `/review` runs a consistent 10-point protocol every time — same rigor, zero prompt engineering |
 | Research eats your main context window and you lose track | `research` subagent explores in an **isolated** context — your main window stays clean |
 | Knowledge docs slowly rot as the code evolves | Self-maintenance rule + `/maintain` command detect drift and fix stale references automatically |
+| You're locked into one model — switching to Haiku or a local LLM means reconfiguring everything | Agents auto-select the **most efficient model** per task (opus for security, session model for research) — and **fall back gracefully** to whatever you're running: Haiku, Bedrock, Vertex, Ollama, LM Studio |
 
 **After a few sessions, your AI will know things about your codebase that even some team members don't.**
 
@@ -140,6 +141,7 @@ Brain replaces advisory text with real mechanisms:
 | ⚡ **One command replaces 15 min of prompt engineering** | `/review` runs a 10-point protocol · `/mr` generates descriptions · `/debug` traces root causes — 26 commands, pre-built, consistent |
 | 🔍 **Your entire stack understood in 2 seconds, zero tokens** | `discover.sh` — 25+ languages, 1100+ frameworks, 21 package managers — pure bash, runs before the AI even wakes up |
 | 🤖 **Research doesn't eat your context window** | 5 subagents run in isolated contexts — explore 20+ files, review code, challenge plans — your main conversation stays clean |
+| 🧠 **Best model per task — local LLMs included** | Agents declare their optimal model (opus for security audit, session model for research) and fall back gracefully. Works with Anthropic API, Bedrock, Vertex, **Ollama, LM Studio, any local endpoint**. Protocol auto-scales to model capability |
 | 🤝 **One brain, three AI tools** | Write knowledge once → Claude Code, GitHub Copilot, and any LLM all read it — switch tools without starting over |
 
 > 🎯 **100+ files isn't complexity. It's the minimum architecture where instructions become guarantees.**
@@ -217,7 +219,7 @@ The system is designed to **minimize token cost** while maximizing context — y
 | 📚 **Knowledge docs** | 13 | 8 domain docs (architecture, rules, build, CVE policy, terminal safety, MR templates, plugin config, decisions) · knowledge base guide · full reference guide · 3 worked domain examples |
 | ⚡ **Slash commands** | 26 | `/plan` `/build` `/test` `/lint` `/serve` `/review` `/mr` `/debug` `/diff` `/git` `/deps` `/docker` `/migrate` `/db` `/cleanup` `/maintain` `/checkpoint` `/resume` `/context` `/ticket` `/bootstrap` `/health` `/mcp` `/squad-plan` `/research` `/update-code-index` |
 | 🪝 **Lifecycle hooks** | 14 | Session recovery, config protection, terminal safety gate (3 profiles), commit quality, batch formatting, exit checklist, compaction recovery, identity refresh, permission audit, test reminders |
-| 🤖 **AI subagents** | 5 | **research** (read-only exploration), **reviewer** (10-point MR review), **plan-challenger** (adversarial plan critique), **session-reviewer** (conversation pattern analysis), **security-auditor** (vulnerability scanning) |
+| 🤖 **AI subagents** | 5 | **research** (read-only exploration), **reviewer** (10-point MR review), **plan-challenger** (adversarial plan critique), **session-reviewer** (conversation pattern analysis), **security-auditor** (vulnerability scanning) — each declares its optimal model, falls back to session model for local/alternative providers |
 | 🎓 **Skills** | 5 | TDD discipline (auto-loads on test files), root-cause trace, changelog generation, session safety guards, cross-layer consistency check |
 | 🔧 **Brain scripts** | 12 | `discover.sh` (3800-line stack detector), `populate-templates.sh`, `post-bootstrap-validate.sh`, `validate.sh`, `canary-check.sh`, `phase2-verify.sh`, `toggle-claude-mem.sh`, `generate-service-claudes.sh`, `generate-copilot-docs.sh`, `setup-plugins.sh`, `check-creative-work.sh`, `tdd-loop-check.sh` — all in `claude/scripts/` |
 | 🤝 **GitHub Copilot config** | 8 | Root instructions, 3 scoped instruction files (+1 template), 2 reusable prompts (+1 template) |
@@ -227,9 +229,9 @@ The system is designed to **minimize token cost** while maximizing context — y
 
 ---
 
-## 🔀 One Brain, Three AI Assistants
+## 🔀 One Brain, Three AI Assistants — Any Model
 
-The knowledge layer (`claude/*.md`) is the **single source of truth**. Each tool gets the depth it can handle:
+The knowledge layer (`claude/*.md`) is the **single source of truth**. Each tool gets the depth it can handle — and agents auto-select the most efficient model per task, falling back to your session model when unavailable (Ollama, LM Studio, any local LLM):
 
 ```
               claude/*.md  (shared knowledge)
@@ -365,6 +367,18 @@ Nope. The bootstrap detects existing configurations and enters **upgrade mode** 
 <summary><strong>💰 How much does this cost in tokens?</strong></summary>
 
 The always-on layer (`CLAUDE.md` + imported rules) costs ~3-4K tokens per conversation. Path-scoped rules add ~200-400 tokens each, only when triggered. Full domain docs are ~1-2K each, loaded on-demand. The three-tier architecture ensures you're not paying for context you don't need.
+</details>
+
+<details>
+<summary><strong>🧠 Does this work with smaller models, local LLMs, or third-party providers?</strong></summary>
+
+Yes — and it's designed for it. The model strategy has two layers:
+
+1. **Best choice by default:** Quality-critical agents (`reviewer`, `plan-challenger`, `security-auditor`) declare `model: opus` for maximum quality. Lightweight agents (`research`, `session-reviewer`) use the session model for efficiency — a smaller model is *faster and cheaper* for mechanical tasks like grep and pattern matching.
+
+2. **Universal compatibility:** When the declared model isn't available (local LLM via Ollama/LM Studio, alternative provider, Haiku-only plan), agents **fall back to the session model** automatically. Everything still works — the protocol auto-scales to model capability (full 10-point review on Opus, streamlined on smaller models).
+
+The three-layer token strategy (always-on ~3-4K, auto-loaded ~200-400, on-demand ~1-2K) keeps context lean enough for smaller context windows.
 </details>
 
 <details>

@@ -4,6 +4,12 @@
 # Usage: bash claude/scripts/setup-plugins.sh [project-dir]
 # Safe: exits cleanly if claude CLI not available (non-Claude Code environments)
 
+# ─── Source guard — prevent env corruption if sourced ─────────────
+if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+  echo "❌ setup-plugins.sh must be EXECUTED, not sourced." >&2
+  return 1 2>/dev/null || exit 1
+fi
+
 set -eo pipefail
 PROJECT_DIR="${1:-.}"
 cd "$PROJECT_DIR"

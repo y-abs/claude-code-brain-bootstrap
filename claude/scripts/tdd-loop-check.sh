@@ -16,6 +16,12 @@
 #   4b. Failures (exit 2) → stderr fed back to Claude → loop continues
 #   5. Claude sees failures, fixes, Stop hook runs again → repeat until green
 
+# ─── Source guard — prevent env corruption if sourced ─────────────
+if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+  echo "❌ tdd-loop-check.sh must be EXECUTED, not sourced." >&2
+  return 1 2>/dev/null || exit 1
+fi
+
 MAX_ITERATIONS=25
 ITERATION_FILE='.claude/.tdd-iteration-count'
 mkdir -p .claude

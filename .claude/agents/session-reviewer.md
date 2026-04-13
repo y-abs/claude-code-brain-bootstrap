@@ -5,7 +5,7 @@ description: >
   and problematic tool usage. Feeds findings to CLAUDE_ERRORS.md or lessons.md.
   Use after long sessions or when you want to extract learnings.
 allowed-tools: Read, Grep, Glob, Bash
-model: sonnet
+# model: not set — inherits session model. Works with any Claude tier.
 color: magenta
 ---
 

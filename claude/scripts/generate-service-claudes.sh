@@ -4,6 +4,12 @@
 # Scans common monorepo service directories and creates minimal CLAUDE.md stubs.
 # Supports 2-level nesting: if a child has no manifest, its grandchildren are scanned.
 
+# ─── Source guard — prevent env corruption if sourced ─────────────
+if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+  echo "❌ generate-service-claudes.sh must be EXECUTED, not sourced." >&2
+  return 1 2>/dev/null || exit 1
+fi
+
 set -euo pipefail
 
 ROOT="${1:-.}"

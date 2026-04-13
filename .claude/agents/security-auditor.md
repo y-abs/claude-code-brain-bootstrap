@@ -5,6 +5,7 @@ description: >
   dependency risks, and compliance issues. Use before deployment or when
   touching auth/crypto/data-handling code.
 allowed-tools: Read, Grep, Glob, Bash
+# model: declares intent — falls back to session model if unavailable (model-agnostic)
 model: opus
 effort: max
 color: red

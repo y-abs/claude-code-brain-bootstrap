@@ -35,7 +35,7 @@
 
 ## Token Cost Strategy
 
-- **Subagents** for exploration: `research` + `reviewer` + `plan-challenger` + `session-reviewer` + `security-auditor` run in isolated context — main stays clean.
+- **Subagents** for exploration: `research` + `reviewer` + `plan-challenger` + `session-reviewer` + `security-auditor` run in isolated context — main stays clean. Quality-critical agents (reviewer, plan-challenger, security-auditor) declare their optimal model; lightweight agents (research, session-reviewer) inherit the session model for efficiency.
 - **Effort levels**: quick commands (`/build`, `/lint`, `/test`) use `effort: low`; research (`/plan`, `/review`) use `effort: high`.
 - **Compact-safe hooks**: `SessionStart` hooks inject project context on cold starts and after compaction.
 - **Read domain docs on-demand** from the lookup table, not preemptively.
@@ -44,6 +44,30 @@
 - **`!command` pre-fetching** on 6 commands — injects git/task data before Claude starts, eliminating setup tool calls.
 - **`disable-model-invocation: true`** on side-effect commands — prevents accidental skill loading into context budget.
 - **Short descriptions** — all command descriptions ≤127 chars. Front-loaded key use cases.
+
+## Model Awareness
+
+Agents declare their **optimal model** for maximum quality — and fall back to the session model when unavailable. This guarantees the best choice when multiple models are accessible (Anthropic API, Bedrock, Vertex), and full compatibility when only one model exists (Ollama, LM Studio, any local LLM).
+
+| Agent | Declared model | Why |
+|:------|:--------------:|:----|
+| `research` | _(session)_ | Mechanical (grep, read, summarize) — lighter model = faster + cheaper |
+| `reviewer` | opus | Deep reasoning, 10-point protocol — a missed bug costs 100× the token savings |
+| `plan-challenger` | opus | Adversarial reasoning — subtle flaws require highest capability |
+| `session-reviewer` | _(session)_ | Pattern matching in text — any model handles this |
+| `security-auditor` | opus | Security demands highest capability — no compromise |
+
+**Protocol auto-scales to model capability:**
+
+| Capability | Full model (Opus/Sonnet) | Smaller/local model (Haiku, Ollama…) |
+|:-----------|:------------------------|:-------------------------------------|
+| Review protocol | Full 10-point checklist | Focus on items 1-4 (ticket, diff, cross-layer, enums) |
+| Subagents | Use freely — isolated context | Prefer inline research to save overhead |
+| Meta-cognition | Full sub-question decomposition | Direct approach, skip confidence scoring |
+| Exit checklist | All 6 gates | Gates 1-3 only (corrections, knowledge, progress) |
+| Domain docs | On-demand from lookup table | Read only the single most relevant doc |
+
+**For smaller/local models:** Prioritize correctness over protocol completeness. Skip ceremony, keep substance.
 
 ## Meta-Cognition
 

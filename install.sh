@@ -14,6 +14,14 @@
 #   - Adds missing Brain components (commands, hooks, agents, skills, rules)
 #   - Preserves user-only files even in infrastructure directories
 
+# ─── Source guard — prevent env corruption if sourced ─────────────
+if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+  echo "❌ install.sh must be EXECUTED, not sourced." >&2
+  echo "   Wrong:  source install.sh /path/to/repo" >&2
+  echo "   Right:  bash install.sh /path/to/repo" >&2
+  return 1 2>/dev/null || exit 1
+fi
+
 set -euo pipefail
 
 # ── Resolve paths ──────────────────────────────────────────────────

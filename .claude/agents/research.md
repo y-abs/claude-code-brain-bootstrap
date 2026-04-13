@@ -16,7 +16,7 @@ allowed-tools:
   - Bash(sort *)
   - Bash(awk *)
   - Bash(sed *)
-model: sonnet
+# model: not set — inherits session model. Works with any Claude tier.
 effort: low
 maxTurns: 20
 memory: project
