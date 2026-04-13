@@ -124,6 +124,20 @@ The bootstrap is **adaptive** — it runs 8 domain-detection greps and automatic
 
 ---
 
+## 🖥️ Platform Support
+
+| Platform | Status | Shell | Notes |
+|:---------|:-------|:------|:------|
+| **Linux** | ✅ Native | bash 4+ | Zero configuration needed |
+| **macOS** | ✅ Native | bash 3.2+ (system) / bash 5 (Homebrew) | `discover.sh` + `populate-templates.sh` require Bash 4+ (`brew install bash`) — all other scripts work with system bash |
+| **Windows (WSL2)** | ✅ Recommended | bash 5 (Ubuntu) | Full Linux environment — everything works natively |
+| **Windows (Git Bash)** | ✅ Supported | bash 4.4+ (MSYS2) | Works with default Git for Windows installation |
+| **Windows (CMD/PowerShell)** | ❌ Not supported | — | Claude Code itself requires a Unix shell |
+
+> **Required tools:** `git`, `bash` ≥ 3.2 (≥ 4 for `/bootstrap`). **Recommended:** `jq` (auto-merges settings).
+
+---
+
 ## 🧬 From Instructions to Guarantees
 
 Every AI coding tool reads instructions. None of them can enforce those instructions on themselves.
@@ -166,19 +180,6 @@ Your stack not listed? [It takes one PR to add it](#-contributing). 🙌
 
 ---
 
-## 🖥️ Platform Support
-
-| Platform | Status | Shell | Notes |
-|:---------|:-------|:------|:------|
-| **Linux** | ✅ Native | bash 4+ | Zero configuration needed |
-| **macOS** | ✅ Native | bash 3.2+ (system) / bash 5 (Homebrew) | `discover.sh` + `populate-templates.sh` require Bash 4+ (`brew install bash`) — all other scripts work with system bash |
-| **Windows (WSL2)** | ✅ Recommended | bash 5 (Ubuntu) | Full Linux environment — everything works natively |
-| **Windows (Git Bash)** | ✅ Supported | bash 4.4+ (MSYS2) | Works with default Git for Windows installation |
-| **Windows (CMD/PowerShell)** | ❌ Not supported | — | Claude Code itself requires a Unix shell |
-
-> **Required tools:** `git`, `bash` ≥ 3.2 (≥ 4 for `/bootstrap`). **Recommended:** `jq` (auto-merges settings).
-
----
 
 ## 🧠 How It Works Under the Hood
 
@@ -373,6 +374,18 @@ Three worked examples in `claude/_examples/` — API domain, database domain, me
 <summary><strong>🌍 Does this work with languages other than JavaScript?</strong></summary>
 
 Yes! The discovery engine detects **25+ languages**: TypeScript, JavaScript, Python, Go, Rust, Java, Kotlin, Scala, Groovy, Ruby, PHP, C#, C, C++, Objective-C, Swift, Dart, Shell/Bash, Elixir, Lua, Zig, Julia, Perl, OCaml, F#, Clojure, R, and more. The knowledge docs and golden rules are language-agnostic. Stack-specific details (build commands, test runner, formatter) are auto-detected and populated for your language automatically.
+</details>
+
+<details>
+<summary><strong>🖥️ Does this work on macOS / Windows?</strong></summary>
+
+Yes — Linux, macOS, and Windows (WSL2 / Git Bash) are all supported. Three layers of cross-platform hardening ensure it:
+
+1. **`_platform.sh`** — portable shell helper library used by all scripts. Wraps GNU-only commands (`sed -i`, `readlink -f`, `mktemp -d`, `date`) with platform-safe alternatives that work on both GNU and BSD (macOS) systems.
+2. **`portability-lint.sh`** — CI check that scans every `.sh` file for 9 known GNU-only patterns and fails the build if any slip through (e.g., `sed -i ''` without platform guard, `readlink -f` without fallback).
+3. **`integration-test.sh`** — 17 assertions covering FRESH install, UPGRADE, `--check` mode, and 3 guard scenarios, run on all 3 platforms in CI.
+
+macOS note: `discover.sh` and `populate-templates.sh` require Bash 4+ (`brew install bash`) — all other scripts work with the system bash 3.2. Run `bash install.sh --check` to verify your environment before installing.
 </details>
 
 <details>
