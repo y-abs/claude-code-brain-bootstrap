@@ -5,6 +5,12 @@
 # Usage: bash claude/scripts/check-creative-work.sh [project-dir]
 # Exit: 0 = all critical pass, 1 = failures found
 
+# ─── Source guard — prevent env corruption if sourced ─────────────
+if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+  echo "❌ check-creative-work.sh must be EXECUTED, not sourced." >&2
+  return 1 2>/dev/null || exit 1
+fi
+
 set -eo pipefail
 PROJECT_DIR="${1:-.}"
 cd "$PROJECT_DIR"

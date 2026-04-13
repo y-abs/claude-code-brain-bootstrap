@@ -4,6 +4,12 @@
 # Usage: bash claude/scripts/generate-copilot-docs.sh [root_dir]
 # Safe to re-run: only creates missing files, never overwrites existing.
 
+# ─── Source guard — prevent env corruption if sourced ─────────────
+if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+  echo "❌ generate-copilot-docs.sh must be EXECUTED, not sourced." >&2
+  return 1 2>/dev/null || exit 1
+fi
+
 set -euo pipefail
 
 ROOT="${1:-.}"

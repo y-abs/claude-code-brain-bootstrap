@@ -5,6 +5,12 @@
 # Leaves creative placeholders (architecture, domain docs) for AI to handle.
 # Exit: 0 on success, 1 on error
 
+# ─── Source guard — prevent env corruption if sourced ─────────────
+if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+  echo "❌ populate-templates.sh must be EXECUTED, not sourced." >&2
+  return 1 2>/dev/null || exit 1
+fi
+
 # ─── Bash 4+ required (associative arrays — declare -A) ──────────
 if [ "${BASH_VERSINFO[0]:-0}" -lt 4 ]; then
   echo "❌ bash 4+ required (found: ${BASH_VERSION:-unknown})" >&2

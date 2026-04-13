@@ -4,6 +4,20 @@
 # Outputs KEY=VALUE pairs to stdout — consumable by populate-templates.sh and AI.
 # Usage: bash claude/scripts/discover.sh [project-dir]
 # Exit: Always 0 (informational output only)
+#
+# SAFETY: This script MUST be executed, never sourced. It changes CWD, sets
+# pipefail, and creates 50+ variables. A source guard prevents env corruption.
+
+# ─── Source guard — MUST be first (before any state changes) ──────
+# Detects if the script is being sourced instead of executed as a subprocess.
+# If sourced, all variable assignments, cd, set -o pipefail would pollute
+# the user's shell environment. This is a hard block, not a warning.
+if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+  echo "❌ discover.sh must be EXECUTED, not sourced." >&2
+  echo "   Wrong:  source claude/scripts/discover.sh" >&2
+  echo "   Right:  bash claude/scripts/discover.sh [project-dir]" >&2
+  return 1 2>/dev/null || exit 1
+fi
 
 # ─── Bash 4+ required (associative arrays — declare -A) ──────────
 if [ "${BASH_VERSINFO[0]:-0}" -lt 4 ]; then

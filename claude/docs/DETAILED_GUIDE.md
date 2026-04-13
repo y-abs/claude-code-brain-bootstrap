@@ -817,7 +817,7 @@ Three worked examples in `claude/_examples/` — study them, then delete them.
 <summary><strong>🤖 Adding a new subagent</strong></summary>
 
 1. Create `.claude/agents/<name>.md` with YAML frontmatter
-2. Set `model:` (sonnet for speed, opus for depth)
+2. Set `model:` to the optimal model for the task (e.g., `opus` for security/review). Omit it for lightweight agents (research, pattern matching) — they inherit the session model. Agents fall back gracefully when the declared model is unavailable (local LLMs, alternative providers).
 3. Keep `allowed-tools:` minimal — read-only for research agents
 4. Set `maxTurns:` to prevent runaway (recommend: 20-30)
 5. Include anti-hallucination protocol (grep before claiming)

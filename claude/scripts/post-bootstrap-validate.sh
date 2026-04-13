@@ -5,6 +5,12 @@
 # Usage: bash claude/scripts/post-bootstrap-validate.sh [project-dir]
 # Exit: 0 if healthy, 1 if critical failures remain after auto-fix
 
+# ─── Source guard — prevent env corruption if sourced ─────────────
+if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+  echo "❌ post-bootstrap-validate.sh must be EXECUTED, not sourced." >&2
+  return 1 2>/dev/null || exit 1
+fi
+
 set -eo pipefail
 PROJECT_DIR="${1:-.}"
 cd "$PROJECT_DIR"

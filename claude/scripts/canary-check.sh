@@ -4,6 +4,12 @@
 # Run periodically, via CI, or after bootstrap to verify configuration integrity.
 # Exit code: 0 = all pass, 1 = failures found
 
+# ─── Source guard — prevent env corruption if sourced ─────────────
+if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+  echo "❌ canary-check.sh must be EXECUTED, not sourced." >&2
+  return 1 2>/dev/null || exit 1
+fi
+
 set -eo pipefail
 
 PROJECT_DIR="${1:-.}"

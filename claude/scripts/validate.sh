@@ -3,6 +3,12 @@
 # Run: bash claude/scripts/validate.sh
 # Exit: 0 if all checks pass, 1 if any fail
 
+# ─── Source guard — prevent env corruption if sourced ─────────────
+if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+  echo "❌ validate.sh must be EXECUTED, not sourced." >&2
+  return 1 2>/dev/null || exit 1
+fi
+
 set -euo pipefail
 
 PASS=0

@@ -162,13 +162,17 @@ Task about [domain]?   → 📚 Read claude/[domain].md
 
 ### 🤖 Subagents (`.claude/agents/`)
 
-| Agent | Description | Model | Tools |
-|-------|-------------|-------|-------|
-| `research` | 🔍 Deep codebase exploration | sonnet | Read-only |
+Agents declare their **optimal model** for best results — but gracefully fall back to the session model when it's unavailable. This means they work with **any provider** (Anthropic API, Bedrock, Vertex) and **any local model** (Ollama, LM Studio, or any OpenAI-compatible endpoint).
+
+| Agent | Description | Optimal | Tools |
+|-------|-------------|:-------:|-------|
+| `research` | 🔍 Deep codebase exploration | session | Read-only |
 | `reviewer` | 🔍 Expert MR code review (10-point protocol) | opus | Read-only + lint |
 | `plan-challenger` | ⚔️ Adversarial plan review | opus | Read-only |
-| `session-reviewer` | 📊 Conversation pattern analysis — detect corrections, frustrations, recurring issues | sonnet | Read-only |
+| `session-reviewer` | 📊 Conversation pattern analysis — detect corrections, frustrations, recurring issues | session | Read-only |
 | `security-auditor` | 🔐 Security scanning — secrets, auth gaps, injection, CVEs, DEPLOY/HOLD/BLOCK verdict | opus | Read-only |
+
+> **"Optimal"** = the model set in the agent file for maximum quality. **"session"** = inherits whatever model you're running — Haiku, a local LLM, anything.
 
 ### 🎓 Skills (`.claude/skills/`)
 

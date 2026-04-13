@@ -10,6 +10,12 @@
 # Why: claude-mem consumes significant API quota via background observer sessions
 # (~48% of quota in a 45-min session). Disable during heavy batch work or low quota.
 
+# ─── Source guard — prevent env corruption if sourced ─────────────
+if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+  echo "❌ toggle-claude-mem.sh must be EXECUTED, not sourced." >&2
+  return 1 2>/dev/null || exit 1
+fi
+
 set -euo pipefail
 
 PLUGIN="claude-mem@thedotmack"

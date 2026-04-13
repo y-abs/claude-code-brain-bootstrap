@@ -15,6 +15,7 @@ allowed-tools:
   - Bash(git *)
   - Bash(sort *)
   - Bash(diff *)
+# model: declares intent — falls back to session model if unavailable (model-agnostic)
 model: opus
 effort: high
 maxTurns: 30

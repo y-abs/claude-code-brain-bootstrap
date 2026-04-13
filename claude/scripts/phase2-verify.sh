@@ -4,6 +4,12 @@
 # Usage: bash claude/scripts/phase2-verify.sh [project-dir]
 # Exit:  0 = all critical checks pass, 1 = data loss detected (restore from backup)
 
+# ─── Source guard — prevent env corruption if sourced ─────────────
+if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+  echo "❌ phase2-verify.sh must be EXECUTED, not sourced." >&2
+  return 1 2>/dev/null || exit 1
+fi
+
 PROJECT_DIR="${1:-.}"
 ERRORS=0
 ISSUES=""
