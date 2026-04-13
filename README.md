@@ -86,6 +86,8 @@ bash /tmp/brain/install.sh your-repo/
 rm -rf /tmp/brain
 ```
 
+> 🔍 **Pre-flight check:** `bash /tmp/brain/install.sh --check` — verifies git, bash version, and optional `jq` before touching your repo. Runs in 1 second, no side effects.
+
 The install script **auto-detects** whether your repo is a fresh install or an upgrade:
 
 | Scenario | What happens |
@@ -119,6 +121,20 @@ The bootstrap is **adaptive** — it runs 8 domain-detection greps and automatic
 - **Database / CI / frontend detected** → MCP server suggestions added to the report
 
 > 💡 **Already have a Claude Code config?** Bootstrap detects it and enters **upgrade mode** — your domain docs, lessons, tasks, and customizations are preserved. Only missing pieces are added.
+
+---
+
+## 🖥️ Platform Support
+
+| Platform | Status | Shell | Notes |
+|:---------|:-------|:------|:------|
+| **Linux** | ✅ Native | bash 4+ | Zero configuration needed |
+| **macOS** | ✅ Native | bash 3.2+ (system) / bash 5 (Homebrew) | `discover.sh` + `populate-templates.sh` require Bash 4+ (`brew install bash`) — all other scripts work with system bash |
+| **Windows (WSL2)** | ✅ Recommended | bash 5 (Ubuntu) | Full Linux environment — everything works natively |
+| **Windows (Git Bash)** | ✅ Supported | bash 4.4+ (MSYS2) | Works with default Git for Windows installation |
+| **Windows (CMD/PowerShell)** | ❌ Not supported | — | Claude Code itself requires a Unix shell |
+
+> **Required tools:** `git`, `bash` ≥ 3.2 (≥ 4 for `/bootstrap`). **Recommended:** `jq` (auto-merges settings).
 
 ---
 
@@ -220,7 +236,7 @@ The system is designed to **minimize token cost** while maximizing context — y
 | 🪝 **Lifecycle hooks** | 14 | Session recovery, config protection, terminal safety gate (3 profiles), commit quality, batch formatting, exit checklist, compaction recovery, identity refresh, permission audit, test reminders |
 | 🤖 **AI subagents** | 5 | **research** (read-only exploration), **reviewer** (10-point MR review), **plan-challenger** (adversarial plan critique), **session-reviewer** (conversation pattern analysis), **security-auditor** (vulnerability scanning) — each declares its optimal model, falls back to session model for local/alternative providers |
 | 🎓 **Skills** | 5 | TDD discipline (auto-loads on test files), root-cause trace, changelog generation, session safety guards, cross-layer consistency check |
-| 🔧 **Brain scripts** | 12 | `discover.sh` (3800-line stack detector), `populate-templates.sh`, `post-bootstrap-validate.sh`, `validate.sh`, `canary-check.sh`, `phase2-verify.sh`, `toggle-claude-mem.sh`, `generate-service-claudes.sh`, `generate-copilot-docs.sh`, `setup-plugins.sh`, `check-creative-work.sh`, `tdd-loop-check.sh` — all in `claude/scripts/` |
+| 🔧 **Brain scripts** | 15 | `discover.sh` (3800-line stack detector), `populate-templates.sh`, `post-bootstrap-validate.sh`, `validate.sh`, `canary-check.sh`, `_platform.sh` (portable shell helpers — Linux/macOS/Windows), `portability-lint.sh` (GNU-only pattern detector), `integration-test.sh` (17 end-to-end tests, 3 platforms), `phase2-verify.sh`, `toggle-claude-mem.sh`, `generate-service-claudes.sh`, `generate-copilot-docs.sh`, `setup-plugins.sh`, `check-creative-work.sh`, `tdd-loop-check.sh` — all in `claude/scripts/` |
 | 🤝 **GitHub Copilot config** | 8 | Root instructions, 3 scoped instruction files (+1 template), 2 reusable prompts (+1 template) |
 | 📏 **Path-scoped rules** | 13 | Terminal safety, self-maintenance, quality gates, memory policy, domain learning, practice capture, agent orchestration, language-specific rules, template for adding your own |
 | 🔌 **Plugins** | 1 | **claude-mem** (persistent cross-session memory) — auto-installed, disabled by default (quota protection) |
@@ -419,7 +435,7 @@ All contributions must be **domain-agnostic** (no project-specific content).
 
 🐛 **Found a bug?** → [Open an issue](https://github.com/y-abs/claude-code-brain-bootstrap/issues/new/choose) — structured templates for bug reports and feature requests.
 
-🔄 **CI runs 3 checks on every PR** — template validation (120 checks), ShellCheck on all scripts, and documentation link verification. All must pass to merge.
+🔄 **CI runs 5 checks on every PR** — template validation (120 checks), ShellCheck on all scripts, portability lint (GNU-only pattern detector), cross-platform validation (Linux / macOS / Windows), and integration tests (FRESH + UPGRADE + 4 guard scenarios, all 3 platforms). All must pass to merge.
 
 > 🚀 **Maintainers:** See [CONTRIBUTING.md — Release Process](CONTRIBUTING.md#-release-process-maintainers-only) for the full step-by-step release workflow (PR → tag → GitHub Release).
 

@@ -37,7 +37,7 @@
   - [📏 Path-Scoped Rules — `.claude/rules/`](#-path-scoped-rules--clauderules-13-files)
   - [🤝 GitHub Copilot — `.github/`](#-github-copilot--github-8-files)
   - [🧠 Memory — `claude/tasks/`](#-memory--claudetasks-5-files)
-  - [🔧 Scripts — `claude/scripts/`](#-scripts--claudescripts-12-files)
+  - [🔧 Scripts — `claude/scripts/`](#-scripts--claudescripts-15-files)
 - [🔬 Deep Dives](#-deep-dives)
   - [📂 The 10 Configuration Categories](#-the-10-configuration-categories)
   - [🔄 Bootstrap: How It Actually Works](#-bootstrap-how-it-actually-works)
@@ -374,7 +374,7 @@ The AI's persistent memory across sessions:
 | `.gitkeep` | Ensures directory is tracked in git |
 | `.gitignore` | Excludes temp files (counters, accumulators) from git tracking |
 
-### 🔧 Scripts — `claude/scripts/` (12 files)
+### 🔧 Scripts — `claude/scripts/` (15 files)
 
 The automation backbone — pure bash, zero token cost:
 
@@ -392,6 +392,9 @@ The automation backbone — pure bash, zero token cost:
 | 🔌 `setup-plugins.sh` | All-in-one bootstrap plugin management — install, disable, verify, update CLAUDE.md | ~5s |
 | ✅ `check-creative-work.sh` | Creative work gate check — architecture, placeholders, domain docs, IDE section | ~1s |
 | 🔁 `tdd-loop-check.sh` | TDD enforcement Stop hook — fails the loop if tests were skipped after code changes | ~1s |
+| 🖥️ `_platform.sh` | Portable shell helper library — detects `BRAIN_PLATFORM`, provides `sed_inplace()`, `safe_pgrep()`, `require_tool()`, `supports_unicode()` | instant |
+| 🔍 `portability-lint.sh` | GNU-only pattern detector — catches `sed -i` without `''`, `date -d`, `readlink -f`, `mktemp -d --suffix`, `grep -P` and more. Extensible: add patterns to the table at the top | ~1s |
+| 🧪 `integration-test.sh` | 17 end-to-end tests — FRESH install, UPGRADE merge, and 4 guard scenarios (non-git, subdirectory, non-existent dir, self-bootstrap). Runs on all 3 platforms in CI | ~10s |
 
 ---
 
@@ -1024,7 +1027,115 @@ Brain replaces advisory text with real mechanisms:
 | 🔌 Plugins | 1 |
 | 📋 Exit checklist items | 6 |
 | 🔍 Domain-detection greps | 8 |
-| 🐚 Shell scripts (ShellCheck CI) | 28 |
+| 🐚 Shell scripts (ShellCheck CI) | 31 |
+
+---
+
+## 🖥️ Cross-Platform Compatibility
+
+Brain Bootstrap works on **Linux, macOS, and Windows** (WSL2 / Git Bash).
+
+### Bash Version Requirements
+
+| Scripts | Minimum Bash | Reason |
+|:--------|:-------------|:-------|
+| `discover.sh`, `populate-templates.sh` | **4.0+** | Associative arrays (`declare -A`) |
+| All other scripts (25+) | **3.2+** | Standard bash features only |
+
+> macOS ships with Bash 3.2. Install Bash 5 via `brew install bash` for full `/bootstrap` support. All hook scripts work with system bash.
+
+### How `_platform.sh` Works
+
+The `claude/scripts/_platform.sh` library is sourced by scripts that need platform-specific behavior:
+
+- **`BRAIN_PLATFORM`** — detected as `linux`, `macos`, or `windows` (MINGW/MSYS/Cygwin)
+- **`sed_inplace()`** — portable `sed -i` (BSD on macOS requires `sed -i ''`, GNU uses `sed -i`)
+- **`safe_pgrep()`** — falls back to `ps aux | awk` when `pgrep` is unavailable (Git Bash)
+- **`require_tool()`** — checks for a tool and prints platform-specific install instructions
+- **`supports_unicode()`** — detects emoji support for graceful degradation
+- **`PASS_SYM` / `FAIL_SYM` / `WARN_SYM`** — `✅`/`❌`/`⚠️` or `[OK]`/`[FAIL]`/`[WARN]`
+
+### CI Coverage
+
+The GitHub Actions CI runs on all 3 platforms:
+- **ubuntu-latest** — primary validation + ShellCheck + portability lint
+- **macos-latest** — catches BSD tool differences
+- **windows-latest** — catches Git Bash / MSYS2 differences
+
+### Known Limitations
+
+- **Windows CMD/PowerShell** is not supported — Claude Code itself requires a Unix shell
+- **`discover.sh`** and **`populate-templates.sh`** require Bash 4+ (associative arrays). All other scripts work with Bash 3.2+
+- **`jq`** is recommended but optional — without it, `settings.json` permission merging is deferred to the AI's `/bootstrap` Phase 2
+
+### Pre-flight Check (`--check` mode)
+
+Before installing, verify your environment in 1 second with no side effects:
+
+```bash
+bash /tmp/brain/install.sh --check
+```
+
+**What it checks:**
+- `BRAIN_PLATFORM` — detected platform (linux / macos / windows)
+- `git` availability — required for repo detection
+- `jq` availability — optional; merges `settings.json` permissions immediately
+- `bash` version — warns if <4 (Bash 4+ needed for `discover.sh` / `populate-templates.sh`)
+
+Example output:
+```
+🔍 Brain Bootstrap — Pre-flight Check
+
+  Platform: macos
+  ✅ git git version 2.44.0
+  ✅ jq jq-1.7.1
+  ⚠️  bash 3.2.57(1)-release (<4 — discover.sh and populate-templates.sh need Bash 4+)
+     macOS: brew install bash
+```
+
+### Portability Lint (`portability-lint.sh`)
+
+The portability linter catches GNU-only shell patterns that fail on macOS (BSD) or Windows (Git Bash):
+
+```bash
+bash claude/scripts/portability-lint.sh [directory]   # defaults to claude/scripts/
+```
+
+**Patterns detected:**
+
+| Pattern | Problem | Portable alternative |
+|:--------|:--------|:--------------------|
+| `sed -i` (no `''`) | GNU-only; BSD `sed` requires `sed -i ''` | Use `sed_inplace()` from `_platform.sh` |
+| `date -d` | GNU-only; BSD `date` uses `-j -f` | Use `date -r` for timestamps or `python3` |
+| `readlink -f` | GNU-only; macOS lacks `-f` | Use `realpath` or `python3 -c "import os,sys; print(os.path.realpath(sys.argv[1]))"` |
+| `mktemp -d --suffix` | GNU-only; BSD `mktemp` ignores `--suffix` | Drop `--suffix`, or use temp dir + rename |
+| `grep -P` | GNU-only (PCRE); macOS `grep` is BSD | Use `grep -E` with POSIX ERE instead |
+
+The linter is **extensible** — add new patterns to the table at the top of the script.
+
+### Integration Tests (`integration-test.sh`)
+
+17 end-to-end tests exercise the full `install.sh` flow across all 3 platforms in CI:
+
+```bash
+bash claude/scripts/integration-test.sh
+```
+
+**Test scenarios:**
+
+| Category | Tests | What they verify |
+|:---------|:-----:|:----------------|
+| FRESH install | 5 | Copies all files, sets executable bits, correct FRESH output message |
+| UPGRADE mode | 4 | Detects existing config, enters UPGRADE, preserves user files |
+| Guard: non-git dir | 2 | Rejects non-git directories with clear error |
+| Guard: subdirectory | 2 | Rejects install into a subdirectory (not repo root) |
+| Guard: non-existent dir | 2 | Rejects missing target directories |
+| Guard: self-bootstrap | 2 | Rejects installing into the template repo itself |
+
+**Cross-platform correctness notes:**
+- **macOS symlinks** — `/var` → `/private/var`: fixed by using `--show-cdup` (empty at root) instead of `--show-toplevel` path comparison
+- **Windows MSYS paths** — `mktemp -d` gives `/tmp/...` but `--show-toplevel` returns `C:/Users/...`: same `--show-cdup` fix
+- **Bash 3.2 empty array** — `"${arr[@]}"` with `set -u` crashes on bash 3.2 (macOS system shell): fixed with `${arr[@]+"${arr[@]}"}` guard
 
 ---
 
@@ -1051,17 +1162,19 @@ All contributions must be **domain-agnostic** — no project-specific content.
 
 ### 🔄 CI Pipeline
 
-Every push to `main` and every pull request runs **3 automated checks** via GitHub Actions:
+Every push to `main` and every pull request runs **5 automated checks** via GitHub Actions:
 
-| Job | What it verifies | Why it matters |
-|:----|:----------------|:---------------|
-| ✅ **Template Validation** | Runs `validate.sh` — 120 checks for file existence, hook executability, JSON validity, placeholder integrity, domain-free verification | If this fails, the template is broken. This is the test suite. |
-| 🐚 **ShellCheck** | Lints all 28 `.sh` scripts (hooks, discover.sh, utilities) at `warning` severity | These scripts run on **end-user machines** during Claude Code sessions. A bug in `terminal-safety-gate.sh` silently skips protection. ShellCheck catches it before users do. |
-| 🔗 **Documentation Links** | Checks all internal/relative links across every `.md` file (offline, including `#fragment` anchors) | README → CONTRIBUTING → DETAILED_GUIDE have 20+ cross-references. A broken link in the public README means a confused first-time user. |
+| Job | Platforms | What it verifies | Why it matters |
+|:----|:---------:|:----------------|:---------------|
+| ✅ **Template Validation** | Linux | Runs `validate.sh` — 120 checks for file existence, hook executability, JSON validity, placeholder integrity, domain-free verification | If this fails, the template is broken. This is the test suite. |
+| 🐚 **ShellCheck** | Linux | Lints all 31 `.sh` scripts (hooks, discover.sh, utilities, platform helpers) at `warning` severity | These scripts run on **end-user machines** during Claude Code sessions. A bug in `terminal-safety-gate.sh` silently skips protection. ShellCheck catches it before users do. |
+| 🔗 **Documentation Links** | Linux | Checks all internal/relative links across every `.md` file (offline, including `#fragment` anchors) | README → CONTRIBUTING → DETAILED_GUIDE have 20+ cross-references. A broken link in the public README means a confused first-time user. |
+| 🖥️ **Portability Lint + Platform Validation** | Linux, macOS, Windows | Runs `portability-lint.sh` (GNU-only pattern detector) + `validate.sh` on all 3 platforms | Catches BSD vs GNU tool differences that only surface on macOS/Windows (e.g., `sed -i` without `''`, `date -d`, `grep -P`) |
+| 🧪 **Integration Tests** | Linux, macOS, Windows | Runs `integration-test.sh` — 17 tests covering FRESH install, UPGRADE merge, and 4 guard scenarios | Proves `install.sh` works end-to-end on the exact platforms your users run. macOS symlink paths, Windows MSYS paths, bash 3.2 edge cases. |
 
-All three must pass before a PR can be merged. The CI badge on the README shows the current status.
+All five must pass before a PR can be merged. The CI badge on the README shows the current status.
 
-> 💡 **Run locally before pushing:** `bash claude/scripts/validate.sh` covers the template checks. Install [ShellCheck](https://github.com/koalaman/shellcheck#installing) for local script linting.
+> 💡 **Run locally before pushing:** `bash claude/scripts/validate.sh` covers the template checks. `bash claude/scripts/integration-test.sh` covers end-to-end scenarios. Install [ShellCheck](https://github.com/koalaman/shellcheck#installing) for local script linting.
 
 ---
 

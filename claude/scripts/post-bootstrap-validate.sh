@@ -17,12 +17,8 @@ cd "$PROJECT_DIR"
 
 ERRORS=0
 
-# ─── Portable sed -i (macOS vs GNU) ──────────────────────────────
-if [[ "$(uname)" == "Darwin" ]]; then
-  sed_inplace() { sed -i '' "$@"; }
-else
-  sed_inplace() { sed -i "$@"; }
-fi
+# ─── Portable helpers (sed_inplace, platform detection) ──────────
+source "$(dirname "$0")/_platform.sh"
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "  Post-Bootstrap Validation"
