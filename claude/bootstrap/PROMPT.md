@@ -6,6 +6,19 @@
 
 ---
 
+## ⛔ READ THIS FIRST — FILES YOU MUST NEVER CREATE
+
+Bootstrap is **READ + CONFIGURE**. You document what exists. You do not initialize or scaffold the project.
+
+**Never create these files:**
+- Any `*.lock` file (`yarn.lock`, `package-lock.json`, `pnpm-lock.yaml`, `bun.lockb`)
+- Package manager configs for tools **not already in the project** (`.yarnrc.yml` if no yarn, `bunfig.toml` if no bun)
+- Any `.env*` file (blocked by permissions)
+
+The ONLY paths you write to: `claude/`, `.claude/`, `.github/`, `CLAUDE.md`, `.claudeignore`.
+
+---
+
 ## ⭐ START HERE — READ · PLAN · EXECUTE (mandatory before any tool call)
 
 **Three rules that govern the entire bootstrap:**
@@ -20,7 +33,15 @@ MODE: TBD (Phase 1 will set this)
 P1: discover.sh → read MODE= line → start plugin bg install
 P2: FRESH→SKIP | UPGRADE→read claude/bootstrap/UPGRADE_GUIDE.md, run A through H then verify
 P3S1: populate-templates.sh (1 command)
-P3S2: 6 MANDATORY items (architecture · CLAUDE.md · domains · context · copilot · multi-lang) + conditional 7+8+11 (rules/skills/commands if ≥3 domains detected)
+P3S2 checklist (mark ✓ as done):
+  [ ] 1. architecture.md
+  [ ] 2. CLAUDE.md (lookup table + critical patterns + hard constraints + key decisions + don't list)
+  [ ] 3. Domain docs + .claude/rules/ per signal
+  [ ] 4. .claude/commands/context.md (domain→file mapping)
+  [ ] 5. copilot-instructions.md (patterns + lookup table)
+  [ ] 5b. .github/instructions/ globs (actual service paths)
+  [ ] 6. test.md + lint.md vs SECONDARY_LANGUAGES
+  [ ] 7+8. rules/ + skills/ per domain (MANDATORY if ≥3 domains)
 P4: setup-plugins.sh (1 command — all automated)
 P5: post-bootstrap-validate.sh · report from claude/bootstrap/REFERENCE.md
 Risk: [one specific risk for THIS repo — fill in after Phase 1]
@@ -129,7 +150,10 @@ Handles in one pass: `PROJECT_NAME` (8 files), build/test/lint/serve commands, p
 
 #### Step 2: Creative Population (YOU do this)
 
-> 🧠 **ATTENTION CHECK** — Most important phase. Re-read your plan: `cat claude/tasks/.bootstrap-plan.txt`
+> 🧠 **ATTENTION CHECK** — Most important phase. Re-read your checklist and mark what's still unchecked:
+> ```bash
+> cat claude/tasks/.bootstrap-plan.txt
+> ```
 > Rules still in effect: (1) NEVER lose user data, (2) real patterns from code — not filler, (3) batch reads
 
 > **⚠️ DEPTH RULE**: For repos with >10 services, read 2-3 actual source files per domain. A 20-line doc with 3 real patterns beats 100 lines of filler.
@@ -196,11 +220,7 @@ Handles in one pass: `PROJECT_NAME` (8 files), build/test/lint/serve commands, p
 
 6. **Multi-language command validation** — Check `.claude/commands/test.md` and `lint.md` against `SECONDARY_LANGUAGES` from discovery. Every **actively developed** language must be reachable. **Exception**: secondary languages that are only build utilities (e.g., `py` scripts or `sh` hooks in a `pnpm`/TypeScript project) do NOT need dedicated pytest/ruff entries — adding them creates phantom commands that never run. Use `PRIMARY_LANGUAGE` + `PACKAGE_MANAGER` to distinguish dev languages from tooling languages.
 
-> ✅ **MANDATORY gate** — run the quality check; fix ALL ❌ (and ⚠️ if time permits) before continuing:
-> ```bash
-> bash claude/scripts/check-creative-work.sh . 2>&1
-> ```
-> Verifies: architecture depth · placeholder clearance · domain doc quality (≥5 real patterns each) · lookup table completeness (1 row per doc) · instruction file precision · copilot sync.
+> The completion check runs at the end of Phase 3 (below). Continue to recommended items 7–13.
 
 ---
 

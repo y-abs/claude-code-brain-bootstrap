@@ -22,6 +22,13 @@ if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
   return 1 2>/dev/null || exit 1
 fi
 
+# ─── Bootstrap guard — skip during bootstrap ──────────────────────
+# claude/bootstrap/PROMPT.md exists only during bootstrap;
+# deleted by Phase 5 cleanup (rm -rf claude/bootstrap/) → self-resetting.
+if [ -f "claude/bootstrap/PROMPT.md" ]; then
+  exit 0
+fi
+
 MAX_ITERATIONS=25
 ITERATION_FILE='.claude/.tdd-iteration-count'
 mkdir -p .claude
@@ -48,7 +55,10 @@ fi
 # ─── Skip if no test files exist yet ───
 
 if ! find . \( -name '*.test.*' -o -name '*.spec.*' -o -name 'test_*.py' -o -name '*_test.py' \) \
-    -not -path '*/node_modules/*' -not -path '*/.git/*' 2>/dev/null | grep -q .; then
+    -not -path '*/node_modules/*' -not -path '*/.git/*' \
+    -not -path '*/vendor/*' -not -path '*/dist/*' -not -path '*/build/*' \
+    -not -path '*/.next/*' -not -path '*/target/*' -not -path '*/__pycache__/*' \
+    2>/dev/null | head -1 | grep -q .; then
   rm -f "$ITERATION_FILE"
   exit 0
 fi

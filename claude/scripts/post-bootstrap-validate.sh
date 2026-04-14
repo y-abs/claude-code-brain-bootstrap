@@ -16,6 +16,7 @@ PROJECT_DIR="${1:-.}"
 cd "$PROJECT_DIR"
 
 ERRORS=0
+WARNINGS=0
 
 # ─── Portable helpers (sed_inplace, platform detection) ──────────
 source "$(dirname "$0")/_platform.sh"
@@ -180,6 +181,29 @@ if [ -f "CLAUDE.md" ] && [ -f ".claudeignore" ]; then
   elif [ -z "$NEVER_PATTERNS" ]; then
     echo "  ℹ️  No 'NEVER add' patterns found in Hard Constraints (OK if none needed)"
   fi
+fi
+
+# ─── Step 7: Phantom file check ───────────────────────────────────
+# Flags files that should not be created during bootstrap.
+# Uses git-tracked state to avoid false positives on pre-existing files.
+
+echo ""
+echo "👻 Phantom file check..."
+PHANTOM_PATTERNS=("yarn.lock" "package-lock.json" "pnpm-lock.yaml" "bun.lockb" ".yarnrc" ".yarnrc.yml" "bunfig.toml" ".npmrc")
+PHANTOM_FOUND=0
+if command -v git >/dev/null 2>&1 && git rev-parse --git-dir >/dev/null 2>&1; then
+  for f in "${PHANTOM_PATTERNS[@]}"; do
+    if [ -f "$f" ] && ! git ls-files --error-unmatch "$f" >/dev/null 2>&1; then
+      echo "  ⚠️  $f — untracked, possibly created during bootstrap. Verify and remove if not needed."
+      PHANTOM_FOUND=$((PHANTOM_FOUND + 1))
+    fi
+  done
+fi
+if [ "$PHANTOM_FOUND" -eq 0 ]; then
+  echo "  ✅ No phantom files found"
+else
+  echo "  ⚠️  $PHANTOM_FOUND file(s) to verify (warnings only)"
+  WARNINGS=$((WARNINGS + PHANTOM_FOUND))
 fi
 
 # ─── Summary ──────────────────────────────────────────────────────

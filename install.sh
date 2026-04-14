@@ -178,9 +178,9 @@ if [ -f "$TARGET/CONTRIBUTING.md" ]; then
 fi
 
 # ── Detect mode ───────────────────────────────────────────────────
-# PRINCIPLE: If ANY Claude-related content exists, it's UPGRADE.
-# This is the SAFE default — we never risk overwriting user data.
-# FRESH only happens when absolutely nothing Claude-related is present.
+# PRINCIPLE: If Brain Bootstrap-related content exists, it's UPGRADE.
+# .mcp.json is a general Claude Code config — excluded by design.
+# FRESH only happens when absolutely nothing Brain-related is present.
 
 has_claude_content() {
   # Any CLAUDE.md (regardless of content — could be hand-crafted, Brain, or template)
@@ -203,8 +203,8 @@ has_claude_content() {
   # Any .claudeignore
   [ -f "$TARGET/.claudeignore" ] && return 0
 
-  # Any .mcp.json (Claude Code MCP config)
-  [ -f "$TARGET/.mcp.json" ] && return 0
+  # NOTE: .mcp.json intentionally excluded — it is a Claude Code tool config (MCP servers),
+  # not a Brain Bootstrap artifact. A user's personal .mcp.json must not trigger UPGRADE.
 
   # NOTE: We intentionally do NOT check root tasks/ or .tasks/ here.
   # A root tasks/ folder could be anything (Gulp tasks, Makefile targets, project management).

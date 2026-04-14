@@ -324,7 +324,11 @@
       "Write(.env)",
       "Write(.env.*)",
       "Edit(.env)",
-      "Edit(.env.*)"
+      "Edit(.env.*)",
+      "Write(yarn.lock)",
+      "Write(package-lock.json)",
+      "Write(pnpm-lock.yaml)",
+      "Write(bun.lockb)"
     ]
   }
 }
