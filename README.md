@@ -52,7 +52,7 @@ And tomorrow?
 
 Every session starts from zero. Every correction you made: gone.
 
-You become a full-time AI babysitter 🍼, repeating the same instructions, fixing the same mistakes, re-explaining the same architectur.
+You become a full-time AI babysitter 🍼, repeating the same instructions, fixing the same mistakes, re-explaining the same architecture.
 
 Session after session after session...
 
