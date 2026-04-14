@@ -229,6 +229,8 @@ The bootstrap is **adaptive** — it runs 8 domain-detection greps and automatic
 
 > **Required tools:** `git`, `bash` ≥ 3.2 (≥ 4 for `/bootstrap`), `jq` (safety hooks + discovery engine depend on it).
 >
+> **Recommended:** Python 3.10+ — enables **graphify** knowledge graph (architecture map, cross-module connections, community detection). Without Python, graphify is skipped; everything else works normally.
+>
 > Without `jq`: install works (settings merge skipped), but **lifecycle hooks can't parse Claude Code's JSON input** — config protection, terminal safety gate, and commit quality checks silently pass through. Discovery is degraded for JS/TS projects (can't read `package.json` fields). `awk` is POSIX-standard and always available.
 >
 > Install: `brew install jq` (macOS) · `sudo apt install jq` (Linux) · included in Git Bash (Windows).
@@ -252,6 +254,7 @@ Brain replaces advisory text with real mechanisms:
 | 🔄 **Knowledge never goes stale** | Exit checklist catches drift every turn · `/maintain` audits all docs · self-maintenance rule fires on every knowledge edit |
 | ⚡ **One command replaces 15 min of prompt engineering** | `/review` runs a 10-point protocol · `/mr` generates descriptions · `/debug` traces root causes — 26 commands, pre-built, consistent |
 | 🔍 **Your entire stack understood in 2 seconds, zero tokens** | `discover.sh` — 25+ languages, 1100+ frameworks, 21 package managers — pure bash, runs before the AI even wakes up |
+| 🗺️ **Architecture visible to the AI at all times** | **graphify** knowledge graph — god nodes, community clusters, cross-module connections. PreToolUse hook makes the AI navigate by structure, not grep through every file |
 | 🤖 **Research doesn't eat your context window** | 5 subagents run in isolated contexts — explore 20+ files, review code, challenge plans — your main conversation stays clean |
 | 🧠 **Best model per task — local LLMs included** | Agents declare their optimal model (opus for security audit, session model for research) and fall back gracefully. Works with Anthropic API, Bedrock, Vertex, **Ollama, LM Studio, any local endpoint**. Protocol auto-scales to model capability |
 | 🤝 **One brain, three AI tools** | Write knowledge once → Claude Code, GitHub Copilot, and any LLM all read it — switch tools without starting over |
@@ -264,6 +267,8 @@ Brain replaces advisory text with real mechanisms:
 
 The discovery engine detects **25+ languages**, **21 package managers**, **1100+ frameworks**, **13 CI systems**, **12+ database/ORM tools**, and **15+ formatter/linter combinations**.
 No token cost, runs in ~2 seconds, and is the foundation for all subsequent knowledge generation. It populates the initial `claude/architecture.md` and `claude/build.md` with accurate, repo-specific context.
+
+After discovery, **graphify** goes deeper — building a persistent knowledge graph from your actual code structure (tree-sitter AST) and semantic relationships (Claude extraction). Discovery tells the AI *what tools you use*. Graphify tells it *how your code is connected*.
 
 **What the engine outputs (`claude/tasks/.discovery.env`):**
 - Stack identity: languages, package manager, runtime, frameworks
@@ -298,16 +303,22 @@ Your repo
 │   ├── build.md                    ← Build/test/lint/serve commands for your stack
 │   ├── terminal-safety.md          ← Shell anti-patterns that cause session hangs
 │   ├── cve-policy.md               ← Security decision tree
+│   ├── plugins.md                  ← Plugin config (claude-mem + graphify + MCP)
 │   ├── scripts/                    ← 15 bootstrap & maintenance scripts
 │   ├── bootstrap/                  ← 🧠 Setup scaffolding (auto-deleted after bootstrap)
 │   ├── tasks/lessons.md            ← 🧠 Accumulated wisdom (persists across sessions)
 │   ├── tasks/todo.md               ← 📝 Current task plan (survives session boundaries)
 │   └── tasks/CLAUDE_ERRORS.md      ← 🐛 Error log (promotes to rules after 3+ recurrences)
+├── 🗺️ graphify-out/                ← Knowledge graph (built on demand via /graphify)
+│   ├── GRAPH_REPORT.md             ← Architecture map — god nodes, communities, surprises
+│   ├── graph.json                  ← Persistent queryable graph
+│   └── graph.html                  ← Interactive visualization
 ├── 🤖 .github/
 │   ├── copilot-instructions.md     ← GitHub Copilot root instructions
 │   ├── instructions/               ← Scoped instructions (auto-loaded per file type)
 │   └── prompts/                    ← Reusable prompts
 └── 🚫 .claudeignore                ← Context exclusions (lock files, binaries, etc.)
+└── 🗺️ .graphifyignore              ← Graph exclusions (node_modules, dist, lockfiles...)
 ```
 
 **Write your knowledge once. Every AI tool reads it.** ✍️
@@ -321,6 +332,7 @@ The system is designed to **minimize token cost** while maximizing context — y
 | 🟢 **Always on** | `CLAUDE.md` + imported rules — operating protocol, critical patterns | Every conversation | ~3-4K tokens |
 | 🟡 **Auto-loaded** | Path-scoped rules — short do/don't lists per domain | When editing matching files | ~200-400 each |
 | 🔵 **On-demand** | Full domain docs — architecture, build, auth, database | When the task requires it | ~1-2K each |
+| 🗺️ **Graph** | `GRAPH_REPORT.md` — architecture map, god nodes, communities | Before file searches (via PreToolUse hook) | 71.5× fewer tokens than reading raw files |
 
 ---
 
@@ -336,7 +348,7 @@ The system is designed to **minimize token cost** while maximizing context — y
 | 🔧 **Brain scripts** | 15 | `discover.sh` (3800-line stack detector), `populate-templates.sh`, `post-bootstrap-validate.sh`, `validate.sh`, `canary-check.sh`, `_platform.sh` (portable shell helpers — Linux/macOS/Windows), `portability-lint.sh` (GNU-only pattern detector), `integration-test.sh` (17 assertions: FRESH/UPGRADE/--check/3 guards, 3 platforms), `phase2-verify.sh`, `toggle-claude-mem.sh`, `generate-service-claudes.sh`, `generate-copilot-docs.sh`, `setup-plugins.sh`, `check-creative-work.sh`, `tdd-loop-check.sh` — all in `claude/scripts/` |
 | 🤝 **GitHub Copilot config** | 8 | Root instructions, 3 scoped instruction files (+1 template), 2 reusable prompts (+1 template) |
 | 📏 **Path-scoped rules** | 13 | Terminal safety, self-maintenance, quality gates, memory policy, domain learning, practice capture, agent orchestration, language-specific rules, template for adding your own |
-| 🔌 **Plugins** | 1 | **claude-mem** (persistent cross-session memory) — auto-installed, disabled by default (quota protection) |
+| 🔌 **Plugins** | 2 | **claude-mem** (persistent cross-session memory) — auto-installed, disabled by default (quota protection) · **graphify** (knowledge graph engine) — auto-installed if Python 3.10+ available, graph built on demand |
 | ✅ **Validation checks** | 120 | File existence, hook executability, placeholder detection, settings consistency, cross-reference integrity, self-bootstrap protection |
 
 ---
@@ -375,7 +387,7 @@ The knowledge layer (`claude/*.md`) is the **single source of truth**. Each tool
 
 ## 🔄 It Gets Smarter Over Time
 
-This isn't a static config that rots. It's a **living system** with six feedback mechanisms:
+This isn't a static config that rots. It's a **living system** with seven feedback mechanisms:
 
 1. 📋 **Exit checklist** — enforced at the end of every AI turn. Captures corrections, new patterns, and pitfalls before the AI yields.
 2. 🧠 **`lessons.md`** — accumulated wisdom, read at every session start. The AI literally cannot make the same mistake twice.
@@ -383,6 +395,7 @@ This isn't a static config that rots. It's a **living system** with six feedback
 4. 🔁 **Session hooks** — auto-inject task state on startup, resume, and compaction. Context survives session boundaries and token budget resets.
 5. 🔍 **`/maintain` command** — audits all knowledge docs for stale file paths, dead references, and drift from the actual codebase.
 6. 🛠️ **Self-maintenance rule** — auto-loads when editing knowledge files. Enforces consistency invariants in real-time.
+7. 🗺️ **graphify git hooks** — auto-rebuild the knowledge graph on every commit and branch switch. Architecture understanding stays current without any manual action.
 
 > 💡 After a few sessions, your AI will know things about your codebase that even some team members don't.
 
@@ -425,11 +438,12 @@ Plus 8 more hooks for identity refresh, permission audit, subagent logging, exit
 
 ## 🔌 Plugin Ecosystem
 
-The bootstrap installs **one Claude Code plugin** — no manual setup needed:
+The bootstrap installs **two tools** — no manual setup needed:
 
 | Plugin | Purpose | Default |
 |:-------|:--------|:-------:|
 | **[claude-mem](https://github.com/thedotmack/claude-mem)** | 🧠 Persistent cross-session memory (SQLite + ChromaDB) — auto-captures every interaction, searchable across sessions | ⚠️ Disabled (quota protection) |
+| **[graphify](https://github.com/safishamsi/graphify)** | 🗺️ Knowledge graph — turns your codebase into a queryable architecture map with god nodes, community clusters, and cross-module connections | ✅ Installed (graph built on demand) |
 
 ```bash
 # claude-mem is disabled by default (PostToolUse(*) can use ~48% of API quota)
@@ -438,9 +452,16 @@ bash claude/scripts/toggle-claude-mem.sh off      # Disable for batch work
 bash claude/scripts/toggle-claude-mem.sh status   # Check current state
 ```
 
-> 📖 **Want an AI-powered knowledge vault?** [obsidian-mind](https://github.com/breferrari/obsidian-mind) is a companion Obsidian vault template (not a Claude Code plugin) — clone it separately for persistent knowledge graph features across sessions.
+```bash
+# graphify — build the knowledge graph (first run ~5 min, then incremental via SHA256 cache)
+/graphify .                                        # Full build (inside Claude Code / any AI)
+graphify query "auth flow"                         # Query from terminal (no AI needed)
+# Git hooks auto-rebuild on every commit and branch switch (AST only, instant, no LLM)
+```
 
-> 📚 **Full plugin reference:** [claude/plugins.md](claude/plugins.md) — hook coexistence, quota management, obsidian-mind setup guide.
+> 📖 **Want an AI-powered knowledge vault?** [obsidian-mind](https://github.com/breferrari/obsidian-mind) is a companion Obsidian vault template (not a Claude Code plugin) — clone it separately for curated human knowledge management. **The three-tool stack** (claude-mem × graphify × obsidian-mind) gives your AI three layers of intelligence: event log → code structure → human knowledge. Each layer compounds the others. See `claude/plugins.md` for the full synergy guide.
+
+> 📚 **Full plugin reference:** [claude/plugins.md](claude/plugins.md) — hook coexistence, three-tool synergy stack, token economics, obsidian-mind setup guide.
 
 ---
 

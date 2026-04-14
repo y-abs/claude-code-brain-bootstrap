@@ -1,0 +1,60 @@
+# .graphifyignore — Exclude patterns for graphify knowledge graph
+# Same syntax as .gitignore. Patterns work correctly even from subfolders.
+
+# ── Dependencies & build artifacts ──
+node_modules/
+dist/
+build/
+out/
+.next/
+.nuxt/
+.output/
+target/
+vendor/
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# ── Package manager lockfiles (noise, not architecture) ──
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+Cargo.lock
+go.sum
+composer.lock
+Gemfile.lock
+poetry.lock
+
+# ── Generated / compiled ──
+*.min.js
+*.min.css
+*.map
+*.generated.*
+*.d.ts
+
+# ── IDE & OS ──
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# ── Test fixtures & snapshots (not architecture) ──
+__snapshots__/
+*.snap
+fixtures/
+
+# ── CI / Docker / Helm (infrastructure, not code architecture) ──
+# Uncomment if you want to exclude these:
+# .github/
+# helm/
+# Dockerfile*
+# docker-compose*
+
+# ── Brain Bootstrap internals (already managed by .claudeignore) ──
+claude/tasks/
+claude/bootstrap/
+graphify-out/cache/
+graphify-out/transcripts/
+

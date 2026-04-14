@@ -53,6 +53,32 @@ if [ "${1:-}" = "--check" ]; then
     echo "  ⚠️  bash $BASH_VERSION (<4 — discover.sh and populate-templates.sh need Bash 4+)"
     echo "     macOS: brew install bash"
   fi
+  # Python 3.10+ (required for graphify knowledge graph — optional but recommended)
+  PY_FOUND=false
+  for py_cmd in python3 python; do
+    if command -v "$py_cmd" &>/dev/null; then
+      PY_VER=$("$py_cmd" -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')" 2>/dev/null || true)
+      PY_MAJOR="${PY_VER%%.*}"
+      PY_MINOR="${PY_VER##*.}"
+      if [ "${PY_MAJOR:-0}" -ge 3 ] && [ "${PY_MINOR:-0}" -ge 10 ]; then
+        echo "  ✅ $py_cmd $PY_VER (≥3.10 — graphify knowledge graph ready)"
+        PY_FOUND=true
+        break
+      else
+        echo "  ⚠️  $py_cmd $PY_VER (<3.10 — graphify needs 3.10+)"
+      fi
+    fi
+  done
+  if [ "$PY_FOUND" = "false" ]; then
+    echo "  ⚠️  Python 3.10+ not found — graphify knowledge graph won't be available"
+    echo "     graphify turns your codebase into a queryable knowledge graph (architecture map,"
+    echo "     cross-module connections, community detection). Optional but highly recommended."
+    case "$BRAIN_PLATFORM" in
+      macos)   echo "     Install: brew install python@3.12" ;;
+      windows) echo "     Install: winget install Python.Python.3.12" ;;
+      linux)   echo "     Install: sudo apt install python3  OR  sudo dnf install python3" ;;
+    esac
+  fi
   echo ""
   exit 0
 fi
@@ -290,7 +316,7 @@ if [ "$MODE" = "FRESH" ]; then
   echo ""
 
   # Root files
-  for f in CLAUDE.md CLAUDE.local.md.example .claudeignore .mcp.json; do
+  for f in CLAUDE.md CLAUDE.local.md.example .claudeignore .mcp.json .graphifyignore; do
     if [ -f "$SCRIPT_DIR/$f" ]; then
       cp "$SCRIPT_DIR/$f" "$TARGET/$f"
       echo "  ✅ $f"
@@ -366,7 +392,7 @@ echo ""
 echo "🛡️  Phase A — Inventorying your data (NEVER overwritten):"
 
 # Root files
-for f in CLAUDE.md CLAUDE.local.md .claudeignore .mcp.json; do
+for f in CLAUDE.md CLAUDE.local.md .claudeignore .mcp.json .graphifyignore; do
   if [ -f "$TARGET/$f" ]; then
     echo "  🔒 $f"
     PRESERVED_COUNT=$((PRESERVED_COUNT + 1))
@@ -516,7 +542,7 @@ echo "➕ Phase D — Adding missing files:"
 phase_d_added=0
 
 # Root files
-for f in CLAUDE.md CLAUDE.local.md.example .claudeignore .mcp.json; do
+for f in CLAUDE.md CLAUDE.local.md.example .claudeignore .mcp.json .graphifyignore; do
   if [ -f "$SCRIPT_DIR/$f" ] && copy_if_missing "$SCRIPT_DIR/$f" "$TARGET/$f"; then
     echo "  ➕ $f (new)"
     phase_d_added=$((phase_d_added + 1))

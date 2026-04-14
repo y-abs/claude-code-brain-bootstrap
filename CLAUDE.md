@@ -188,6 +188,20 @@ bash claude/scripts/toggle-claude-mem.sh status   # Check state
 
 > **obsidian-mind** is a companion Obsidian vault (not a Claude Code plugin) — clone separately if you want AI-powered knowledge management: `git clone https://github.com/breferrari/obsidian-mind.git`. See `claude/plugins.md`.
 
+## graphify — Knowledge Graph
+
+> If `graphify-out/GRAPH_REPORT.md` exists, **read it before answering architecture questions** — it contains god nodes, community structure, and surprising cross-module connections the graph discovered.
+
+**Rules (when graph exists):**
+- Before searching files (Glob/Grep), consult `graphify-out/GRAPH_REPORT.md` for structure
+- If `graphify-out/wiki/index.md` exists, navigate it instead of reading raw files
+- Use `/graphify .` to build or rebuild the full graph (runs tree-sitter AST + Claude extraction)
+- Use `graphify query "<question>"` for targeted graph traversal from terminal
+
+**Git hooks auto-rebuild** the code graph on every commit and branch switch (AST only, no LLM, instant). Docs/images require `/graphify --update`.
+
+> No graph yet? Run `/graphify .` — first run takes ~5 min, subsequent runs are incremental (SHA256 cache). See `claude/plugins.md` for details.
+
 ## Core Principles
 
 Simplicity · No laziness (root cause, senior standards) · Surgical changes · Evidence-based

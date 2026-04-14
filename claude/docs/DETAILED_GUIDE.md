@@ -27,7 +27,7 @@
 - [🏛️ The Architecture Tour](#-the-architecture-tour)
   - [🎯 The Three-Tier Token Strategy](#-the-three-tier-token-strategy)
 - [📂 Every File, Explained](#-every-file-explained)
-  - [🏠 Root Files (7)](#-root-files-7)
+  - [🏠 Root Files (8)](#-root-files-8)
   - [🧠 Bootstrap Scaffolding — `claude/bootstrap/`](#-bootstrap-scaffolding--claudebootstrap-3-files-auto-deleted)
   - [📚 Knowledge Docs — `claude/`](#-knowledge-docs--claude-13-files)
   - [⚡ Slash Commands — `.claude/commands/`](#-slash-commands--claudecommands-26-files)
@@ -87,7 +87,7 @@ Here's the mental model:
             "Here's everything we've learned together"
 ```
 
-**26 slash commands. 14 lifecycle hooks. 5 AI subagents. 5 skills. 1 plugin. 120 validation checks. 8 domain-detection greps. Zero setup friction.**
+**26 slash commands. 14 lifecycle hooks. 5 AI subagents. 5 skills. 2 tools. 120 validation checks. 8 domain-detection greps. Zero setup friction.**
 
 > 💡 Battle-tested. Works with **any language, any framework, any repo**.
 
@@ -201,13 +201,14 @@ Your AI shouldn't drown in 50K tokens when you ask it to fix a typo. So the syst
 
 ## 📂 Every File, Explained
 
-### 🏠 Root Files (7)
+### 🏠 Root Files (8)
 
 | File | What it does |
 |:-----|:------------|
 | 📋 `CLAUDE.md` | The brain — operating protocol, exit checklist, critical patterns, lookup table |
 | 👤 `CLAUDE.local.md.example` | Your personal overrides (gitignored in use) |
 | 🚫 `.claudeignore` | Keeps binaries, lock files, and build artifacts out of context |
+| 🗺️ `.graphifyignore` | Tells graphify what to exclude from the knowledge graph (node_modules, dist, lockfiles) |
 | 📖 `README.md` | The pitch + quick start |
 | ⚖️ `LICENSE` | MIT |
 | 🔌 `.mcp.json` | MCP server configuration template for tool integrations |
@@ -501,13 +502,14 @@ Parallel config for Copilot users:
 
 #### 10. 🔌 Plugin Ecosystem
 
-One plugin is auto-installed by bootstrap:
+Two tools are auto-installed by bootstrap:
 
-| Plugin | Purpose | Default state |
-|:-------|:--------|:------------:|
+| Tool | Purpose | Default state |
+|:-----|:--------|:------------:|
 | 🧠 **claude-mem** | Persistent cross-session memory (SQLite + ChromaDB) | ⚠️ Disabled (quota protection) |
+| 🗺️ **graphify** | Knowledge graph — 71.5× fewer tokens per query vs raw files | ✅ Installed (graph on demand) |
 
-Plugin hooks fire **in parallel** with project hooks — independent systems, zero conflicts. See `claude/plugins.md` for the full coexistence matrix and the optional obsidian-mind vault companion.
+Plugin hooks fire **in parallel** with project hooks — independent systems, zero conflicts. See `claude/plugins.md` for the full coexistence matrix, the three-tool synergy stack (claude-mem × graphify × obsidian-mind), and setup guides.
 
 ---
 
@@ -964,26 +966,61 @@ claude plugin install claude-mem@thedotmack
 
 ## 🔌 Plugin Ecosystem — Deep Dive
 
-The bootstrap installs **one Claude Code plugin**. Additionally, [obsidian-mind](https://github.com/breferrari/obsidian-mind) is an optional companion Obsidian vault (cloned separately) that pairs well with claude-mem:
+The bootstrap installs **two tools** that give your AI persistent intelligence beyond the session boundary. Additionally, [obsidian-mind](https://github.com/breferrari/obsidian-mind) is an optional companion Obsidian vault (cloned separately) that completes the three-layer memory stack:
 
-| | Type | Answers | Analogy | Default |
-|:|:-----|:--------|:--------|:-------:|
-| 🧠 **[claude-mem](https://github.com/thedotmack/claude-mem)** | Claude Code plugin | *"What did I do across sessions?"* | git reflog — automatic forensic trail | ⚠️ Disabled |
-| 📖 **[obsidian-mind](https://github.com/breferrari/obsidian-mind)** | Obsidian vault (clone separately) | *"What do I know about this?"* | git commits — curated knowledge graph | Optional |
+| | Type | Answers | Token Impact | Default |
+|:|:-----|:--------|:-------------|:-------:|
+| 🧠 **[claude-mem](https://github.com/thedotmack/claude-mem)** | Claude Code plugin | *"What did I do across sessions?"* | ~48% API quota when enabled | ⚠️ Disabled |
+| 🗺️ **[graphify](https://github.com/safishamsi/graphify)** | Python tool + PreToolUse hook | *"How is my code connected?"* | **71.5× fewer tokens** per query | ✅ Installed |
+| 📖 **[obsidian-mind](https://github.com/breferrari/obsidian-mind)** | Obsidian vault (clone separately) | *"What do I know about this?"* | ~2K tokens/session | Optional |
 
-**The synergy:** claude-mem captures raw material → obsidian-mind curates it into durable knowledge.
+### Three Layers of Intelligence
+
+Each tool answers a fundamentally different question — together they form a complete memory system:
+
+```
+   📝 claude-mem          🗺️ graphify               🧠 obsidian-mind
+   (event log)            (code structure)           (human knowledge)
+   ─────────────          ──────────────             ────────────────
+   What happened?         How is it connected?       Why was it built this way?
+   
+   "I edited AuthService  "AuthService → Database    "We chose JWT over sessions
+    at 14:32 yesterday"    → CacheLayer → API"        because of horizontal scaling"
+```
+
+**The synergy:** claude-mem captures raw material → graphify maps structural connections → obsidian-mind curates durable knowledge. Each layer compounds the value of the others.
+
+### Setup & Usage
 
 ```bash
-# claude-mem eats API quota (PostToolUse(*) fires after EVERY tool call)
-bash claude/scripts/toggle-claude-mem.sh on       # Enable for exploratory sessions
-bash claude/scripts/toggle-claude-mem.sh off      # Disable for heavy batch work
+# claude-mem — toggle on for exploratory sessions, off for batch work
+bash claude/scripts/toggle-claude-mem.sh on       # Enable (activates next session)
+bash claude/scripts/toggle-claude-mem.sh off      # Disable + kill worker — saves quota
 bash claude/scripts/toggle-claude-mem.sh status   # Check current state
+
+# graphify — build once, auto-maintained by git hooks
+/graphify .                                        # Full build (~5 min first run)
+graphify query "auth flow"                         # Query from terminal (no AI needed)
+# Git hooks auto-rebuild on every commit and branch switch (AST only, instant, no LLM)
 
 # obsidian-mind — clone as a separate Obsidian vault
 git clone https://github.com/breferrari/obsidian-mind.git ~/my-knowledge-vault
+# Then open ~/my-knowledge-vault as an Obsidian vault
 ```
 
-> 📚 **Full plugin reference:** [claude/plugins.md](../plugins.md) — hook coexistence matrix, quota management, obsidian-mind setup guide.
+### Why Graphify Matters — Token Economics
+
+Without graphify, every architecture question costs your AI thousands of tokens reading raw files. With graphify:
+
+- **71.5× fewer tokens per query** (measured on a 52-file corpus — scales with codebase size)
+- **PreToolUse hook** fires before every Glob/Grep — AI navigates by graph structure, not brute-force search
+- **SHA256 cache** — first run ~5 min, subsequent runs rebuild only changed files (seconds)
+- **Git hooks** — graph stays current automatically on every commit and branch switch
+- **Every edge tagged** — `EXTRACTED` (source code), `INFERRED` (with confidence score), `AMBIGUOUS` (flagged for review)
+
+The graph is not optional intelligence — it's the **efficiency layer** that makes large codebases tractable for AI. On a monorepo with 50+ services, the difference between "grep everything" and "read the graph report" is the difference between a 30-second answer and a 5-minute search.
+
+> 📚 **Full plugin reference:** [claude/plugins.md](../plugins.md) — hook coexistence matrix, three-tool synergy stack, ordering guide, and setup details.
 
 ### Adding other plugins
 
@@ -1026,7 +1063,7 @@ Brain replaces advisory text with real mechanisms:
 | 🏷️ Configurable placeholders | 35+ |
 | 🔄 Bootstrap phases | 5 |
 | 🤖 AI subagents | 5 |
-| 🔌 Plugins | 1 |
+| 🔌 Plugins/tools | 2 |
 | 📋 Exit checklist items | 6 |
 | 🔍 Domain-detection greps | 8 |
 | 🐚 Shell scripts (ShellCheck CI) | 31 |

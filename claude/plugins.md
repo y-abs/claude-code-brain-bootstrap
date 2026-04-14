@@ -4,13 +4,14 @@
 
 ## Overview
 
-This configuration ships with **one Claude Code plugin** installed and configured by the bootstrap:
+The bootstrap installs and configures **two tools** that give your AI persistent intelligence beyond the session boundary:
 
-| Plugin | Purpose | Default State | Token Impact |
-|--------|---------|:------------:|:------------:|
-| **claude-mem** | Automatic machine memory — captures every tool interaction across sessions | ⚠️ **Disabled** (quota protection) | ~48% of API quota when enabled |
+| Tool | Purpose | Default State | Token Impact |
+|------|---------|:------------:|:------------:|
+| **claude-mem** | 🧠 Persistent cross-session memory — captures every tool interaction (SQLite + ChromaDB) | ⚠️ **Disabled** (quota protection) | ~48% of API quota when enabled |
+| **graphify** | 🗺️ Knowledge graph — turns your codebase into a queryable architecture map with **71.5× fewer tokens** per query vs reading raw files | ✅ **Installed** (graph built on demand) | Saves tokens on every file search |
 
-Claude Code plugins are **global extensions** installed at `~/.claude/plugins/`. They add lifecycle hooks, skills, MCP tools, and commands that fire **alongside** your project-level configuration — never replacing it.
+Claude Code plugins are **global extensions** installed at `~/.claude/plugins/`. Graphify is a Python tool that integrates via a global skill + PreToolUse hook + git hooks. Both fire **alongside** your project-level configuration — never replacing it.
 
 **Key principle:** Plugin hooks and project hooks are **independent systems** — registered via separate mechanisms (`plugin/hooks/hooks.json` vs `.claude/settings.json`), fired in parallel on the same lifecycle events, addressing different concerns with **zero conflicts**.
 
@@ -73,44 +74,159 @@ git clone https://github.com/breferrari/obsidian-mind.git ~/my-knowledge-vault
 
 **Works standalone** — run Claude Code from inside the cloned vault directory. The vault's own `.claude/settings.json` + hooks provide all the AI-agent wiring.
 
-## Why Both? — Complementary, Not Competing
+## graphify — Knowledge Graph Engine (strongly recommended)
 
-| Question | Answered by | Example |
-|----------|------------|---------|
-| *"How did we fix the auth bug last Tuesday?"* | **claude-mem** — searches observations for exact tool calls and file changes | Factual reconstruction from event log |
-| *"What's our authentication architecture pattern?"* | **obsidian-mind** — reads curated vault notes with context and reasoning | Conceptual understanding from knowledge graph |
+**Purpose:** Turn your codebase into a queryable knowledge graph — architecture map, cross-module connections, community clusters, god nodes, and an honest audit trail. Uses tree-sitter AST (deterministic, 23 languages) + Claude extraction (semantic) + Leiden community detection (topology-based, no embeddings).
 
-| Aspect | claude-mem | obsidian-mind |
-|--------|-----------|---------------|
-| **What gets stored** | Every tool invocation (file reads, edits, bash commands) | Curated knowledge (decisions, patterns, meeting takeaways) |
-| **Who decides** | Automatic — no human in the loop | Intentional — user or Claude explicitly writes |
-| **Retrieval** | "What did I do?" (factual) | "What do I know?" (conceptual) |
-| **Analogy** | Git reflog — complete forensic trail | Git commits — meaningful, narrated changes |
-| **Storage** | SQLite + ChromaDB (`~/.claude-mem/`) — global | Plain Markdown vault — per-vault directory |
-| **Install method** | `claude plugin install claude-mem@thedotmack` | `git clone https://github.com/breferrari/obsidian-mind.git` |
+**Why it matters:** Without graphify, your AI reads raw files to understand architecture — expensive, slow, and lossy. With graphify, it reads a compact graph report: **71.5× fewer tokens per query** on a 52-file corpus. The savings compound with codebase size. On a 200-file monorepo, the difference between "grep everything" and "navigate the graph" is measured in minutes and thousands of tokens per question.
 
-**Synergy:** claude-mem captures raw material → obsidian-mind curates it into durable knowledge. A `timeline-report` from claude-mem can feed `/om-dump` to create structured vault notes.
+**Requires:** Python 3.10+ (installed automatically by `setup-plugins.sh` if Python is available). Without Python, graphify is skipped gracefully — everything else works normally.
+
+**What it provides:**
+- **`graphify-out/GRAPH_REPORT.md`** — plain-language architecture map: god nodes (highest-degree concepts), surprising connections, community clusters, suggested questions. Claude reads this before searching files.
+- **`graphify-out/graph.json`** — persistent queryable graph. Survives sessions, context resets, everything.
+- **`graphify-out/graph.html`** — interactive visualization (click nodes, search, filter by community)
+- **SHA256 cache** — re-runs only process changed files. First run ~5 min, subsequent runs seconds.
+- **Git hooks** — post-commit + post-checkout auto-rebuild the code graph (AST only, no LLM, instant)
+- **PreToolUse hook** — fires before every Glob/Grep. When graph exists, reminds Claude to consult GRAPH_REPORT.md before searching raw files. Zero cost when no graph.
+- **Every edge tagged** — `EXTRACTED` (found in source), `INFERRED` (reasonable guess with confidence score), `AMBIGUOUS` (flagged for review). You always know what's real.
+
+**Setup (automatic during bootstrap):**
+```bash
+# setup-plugins.sh handles all of this:
+pip install graphifyy            # Python package
+graphify install                 # Global skill → ~/.claude/skills/graphify/SKILL.md
+graphify hook install            # Git hooks → .git/hooks/post-commit + post-checkout
+```
+
+**Usage:**
+```bash
+/graphify .                      # Build full knowledge graph (first run ~5 min)
+/graphify . --update             # Incremental — re-extract only changed files
+/graphify . --no-viz             # Skip HTML, just report + JSON (faster)
+/graphify . --wiki               # Also generate agent-crawlable wiki
+/graphify . --watch              # Auto-rebuild on file changes (background)
+graphify query "auth flow"       # BFS traversal from terminal (no AI needed)
+graphify path "AuthModule" "DB"  # Shortest path between two concepts
+graphify explain "UserService"   # Plain-language node explanation
+```
+
+**Token savings:** **71.5× fewer tokens per query** vs reading raw files (on a 52-file corpus). Token reduction scales with corpus size — 6 files fit in a context window anyway, but at 50+ files the graph becomes the critical efficiency layer. The graph IS the compressed context. First run extracts and builds (~5 min); every subsequent query reads the compact graph instead of raw files — that's where the savings compound.
+
+**When to use:**
+- **New to a codebase** — run `/graphify .` before your first session. GRAPH_REPORT.md becomes your architecture briefing.
+- **After major refactors** — run `/graphify . --update` to refresh the graph.
+- **Daily work** — git hooks keep it current automatically. The PreToolUse hook means Claude always navigates by structure, not by grepping through every file.
+
+**MCP server mode** (advanced — persistent graph access for repeated queries):
+```bash
+# Add to .mcp.json for structured graph access:
+python3 -m graphify.serve graphify-out/graph.json
+```
+
+**Manual install (if bootstrap couldn't auto-install):**
+```bash
+pip install graphifyy                # or: pip install graphifyy --break-system-packages
+graphify install                     # global skill
+graphify claude install              # project CLAUDE.md section + PreToolUse hook
+graphify hook install                # git hooks
+```
+
+**Uninstall:**
+```bash
+graphify claude uninstall            # remove CLAUDE.md section + hook
+graphify hook uninstall              # remove git hooks
+pip uninstall graphifyy              # remove package
+```
+
+## The Three-Tool Memory Stack — claude-mem × graphify × obsidian-mind
+
+Three tools, three layers of intelligence. Each answers a fundamentally different question:
+
+| Question | Answered by | Layer | Example |
+|----------|------------|-------|---------|
+| *"How did we fix the auth bug last Tuesday?"* | **claude-mem** | 📝 Event log | Exact tool calls, file paths, terminal commands — forensic reconstruction |
+| *"How is auth connected to the database layer?"* | **graphify** | 🗺️ Code structure | God nodes, community clusters, cross-module edges — navigate by architecture |
+| *"What's our authentication philosophy and why?"* | **obsidian-mind** | 🧠 Human knowledge | Curated decisions, rationale, people context — understand the *why* |
+
+| Aspect | claude-mem | graphify | obsidian-mind |
+|--------|-----------|----------|---------------|
+| **What gets stored** | Every tool invocation (file reads, edits, commands) | Code structure (AST), cross-module relationships, design rationale | Curated knowledge (decisions, patterns, meetings, people) |
+| **Who decides** | Automatic — no human in the loop | Automatic — tree-sitter AST + Claude extraction | Intentional — user or Claude explicitly writes |
+| **Retrieval** | *"What did I do?"* (factual) | *"How is it connected?"* (structural) | *"What do I know?"* (conceptual) |
+| **Token impact** | ~48% API quota when enabled | **71.5× fewer tokens** vs reading raw files | ~2K tokens session start |
+| **Analogy** | Git reflog — forensic trail | Architecture diagram — structural map | Wiki — curated narrative |
+| **Storage** | SQLite + ChromaDB (`~/.claude-mem/`) | `graphify-out/` (JSON graph + HTML + report) | Plain Markdown vault |
+| **Persistence** | Global, across all projects | Per-project, survives sessions/compactions | Per-vault directory |
+| **Install method** | `claude plugin install claude-mem@thedotmack` | `pip install graphifyy && graphify install` | `git clone https://github.com/breferrari/obsidian-mind.git` |
+
+### The Synergy Pipeline
+
+```
+   claude-mem                  graphify                    obsidian-mind
+   ──────────                  ────────                    ─────────────
+   📝 Captures raw events      🗺️ Maps code structure       🧠 Curates knowledge
+   "I edited AuthService.ts"   "AuthService → DB → Cache"  "Auth uses JWT because..."
+         │                           │                            │
+         └── timeline-report ──→ graph query ──→ /om-dump ──→ vault note
+             (what happened)    (how connected)   (why it matters)
+```
+
+**Each tool is most powerful when the others exist:**
+- **graphify + obsidian-mind** — graphify discovers *what* your code does structurally; obsidian-mind captures *why* those decisions were made. Together: complete architectural understanding.
+- **claude-mem + graphify** — claude-mem records what you changed; graphify shows how those changes ripple through the architecture. Together: impact analysis.
+- **claude-mem + obsidian-mind** — claude-mem captures raw events; obsidian-mind curates them into lasting knowledge. Together: automated institutional memory.
+
+### Ordering: Bootstrap First, Then Graph
+
+**Why this order matters:** Bootstrap creates the knowledge docs (`claude/architecture.md`, domain docs, `CLAUDE.md`) — these are the files graphify will index. Running graphify on an empty repo produces a useless graph. After bootstrap populates real domain knowledge, graphify indexes *meaningful content*.
+
+The bootstrap flow:
+1. **Phase 4** — `setup-plugins.sh` **installs** graphify (pip package + global skill + git hooks). Fast, automatic, ~5s.
+2. **Phase 5** — Report is generated and shown to the user.
+3. **After report** — The AI **asks the user**: "🗺️ Want me to build the knowledge graph now?" This is the one permission-ask in the entire bootstrap — the graph build takes ~5 min and costs tokens, so the user chooses when.
+4. **If yes** → `/graphify .` runs. When it finishes, `graphify-out/GRAPH_REPORT.md` exists and the PreToolUse hook activates automatically.
+5. **If no** → The user runs `/graphify .` anytime later. Everything else works without it.
+
+### Using All Three
+
+```bash
+# 1. Bootstrap creates knowledge docs (always first)
+/bootstrap
+
+# 2. Graphify maps your code structure (recommended — ~5 min first run)
+/graphify .
+
+# 3. Claude-mem captures session history (enable when you want recall)
+bash claude/scripts/toggle-claude-mem.sh on
+
+# 4. Obsidian-mind for human knowledge (optional — clone separately)
+git clone https://github.com/breferrari/obsidian-mind.git ~/my-knowledge-vault
+```
+
+**You don't need all three.** Graphify alone gives massive value (71.5× token savings, architecture visibility). Add claude-mem for cross-session recall. Add obsidian-mind for human knowledge management. Each layer compounds the others.
 
 ## Hook Coexistence — Zero Conflict Proof
 
 Plugin hooks fire **in parallel** with project hooks on the same lifecycle event. They are architecturally independent — plugins register via `plugin/hooks/hooks.json`, project via `.claude/settings.json`. Claude Code merges them at runtime.
 
-| Lifecycle Event | Project Hook | claude-mem | Conflict? |
-|----------------|-------------|-----------|:---------:|
-| `SessionStart(startup)` | session-start.sh | ✅ (memory injection) | ✅ Additive |
-| `SessionStart(resume)` | session-start.sh | — | ✅ None |
-| `SessionStart(clear)` | session-start.sh | ✅ | ✅ Additive |
-| `SessionStart(compact)` | on-compact.sh | ✅ | ✅ Additive |
-| `PreCompact` | pre-compact.sh | — | ✅ None |
-| `UserPromptSubmit` | identity-reinjection.sh | ✅ (context capture) | ✅ None |
-| `PreToolUse(Bash)` | terminal-safety-gate.sh | — | ✅ None |
-| `PreToolUse(Write\|Edit)` | config-protection.sh | — | ✅ None |
-| `PostToolUse(*)` | edit-accumulator.sh (Edit\|Write only) | ✅ (**every** tool) | ✅ Different concerns |
-| `Stop` | stop-batch-format.sh, exit-nudge.sh | ✅ (session summary) | ✅ Additive |
-| `SubagentStop` | subagent-stop.sh | — | ✅ None |
-| `SessionEnd` | — | ✅ (drain observations) | ✅ None |
+| Lifecycle Event | Project Hook | claude-mem | graphify | Conflict? |
+|----------------|-------------|-----------|----------|:---------:|
+| `SessionStart(startup)` | session-start.sh | ✅ (memory injection) | — | ✅ Additive |
+| `SessionStart(resume)` | session-start.sh | — | — | ✅ None |
+| `SessionStart(clear)` | session-start.sh | ✅ | — | ✅ Additive |
+| `SessionStart(compact)` | on-compact.sh | ✅ | — | ✅ Additive |
+| `PreCompact` | pre-compact.sh | — | — | ✅ None |
+| `UserPromptSubmit` | identity-reinjection.sh | ✅ (context capture) | — | ✅ None |
+| `PreToolUse(Bash)` | terminal-safety-gate.sh | — | — | ✅ None |
+| `PreToolUse(Write\|Edit)` | config-protection.sh | — | — | ✅ None |
+| `PreToolUse(Glob\|Grep)` | — | — | ✅ (graph hint) | ✅ None |
+| `PostToolUse(*)` | edit-accumulator.sh (Edit\|Write only) | ✅ (**every** tool) | — | ✅ Different concerns |
+| `Stop` | stop-batch-format.sh, exit-nudge.sh | ✅ (session summary) | — | ✅ Additive |
+| `SubagentStop` | subagent-stop.sh | — | — | ✅ None |
+| `SessionEnd` | — | ✅ (drain observations) | — | ✅ None |
 
-**Zero conflicts across all 12 lifecycle events.** Verified via complete hook configuration analysis.
+**Zero conflicts across all 13 lifecycle events.** graphify's PreToolUse(Glob\|Grep) hook is a no-op when no graph exists (`[ -f graphify-out/graph.json ]` returns false).
 
 ## MCP Servers — Model Context Protocol
 
@@ -166,3 +282,6 @@ Claude Code plugins are installed globally at `~/.claude/plugins/`. They coexist
 | Plugin not activating | Installed but disabled | `claude plugin enable <name>` |
 | claude-mem not capturing after restart | Worker didn't start | `bash claude/scripts/toggle-claude-mem.sh status` to check; re-enable if needed |
 | obsidian-mind `/om-*` commands missing | Vault not cloned / not running from vault dir | `git clone https://github.com/breferrari/obsidian-mind.git` then `cd` into it |
+| graphify `GRAPH_REPORT.md` empty/missing | Graph not built yet | Run `/graphify .` — first build takes ~5 min |
+| graphify PreToolUse hook not firing | `graphify-out/graph.json` doesn't exist | Run `/graphify .` — hook is a no-op until graph exists |
+| Python not available for graphify | No Python 3.10+ | Install Python; graphify is skipped gracefully without it |

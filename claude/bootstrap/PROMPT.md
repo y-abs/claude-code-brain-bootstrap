@@ -50,7 +50,7 @@ If you hit ambiguity, make the best choice and document it in the report. Only s
 | **2** Smart Merge | **UPGRADE only** | Read guide → backup → preserve + enhance | 1-3 min |
 | **3** Populate | Both | Script + creative docs | 3-5 min |
 | **3.5** MCP | Both | Scan discovery → add suggestions to report (no user input) | ~5s |
-| **4** Plugins | Both | 1 script: install, disable, verify, update CLAUDE.md | ~2s |
+| **4** Plugins | Both | 1 script: claude-mem (install, disable, verify) + graphify (pip, skill, hooks) | ~5s |
 | **5** Validate | Both | Validate script + report | 30s |
 
 ---
@@ -262,13 +262,17 @@ Add a **"💡 MCP Suggestions"** bullet list to the final report. User configure
 
 ### Phase 4: Plugin Setup (1 command)
 
-> TL;DR: one script handles everything — wait for background install, disable, verify, update CLAUDE.md.
+> TL;DR: one script handles everything — claude-mem (wait, disable, verify) + graphify (pip install, skill, git hooks).
 
 ```bash
 bash claude/scripts/setup-plugins.sh . 2>&1
 ```
 
-The script: waits for background install → disables claude-mem (quota protection) → kills worker → verifies → updates CLAUDE.md plugin placeholder. If install failed, it documents in the report and gives the user the manual command.
+The script handles two tools in sequence:
+1. **claude-mem** — waits for background install → disables (quota protection) → kills worker → verifies → updates CLAUDE.md plugin placeholder. If install failed, documents in report with manual command.
+2. **graphify** — detects Python 3.10+ → `pip install graphifyy` → `graphify install` (global skill) → `graphify hook install` (git hooks for auto-rebuild on commit/branch switch). If Python not available, skips gracefully with manual instructions.
+
+> **graphify builds the graph on demand, not during bootstrap.** After bootstrap completes, the user runs `/graphify .` to build the knowledge graph (~5 min first run, then incremental via SHA256 cache). The PreToolUse hook in settings.json is already wired — it activates automatically once `graphify-out/graph.json` exists.
 
 > **obsidian-mind**: companion Obsidian vault template (not a plugin). Clone separately: `git clone https://github.com/breferrari/obsidian-mind.git`. See `claude/plugins.md`.
 
@@ -339,6 +343,32 @@ rm -rf claude/bootstrap/
 echo "✅ Bootstrap scaffolding removed"
 ```
 
+#### 🗺️ Offer: Build the Knowledge Graph (graphify)
+
+> **This is the absolute last step. Do it AFTER the report is shown to the user.**
+
+If `setup-plugins.sh` successfully installed graphify (check `GRAPHIFY_STATUS` in Phase 4 output), **ask the user ONE question**:
+
+```
+🗺️ graphify is installed and ready. Want me to build the knowledge graph now?
+
+   What you get: architecture map, god nodes, community clusters, cross-module connections
+   Cost: ~5 minutes (first run — then incremental via SHA256 cache)
+   Token savings: 71.5× fewer tokens per architecture question going forward
+
+   → Yes: I'll run /graphify . now
+   → No: You can run /graphify . anytime later
+```
+
+**This is the ONE exception to "do not ask for permission"** — the graph build takes ~5 minutes and costs tokens (Claude extraction pass). The user should choose when to spend that time.
+
+If the user says yes:
+```bash
+/graphify .
+```
+
+If the user says no or doesn't respond, move on. The PreToolUse hook is already wired — it activates automatically whenever `graphify-out/graph.json` appears.
+
 > This is the last step. `/bootstrap` will guide the user to re-install from template if needed in the future.
 
 ```bash
@@ -358,6 +388,6 @@ Include the timing trail output in the report.
 - **Phase 3 Step 1 (Mechanical):** ~5s (1 script)
 - **Phase 3 Step 2 (Creative):** ~5-10 min (🔴 MANDATORY first, then 🟡 RECOMMENDED)
 - **Phase 3.5 (MCP):** ~10s (optional)
-- **Phase 4 (Plugins):** ~2s (1 script — all automated)
+- **Phase 4 (Plugins):** ~5s (1 script — claude-mem + graphify automated)
 - **Phase 5 (Validate + Report):** ~10s (1 script + report)
 - **AI-work total: ~5-10 min** · **Wall-clock total: ~8-16 min**
