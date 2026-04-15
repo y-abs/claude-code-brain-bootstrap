@@ -2,3 +2,10 @@
 tasks/*
 
 .idea/
+
+# cocoindex-code vector index (binary DBs — settings.yml is committed)
+.cocoindex_code/target_sqlite.db
+.cocoindex_code/cocoindex.db
+
+# code-review-graph AST index (project-local SQLite, rebuilt from source)
+.code-review-graph/

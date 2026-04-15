@@ -18,6 +18,9 @@
 | terminal, command, shell, subprocess, pager, interactive | `claude/terminal-safety.md` |
 | CVE, dependency upgrade, security scan | `claude/cve-policy.md` |
 | plugin, claude-mem, hook coexistence, API quota, obsidian-mind vault, rtk | `claude/plugins.md` |
+| structural query, call trace, blast radius, dead code, architecture live, codebase-memory | `claude/plugins.md` |
+| semantic search, find code by meaning, cocoindex, vector search | `claude/plugins.md` |
+| change risk, blast radius, breaking changes, pre-PR safety, risk score | `claude/plugins.md` |
 <!-- {{DOMAIN_LOOKUP_TABLE}} — Add rows for each domain in your project:
 | domain-keyword-1, domain-keyword-2 | `claude/your-domain.md` |
 -->
@@ -189,6 +192,12 @@ bash claude/scripts/toggle-claude-mem.sh status   # Check state
 > **obsidian-mind** is a companion Obsidian vault (not a Claude Code plugin) — clone separately if you want AI-powered knowledge management: `git clone https://github.com/breferrari/obsidian-mind.git`. See `claude/plugins.md`.
 
 **rtk** — execution efficiency layer. Transparently rewrites Claude's bash commands for 60-90% output token savings. Auto-installed by `setup-plugins.sh` if `cargo` is available. No-op when absent. ROI: `rtk gain` · Gaps: `rtk discover`.
+
+**codebase-memory-mcp** — live structural graph (14 MCP tools). Auto-installed. `mcp__codebase-memory-mcp__trace_path` / `detect_changes` / `get_architecture`. **Use before reading files for structural questions.** See `claude/plugins.md`.
+
+**cocoindex-code** — semantic vector search (1 MCP tool: `search`). Auto-installed if Python 3.11+. `mcp__cocoindex-code__search`. Find code by meaning when you don't know exact names. See `claude/plugins.md`.
+
+**code-review-graph** — change risk analysis (29 MCP tools). Auto-installed if Python 3.10+. `mcp__code-review-graph__detect_changes_tool(base_branch="main")`. Pre-PR safety gate: risk score 0–100, blast radius, breaking changes. See `claude/plugins.md`.
 
 ## graphify — Knowledge Graph
 

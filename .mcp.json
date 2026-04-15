@@ -1,4 +1,18 @@
 {
-  "mcpServers": {}
+  "mcpServers": {
+    "codebase-memory-mcp": {
+      "command": "codebase-memory-mcp",
+      "args": []
+    },
+    "cocoindex-code": {
+      "type": "stdio",
+      "command": "ccc",
+      "args": ["mcp"]
+    },
+    "code-review-graph": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["code-review-graph", "serve"]
+    }
+  }
 }
-

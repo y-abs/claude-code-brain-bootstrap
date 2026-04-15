@@ -344,11 +344,11 @@ The system is designed to **minimize token cost** while maximizing context — y
 | ⚡ **Slash commands** | 26 | `/plan` `/build` `/test` `/lint` `/serve` `/review` `/mr` `/debug` `/diff` `/git` `/deps` `/docker` `/migrate` `/db` `/cleanup` `/maintain` `/checkpoint` `/resume` `/context` `/ticket` `/bootstrap` `/health` `/mcp` `/squad-plan` `/research` `/update-code-index` |
 | 🪝 **Lifecycle hooks** | 14 | Session recovery, config protection, terminal safety gate (3 profiles), commit quality, batch formatting, exit checklist, compaction recovery, identity refresh, permission audit, test reminders |
 | 🤖 **AI subagents** | 5 | **research** (read-only exploration), **reviewer** (10-point MR review), **plan-challenger** (adversarial plan critique), **session-reviewer** (conversation pattern analysis), **security-auditor** (vulnerability scanning) — each declares its optimal model, falls back to session model for local/alternative providers |
-| 🎓 **Skills** | 5 | TDD discipline (auto-loads on test files), root-cause trace, changelog generation, session safety guards, cross-layer consistency check |
+| 🎓 **Skills** | 8 | TDD discipline (auto-loads on test files), root-cause trace, changelog generation, session safety guards, cross-layer consistency check, **codebase-memory** (structural graph navigation), **cocoindex-code** (semantic vector search), **code-review-graph** (change risk analysis) |
 | 🔧 **Brain scripts** | 15 | `discover.sh` (3800-line stack detector), `populate-templates.sh`, `post-bootstrap-validate.sh`, `validate.sh`, `canary-check.sh`, `_platform.sh` (portable shell helpers — Linux/macOS/Windows), `portability-lint.sh` (GNU-only pattern detector), `integration-test.sh` (17 assertions: FRESH/UPGRADE/--check/3 guards, 3 platforms), `phase2-verify.sh`, `toggle-claude-mem.sh`, `generate-service-claudes.sh`, `generate-copilot-docs.sh`, `setup-plugins.sh`, `check-creative-work.sh`, `tdd-loop-check.sh` — all in `claude/scripts/` |
 | 🤝 **GitHub Copilot config** | 8 | Root instructions, 3 scoped instruction files (+1 template), 2 reusable prompts (+1 template) |
 | 📏 **Path-scoped rules** | 13 | Terminal safety, self-maintenance, quality gates, memory policy, domain learning, practice capture, agent orchestration, language-specific rules, template for adding your own |
-| 🔌 **Plugins** | 2 | **claude-mem** (persistent cross-session memory) — auto-installed, disabled by default (quota protection) · **graphify** (knowledge graph engine) — auto-installed if Python 3.10+ available, graph built on demand |
+| 🔌 **Plugins** | 6 | **claude-mem** (cross-session memory, disabled by default) · **graphify** (architecture knowledge graph, Python 3.10+) · **rtk** (command token optimizer, 60-90% savings) · **codebase-memory-mcp** (live structural graph, 14 MCP tools) · **cocoindex-code** (semantic vector search, Python 3.11+) · **code-review-graph** (change risk analysis, 29 MCP tools, Python 3.10+) |
 | ✅ **Validation checks** | 120 | File existence, hook executability, placeholder detection, settings consistency, cross-reference integrity, self-bootstrap protection |
 
 ---
@@ -438,30 +438,68 @@ Plus 8 more hooks for identity refresh, permission audit, subagent logging, exit
 
 ## 🔌 Plugin Ecosystem
 
-The bootstrap installs **two tools** — no manual setup needed:
+The bootstrap auto-installs a **five-tool stack** — each tool occupies a distinct, non-overlapping niche:
 
-| Plugin | Purpose | Default |
-|:-------|:--------|:-------:|
-| **[claude-mem](https://github.com/thedotmack/claude-mem)** | 🧠 Persistent cross-session memory (SQLite + ChromaDB) — auto-captures every interaction, searchable across sessions | ⚠️ Disabled (quota protection) |
-| **[graphify](https://github.com/safishamsi/graphify)** | 🗺️ Knowledge graph — turns your codebase into a queryable architecture map with god nodes, community clusters, and cross-module connections | ✅ Installed (graph built on demand) |
+| Tool | Axis | Install | Impact |
+|:-----|:-----|:-------:|:------:|
+| **[graphify](https://github.com/safishamsi/graphify)** | 🗺️ Architecture snapshot — god nodes, community clusters, cross-module map | Auto (Python 3.10+) | **71.5× fewer tokens** per query |
+| **[codebase-memory-mcp](https://github.com/DeusData/codebase-memory-mcp)** | 🔍 Live structural graph — call traces, blast radius, dead code, Cypher queries | Auto (curl) | **120× fewer tokens** vs file reads |
+| **[cocoindex-code](https://github.com/cocoindex/cocoindex-code)** | 🔎 Semantic search — find code by meaning via local vector embeddings (no API key) | Auto (Python 3.11+) | Finds what grep/AST miss |
+| **[code-review-graph](https://github.com/codebase-review/code-review-graph)** | 🔴 Change risk analysis — risk score 0–100, blast radius, breaking changes from git diffs | Auto (Python 3.10+) | Pre-PR safety gate |
+| **[rtk](https://github.com/codemod-com/rtk)** | ⚡ Command efficiency — transparently rewrites bash commands for compressed output | Auto (cargo) | **60-90% output token savings** |
+| **[claude-mem](https://github.com/thedotmack/claude-mem)** | 🧠 Cross-session memory — captures every interaction, searchable across sessions | Auto | ⚠️ Disabled by default (~48% quota) |
 
-```bash
-# claude-mem is disabled by default (PostToolUse(*) can use ~48% of API quota)
-bash claude/scripts/toggle-claude-mem.sh on       # Enable for exploratory sessions
-bash claude/scripts/toggle-claude-mem.sh off      # Disable for batch work
-bash claude/scripts/toggle-claude-mem.sh status   # Check current state
+**Zero overlap. Full coverage.** Each question has exactly one right tool:
+
+```
+Question                                    Tool                         How
+──────────────────────────────────────────────────────────────────────────────────
+"Show me the architecture"                  graphify                     GRAPH_REPORT.md (read once)
+"Who calls AuthService.login()?"            codebase-memory-mcp          trace_path() — <10ms, no file reads
+"Find code related to rate limiting"        cocoindex-code               search() — KNN over float32 vectors
+"Is this PR safe to ship?"                  code-review-graph            detect_changes_tool() — risk score 0–100
+"What did I do last Tuesday?"               claude-mem                   /mem-search (toggle on first)
+Every bash command Claude runs              rtk                          transparent rewrite, no config needed
+──────────────────────────────────────────────────────────────────────────────────
 ```
 
+**graphify vs codebase-memory-mcp** — the most common point of confusion:
+- **graphify** = static architecture report, built once, read at session start. Answers "how is the codebase structured?"
+- **codebase-memory-mcp** = live graph, polled continuously, queried on demand. Answers "who calls X right now?"
+- They're additive: graphify for orientation → codebase-memory-mcp for navigation.
+
+**cocoindex-code** fills the gap both miss: structural tools require knowing names. Semantic search doesn't. "Find code that handles rate limiting" returns relevant chunks even if no file is called `rateLimiting.ts`.
+
+**rtk** is invisible — it rewrites every bash command Claude issues (git, grep, cargo, gh...) for 60-90% fewer output tokens. No configuration, no invocation needed. Self-guarding: no-op if not installed.
+
 ```bash
-# graphify — build the knowledge graph (first run ~5 min, then incremental via SHA256 cache)
-/graphify .                                        # Full build (inside Claude Code / any AI)
-graphify query "auth flow"                         # Query from terminal (no AI needed)
-# Git hooks auto-rebuild on every commit and branch switch (AST only, instant, no LLM)
+# graphify — build once, auto-rebuilt by git hooks
+/graphify .                                        # Full build (~5 min first run)
+graphify query "auth flow"                         # Terminal query — no AI needed
+
+# codebase-memory-mcp — auto-started, always current via background polling
+mcp__codebase-memory-mcp__trace_path              # Who calls this?
+mcp__codebase-memory-mcp__get_architecture        # Live arch view
+
+# cocoindex-code — semantic search (builds index on first use, ~30s)
+mcp__cocoindex-code__search                       # Find code by meaning
+
+# code-review-graph — change risk analysis (build graph once, then query)
+mcp__code-review-graph__build_graph_tool          # First run — build the AST graph
+mcp__code-review-graph__detect_changes_tool       # Pre-PR: risk score + blast radius
+
+# rtk — zero config (just install the binary)
+cargo install rtk          # Activates automatically via pre-wired hook
+rtk gain                   # See how many tokens were saved this session
+
+# claude-mem — toggle on for exploratory sessions
+bash claude/scripts/toggle-claude-mem.sh on       # Enable
+bash claude/scripts/toggle-claude-mem.sh off      # Disable (batch work — saves ~48% quota)
 ```
 
-> 📖 **Want an AI-powered knowledge vault?** [obsidian-mind](https://github.com/breferrari/obsidian-mind) is a companion Obsidian vault template (not a Claude Code plugin) — clone it separately for curated human knowledge management. **The three-tool stack** (claude-mem × graphify × obsidian-mind) gives your AI three layers of intelligence: event log → code structure → human knowledge. Each layer compounds the others. See `claude/plugins.md` for the full synergy guide.
+> 📖 **Human knowledge layer:** [obsidian-mind](https://github.com/breferrari/obsidian-mind) is a companion Obsidian vault (clone separately) — adds the *"why was it built this way?"* axis. See `claude/plugins.md` for the full coexistence matrix, token economics, and setup details.
 
-> 📚 **Full plugin reference:** [claude/plugins.md](claude/plugins.md) — hook coexistence, three-tool synergy stack, token economics, obsidian-mind setup guide.
+> 📚 **Full plugin reference:** [claude/plugins.md](claude/plugins.md) — hook coexistence matrix, five-tool stack breakdown, install/troubleshoot guides.
 
 ---
 

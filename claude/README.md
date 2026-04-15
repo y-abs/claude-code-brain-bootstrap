@@ -92,7 +92,7 @@ Task about [domain]?   → 📚 Read claude/[domain].md
 | `build.md` | 🔨 Build commands, test commands, CI pipeline, local dev |
 | `templates.md` | 📝 MR/ticket templates, context window management |
 | `cve-policy.md` | 🔒 CVE decision tree, ignore list format, override checklist |
-| `plugins.md` | 🔌 Plugin configuration — claude-mem, obsidian-mind, hook coexistence matrix |
+| `plugins.md` | 🔌 Plugin configuration — claude-mem, graphify, rtk, codebase-memory-mcp, cocoindex-code, code-review-graph, obsidian-mind, hook coexistence matrix |
 | `decisions.md` | 🏛️ Architectural decision log — settled choices with full rationale |
 | `_examples/*.md` | 💡 Worked examples of domain docs (delete after understanding) |
 
@@ -189,6 +189,9 @@ Agents declare their **optimal model** for best results — but gracefully fall 
 | `repo-recap` | 🔵 Invocable | Manual — `/repo-recap [fr]` |
 | `pr-triage` | 🔵 Invocable | Manual — `/pr-triage [all\|42 57] [fr]` |
 | `issue-triage` | 🔵 Invocable | Manual — `/issue-triage [all\|42 57] [fr]` |
+| `codebase-memory` | 🔵 Invocable | Manual — use before reading files for structural questions (`trace_path`, `detect_changes`, `get_architecture`) |
+| `cocoindex-code` | 🔵 Invocable | Manual — `/cocoindex-code` or `mcp__cocoindex-code__search` for semantic code discovery |
+| `code-review-graph` | 🔵 Invocable | Manual — run before any PR: `mcp__code-review-graph__detect_changes_tool(base_branch="main")` |
 
 ### 🪝 Hooks (`.claude/hooks/`)
 

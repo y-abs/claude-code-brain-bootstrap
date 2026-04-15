@@ -48,6 +48,7 @@
 - [📐 Best Practices](#-best-practices)
 - [❓ FAQ](#-faq)
 - [🔌 Plugin Ecosystem — Deep Dive](#-plugin-ecosystem--deep-dive)
+  - [🔌 What Is MCP? (Start Here If You're New)](#-what-is-mcp-start-here-if-youre-new)
 - [🧬 From Instructions to Guarantees](#-from-instructions-to-guarantees)
 - [🤝 Contributing](#-contributing)
   - [🔄 CI Pipeline](#-ci-pipeline)
@@ -211,7 +212,7 @@ Your AI shouldn't drown in 50K tokens when you ask it to fix a typo. So the syst
 | 🗺️ `.graphifyignore` | Tells graphify what to exclude from the knowledge graph (node_modules, dist, lockfiles) |
 | 📖 `README.md` | The pitch + quick start |
 | ⚖️ `LICENSE` | MIT |
-| 🔌 `.mcp.json` | MCP server configuration template for tool integrations |
+| 🔌 `.mcp.json` | MCP server configuration — tells Claude Code which external tool servers to start and how. See [What Is MCP?](#-what-is-mcp-start-here-if-youre-new) |
 | 🐚 `.shellcheckrc` | ShellCheck configuration for script linting |
 
 ### 🧠 Bootstrap Scaffolding — `claude/bootstrap/` (3 files, auto-deleted)
@@ -502,14 +503,17 @@ Parallel config for Copilot users:
 
 #### 10. 🔌 Plugin Ecosystem
 
-Two tools are auto-installed by bootstrap:
+Five tools are auto-installed by bootstrap — each occupies a distinct, non-overlapping niche:
 
-| Tool | Purpose | Default state |
-|:-----|:--------|:------------:|
-| 🧠 **claude-mem** | Persistent cross-session memory (SQLite + ChromaDB) | ⚠️ Disabled (quota protection) |
-| 🗺️ **graphify** | Knowledge graph — 71.5× fewer tokens per query vs raw files | ✅ Installed (graph on demand) |
+| Tool | Axis | Default state |
+|:-----|:-----|:------------:|
+| 🧠 **claude-mem** | *"What happened last Tuesday?"* — cross-session event log (SQLite + ChromaDB) | ⚠️ Disabled (~48% quota) |
+| 🗺️ **graphify** | *"Show me the architecture"* — static knowledge graph, 71.5× fewer tokens per query | ✅ On demand |
+| ⚡ **rtk** | *Every bash command* — transparent token optimizer, 60-90% output savings | ✅ Auto-active (cargo) |
+| 🔍 **codebase-memory-mcp** | *"Who calls this function?"* — live structural graph, 14 MCP tools, 120× fewer tokens | ✅ Auto-installed (curl) |
+| 🔎 **cocoindex-code** | *"Find code related to X"* — semantic vector search, local embeddings, no API key | ✅ Auto-installed (Python 3.11+) |
 
-Plugin hooks fire **in parallel** with project hooks — independent systems, zero conflicts. See `claude/plugins.md` for the full coexistence matrix, the three-tool synergy stack (claude-mem × graphify × obsidian-mind), and setup guides.
+**MCP servers (codebase-memory-mcp, cocoindex-code) register zero hooks** — they're pure JSON-RPC stdio servers started on demand. **rtk** is a single `PreToolUse(Bash)` hook, first in chain. **graphify** adds one `PreToolUse(Glob|Grep)` hint hook (no-op when graph absent). **claude-mem** adds `PostToolUse(*)` — which is why it's disabled by default. Zero conflicts by design. See `claude/plugins.md` for the full coexistence matrix.
 
 ---
 
@@ -966,46 +970,254 @@ claude plugin install claude-mem@thedotmack
 
 ## 🔌 Plugin Ecosystem — Deep Dive
 
-The bootstrap installs **two tools** that give your AI persistent intelligence beyond the session boundary. Additionally, [obsidian-mind](https://github.com/breferrari/obsidian-mind) is an optional companion Obsidian vault (cloned separately) that completes the three-layer memory stack:
+The bootstrap auto-installs **five complementary tools** — each axis of intelligence is independent, zero overlap, full coverage:
 
-| | Type | Answers | Token Impact | Default |
-|:|:-----|:--------|:-------------|:-------:|
+| | Type | Axis | Token Impact | Default |
+|:|:-----|:-----|:-------------|:-------:|
 | 🧠 **[claude-mem](https://github.com/thedotmack/claude-mem)** | Claude Code plugin | *"What did I do across sessions?"* | ~48% API quota when enabled | ⚠️ Disabled |
-| 🗺️ **[graphify](https://github.com/safishamsi/graphify)** | Python tool + PreToolUse hook | *"How is my code connected?"* | **71.5× fewer tokens** per query | ✅ Installed |
-| 📖 **[obsidian-mind](https://github.com/breferrari/obsidian-mind)** | Obsidian vault (clone separately) | *"What do I know about this?"* | ~2K tokens/session | Optional |
+| 🗺️ **[graphify](https://github.com/safishamsi/graphify)** | Python tool + PreToolUse hook | *"Show me the architecture"* | **71.5× fewer tokens** per query | ✅ On demand |
+| ⚡ **[rtk](https://github.com/codemod-com/rtk)** | Rust binary + PreToolUse(Bash) hook | *Every bash command* — transparent rewrite | **60-90% output token savings** | ✅ Auto (cargo) |
+| 🔍 **[codebase-memory-mcp](https://github.com/DeusData/codebase-memory-mcp)** | C binary + MCP server | *"Who calls this? What breaks?"* | **120× fewer tokens** vs file exploration | ✅ Auto (curl) |
+| 🔎 **[cocoindex-code](https://github.com/cocoindex/cocoindex-code)** | Python + MCP server | *"Find code related to X"* | Finds what grep/AST miss | ✅ Auto (Python 3.11+) |
+| 🔴 **[code-review-graph](https://github.com/codebase-review/code-review-graph)** | Python + MCP server | *"Is this PR safe to ship?"* — risk score + blast radius | Pre-PR safety gate | ✅ Auto (Python 3.10+) |
+| 📖 **[obsidian-mind](https://github.com/breferrari/obsidian-mind)** | Obsidian vault (clone separately) | *"Why was it built this way?"* | ~2K tokens/session | Optional |
 
-### Three Layers of Intelligence
+### 🔌 What Is MCP? (Start Here If You're New)
 
-Each tool answers a fundamentally different question — together they form a complete memory system:
+**MCP = Model Context Protocol.** It's a standard that lets Claude Code talk to external programs that expose tools. Think of it as a plugin system where external programs become callable functions directly inside your AI session.
+
+**The mental model:**
 
 ```
-   📝 claude-mem          🗺️ graphify               🧠 obsidian-mind
-   (event log)            (code structure)           (human knowledge)
-   ─────────────          ──────────────             ────────────────
-   What happened?         How is it connected?       Why was it built this way?
-   
-   "I edited AuthService  "AuthService → Database    "We chose JWT over sessions
-    at 14:32 yesterday"    → CacheLayer → API"        because of horizontal scaling"
+Without MCP:                          With MCP:
+──────────────────                    ──────────────────────────────────────
+You: "Who calls AuthService?"         You: "Who calls AuthService?"
+Claude: reads 20 files... → answer    Claude: calls tool → answer in <10ms
+Cost: ~5000 tokens, 30 seconds        Cost: ~50 tokens, 0.01 seconds
 ```
 
-**The synergy:** claude-mem captures raw material → graphify maps structural connections → obsidian-mind curates durable knowledge. Each layer compounds the value of the others.
+**How it works — step by step:**
+
+1. You have a program installed on your machine (e.g., `codebase-memory-mcp`)
+2. It exposes tools — functions Claude can call (e.g., `trace_path`, `detect_changes`)
+3. `.mcp.json` tells Claude Code *how to start that program* when it needs a tool
+4. Claude Code starts the program as a subprocess (stdin/stdout), sends it a JSON request, gets a JSON response
+5. Claude sees the result as if it had just read a file — no difference from its perspective
+
+**The `.mcp.json` file explained:**
+
+```json
+{
+  "mcpServers": {
+    "codebase-memory-mcp": {       ← This is the SERVER KEY (you pick the name)
+      "command": "codebase-memory-mcp",   ← Binary to run
+      "args": []                           ← Arguments
+    },
+    "cocoindex-code": {
+      "type": "stdio",
+      "command": "ccc",            ← Binary to run
+      "args": ["mcp"]              ← Arguments passed to it
+    },
+    "code-review-graph": {
+      "type": "stdio",
+      "command": "uvx",            ← uvx = run in isolated Python env
+      "args": ["code-review-graph", "serve"]
+    }
+  }
+}
+```
+
+Each entry = one external program. Claude Code starts them on demand.
+
+**How to call an MCP tool:**
+
+The pattern is always: `mcp__SERVER_KEY__TOOL_NAME`
+
+```
+mcp__codebase-memory-mcp__trace_path
+     └── SERVER_KEY ──┘  └── TOOL ──┘
+
+mcp__cocoindex-code__search
+     └── SERVER ──┘  └─ TOOL ─┘
+
+mcp__code-review-graph__detect_changes_tool
+     └────── SERVER ──────┘  └──── TOOL ────┘
+```
+
+You use these tool names exactly the same way as built-in Claude Code tools — the AI calls them transparently.
+
+**Why stdio? Why not HTTP?**
+
+stdio (stdin/stdout) means the program lives as a subprocess — no port management, no auth, no firewall rules. Claude Code pipes JSON in, reads JSON out. Simple, fast, secure. The program starts in milliseconds and exits when Claude closes it.
+
+**What happens when you open a repo without the binary installed?**
+
+Nothing breaks. Claude Code tries to start the server, fails silently, and the `mcp__*` tools become unavailable. All other functionality works normally. Install the binary → restart Claude Code → tools appear automatically.
+
+**The three MCP servers in this bootstrap:**
+
+| Server key | Binary | What it gives you | Starts when |
+|------------|--------|-------------------|-------------|
+| `codebase-memory-mcp` | `codebase-memory-mcp` | 14 structural graph tools — call paths, dead code, blast radius | First `mcp__codebase-memory-mcp__*` call |
+| `cocoindex-code` | `ccc mcp` | 1 semantic search tool — find code by meaning | First `mcp__cocoindex-code__search` call |
+| `code-review-graph` | `uvx code-review-graph serve` | 29 change risk tools — risk score, blast radius, breaking changes | First `mcp__code-review-graph__*` call |
+
+**Check what's running:**
+```bash
+# See all configured servers and their tools
+/mcp list
+
+# Verify .mcp.json is valid JSON
+cat .mcp.json
+```
+
+**Add a new MCP server in 30 seconds:**
+```bash
+/mcp add github          # Browse Smithery registry and add
+# OR edit .mcp.json directly — add an entry under "mcpServers"
+```
+
+> 📚 Full MCP reference: `claude/plugins.md` → "MCP Servers" section.
+
+### Five Axes — Zero Overlap, Full Coverage
+
+```
+Question                                    Tool                         Mechanism
+──────────────────────────────────────────────────────────────────────────────────
+"Show me the architecture"                  graphify                     GRAPH_REPORT.md (read once)
+"Who calls AuthService.login()?"            codebase-memory-mcp          trace_path() — <10ms
+"Find code related to rate limiting"        cocoindex-code               search() — KNN float32 vectors
+"Is this PR safe to ship?"                  code-review-graph            detect_changes_tool() — risk 0–100
+"What did I do last Tuesday?"               claude-mem                   /mem-search
+"Why was JWT chosen over sessions?"         obsidian-mind (optional)     vault notes
+Every bash command Claude runs              rtk                          transparent rewrite (no config)
+──────────────────────────────────────────────────────────────────────────────────
+```
+
+**graphify** = static architecture snapshot (read once, survives sessions, LLM-synthesized narrative)
+**codebase-memory-mcp** = live structural graph (always current via background polling, 14 MCP tools)
+**cocoindex-code** = semantic search (find code by concept, not by name — fills the gap AST misses)
+**code-review-graph** = change risk analysis (BFS blast radius, risk score, breaking changes — the "safe to ship?" gate)
+**rtk** = execution layer (invisible token optimizer, rewrites every bash command transparently)
+**claude-mem** = temporal memory (forensic session log, what happened when)
+**obsidian-mind** = curated knowledge (the human "why" behind decisions)
+
+### graphify vs codebase-memory-mcp — When to Use Which
+
+These two both analyze code structure but serve completely different purposes:
+
+| Dimension | graphify | codebase-memory-mcp |
+|-----------|----------|---------------------|
+| **Mode** | Static report (read at session start) | Live MCP tools (queried on demand) |
+| **Output** | GRAPH_REPORT.md — LLM-synthesized narrative | Structured JSON via 14 MCP tools |
+| **Query** | Read file / `graphify query` CLI | `mcp__codebase-memory-mcp__*` tools |
+| **Update** | Git hooks (post-commit, post-checkout) | Background git polling (5–60s adaptive) |
+| **Strength** | *"Understand the forest"* — architecture narrative | *"Navigate individual trees"* — precise call tracing |
+| **Best for** | Session start, new to codebase, architecture review | Pre-PR blast radius, call graph, dead code |
+
+**Use graphify at session start.** Use codebase-memory-mcp throughout the session for structural questions.
+
+### codebase-memory-mcp vs cocoindex-code — Structural vs Semantic
+
+| Dimension | codebase-memory-mcp | cocoindex-code |
+|-----------|---------------------|----------------|
+| **Query type** | "Who calls `foo()`?" — exact traversal | "Find code related to auth" — fuzzy meaning |
+| **Index type** | AST nodes + Cypher graph | Text chunks + float32 vectors |
+| **Retrieval** | Graph traversal | KNN similarity |
+| **Requires knowing** | Function/class names | Nothing — just a concept |
+| **Best for** | Known entry points, call chains | Exploration, unfamiliar codebases |
+
+**Use them together:** cocoindex-code finds the entry point → codebase-memory-mcp traces from it.
+
+### rtk — The Invisible Efficiency Layer
+
+rtk is fundamentally different from the other tools: it doesn't answer questions, it reduces the cost of every answer. Every bash command Claude issues (git log, grep, cargo build, gh pr list...) goes through `rtk rewrite` — if RTK has a compressed equivalent, it substitutes it automatically. Claude never knows it happened.
+
+- **Self-guarding hook:** exits 0 silently if rtk or jq are absent — zero penalty when not installed
+- **First in PreToolUse(Bash) chain:** rewrites before safety/quality gates check the command
+- **Session ROI:** `rtk gain` shows tokens saved in the current session
+- **Coverage gaps:** `rtk discover` shows commands not yet in the registry
+
+### code-review-graph — The "Safe to Ship?" Gate
+
+code-review-graph occupies the fourth structural axis: **change risk**. It answers the question none of the other tools answer: given what I just changed, what is the blast radius, and is it safe to merge?
+
+**How it works:**
+1. Builds a SHA-256 AST dependency graph of the entire codebase (~6s for 500 files)
+2. On any `detect_changes_tool` call, reads the current git diff against the base branch
+3. BFS traversal from every changed node to compute all transitively affected nodes (100% recall)
+4. Computes risk score (0–100) as a weighted aggregate of blast radius size, signature changes, and community crossings
+5. Returns: risk score, blast radius list, breaking changes, and impacted execution flows
+
+**Crown jewel — `detect_changes_tool`:**
+```
+mcp__code-review-graph__detect_changes_tool(base_branch="main")
+→ risk_score: 72
+→ blast_radius: [AuthService, UserRepository, SessionMiddleware, ...]
+→ breaking_changes: [AuthService.login() — signature changed]
+→ impacted_flows: [POST /auth/login, POST /auth/refresh]
+```
+
+**Mandatory pre-PR workflow:**
+1. `build_graph_tool(repo_path=".")` — first time only
+2. `detect_changes_tool(base_branch="main")` — always before merging
+3. Score ≥ 60 → `get_dependency_chain_tool` on highest-risk node
+4. Impacted flows → verify with `get_neighbors_tool`
+
+**Why NOT `code-review-graph install --platform claude-code`:**
+The `install` command (without `--no-hooks`) writes a PostToolUse(Write|Edit|Bash) hook to `~/.claude/settings.json` globally — same ~48% quota drain as claude-mem, firing on every file write and bash command. It also injects a `# Code Review Graph` section into CLAUDE.md that blows the 4KB budget. The bootstrap uses `postprocess --no-instructions --no-hooks` — git post-commit hook only (SHA-256, no LLM, <2s).
+
+**Risk score table:**
+| Score | Meaning | Action |
+|-------|---------|--------|
+| 0–25 | Low risk | Review and ship |
+| 26–50 | Moderate | Verify blast radius |
+| 51–75 | High | Write tests for affected nodes |
+| 76–100 | Critical | Full review + stakeholder sign-off |
+
+### Why NOT to use `codebase-memory-mcp install`
+
+The `install` command (without `--skip-config`) writes a `PreToolUse(Grep|Glob|Read|Search)` hook to `~/.claude/settings.json` — **globally, for ALL projects** — that blocks the first file search per session. The bootstrap installs binary-only (`--skip-config`) and manages `.mcp.json` at project level.
+
+### Why NOT `ccc init` for cocoindex-code
+
+`ccc init` is interactive (questionary prompts) — hangs in non-TTY environments like `setup-plugins.sh`. The bootstrap creates the YAML config files programmatically and commits `.cocoindex_code/settings.yml` to the repo so the team shares the same include/exclude patterns. Index DBs are gitignored (binary, machine-specific).
 
 ### Setup & Usage
 
 ```bash
+# graphify — build once, auto-maintained by git hooks
+/graphify .                                        # Full build (~5 min first run)
+graphify query "auth flow"                         # Terminal query (no AI needed)
+
+# codebase-memory-mcp — auto-installed, always ready
+mcp__codebase-memory-mcp__trace_path              # Who calls this function?
+mcp__codebase-memory-mcp__get_architecture        # Live architecture map
+mcp__codebase-memory-mcp__search_graph            # Find by name/pattern/dead code
+
+# cocoindex-code — semantic search (builds index on first use, ~30s)
+mcp__cocoindex-code__search                       # Find code by concept/meaning
+# ccc index                                       # Manually rebuild if needed
+# ccc status                                      # Check chunk/file counts
+
+# code-review-graph — change risk analysis (mandatory pre-PR)
+mcp__code-review-graph__build_graph_tool          # First run — build the AST graph
+mcp__code-review-graph__detect_changes_tool       # Pre-PR: risk score + blast radius
+# code-review-graph build .                       # Terminal equivalent
+# code-review-graph postprocess --no-instructions --no-hooks  # Reinstall git hook
+
+# rtk — install once, active forever
+cargo install rtk              # Activates hook automatically (pre-wired)
+rtk gain                       # Session token savings
+rtk discover                   # Coverage gaps
+
 # claude-mem — toggle on for exploratory sessions, off for batch work
 bash claude/scripts/toggle-claude-mem.sh on       # Enable (activates next session)
 bash claude/scripts/toggle-claude-mem.sh off      # Disable + kill worker — saves quota
 bash claude/scripts/toggle-claude-mem.sh status   # Check current state
 
-# graphify — build once, auto-maintained by git hooks
-/graphify .                                        # Full build (~5 min first run)
-graphify query "auth flow"                         # Query from terminal (no AI needed)
-# Git hooks auto-rebuild on every commit and branch switch (AST only, instant, no LLM)
-
-# obsidian-mind — clone as a separate Obsidian vault
+# obsidian-mind — clone as a separate Obsidian vault (optional)
 git clone https://github.com/breferrari/obsidian-mind.git ~/my-knowledge-vault
-# Then open ~/my-knowledge-vault as an Obsidian vault
 ```
 
 ### Why Graphify Matters — Token Economics
@@ -1020,7 +1232,7 @@ Without graphify, every architecture question costs your AI thousands of tokens 
 
 The graph is not optional intelligence — it's the **efficiency layer** that makes large codebases tractable for AI. On a monorepo with 50+ services, the difference between "grep everything" and "read the graph report" is the difference between a 30-second answer and a 5-minute search.
 
-> 📚 **Full plugin reference:** [claude/plugins.md](../plugins.md) — hook coexistence matrix, three-tool synergy stack, ordering guide, and setup details.
+> 📚 **Full plugin reference:** [claude/plugins.md](../plugins.md) — hook coexistence matrix, tool stack comparison, token economics, and setup details.
 
 ### Adding other plugins
 
@@ -1063,7 +1275,7 @@ Brain replaces advisory text with real mechanisms:
 | 🏷️ Configurable placeholders | 35+ |
 | 🔄 Bootstrap phases | 5 |
 | 🤖 AI subagents | 5 |
-| 🔌 Plugins/tools | 2 |
+| 🔌 Plugins/tools | 5 |
 | 📋 Exit checklist items | 6 |
 | 🔍 Domain-detection greps | 8 |
 | 🐚 Shell scripts (ShellCheck CI) | 31 |

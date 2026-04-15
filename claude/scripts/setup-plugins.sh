@@ -187,10 +187,217 @@ fi
 echo "  ✅ rtk: $RTK_STATUS"
 
 # ═════════════════════════════════════════════════════════════════
+# SECTION 4: codebase-memory-mcp (C binary — zero runtime deps)
+# ═════════════════════════════════════════════════════════════════
+
+echo ""
+echo "🔌 Plugin Setup — codebase-memory-mcp (structural graph)..."
+
+if command -v codebase-memory-mcp &>/dev/null; then
+  CBM_VERSION=$(codebase-memory-mcp --version 2>/dev/null | head -1 | awk '{print $NF}' || echo "unknown")
+  echo "  ✅ codebase-memory-mcp $CBM_VERSION already installed"
+  CBM_STATUS="$CBM_VERSION installed"
+
+elif command -v curl &>/dev/null; then
+  echo "  ⏳ Installing codebase-memory-mcp via install.sh..."
+  # --skip-config: binary only — we manage .mcp.json ourselves (avoids global settings.json hooks)
+  if curl -fsSL https://raw.githubusercontent.com/DeusData/codebase-memory-mcp/main/install.sh \
+       | bash -s -- --skip-config 2>/dev/null; then
+    # Reload PATH — install script adds ~/.local/bin
+    export PATH="$HOME/.local/bin:$PATH"
+    CBM_VERSION=$(codebase-memory-mcp --version 2>/dev/null | head -1 | awk '{print $NF}' || echo "unknown")
+    echo "  ✅ codebase-memory-mcp $CBM_VERSION installed"
+    # Enable auto-index: index new projects automatically on MCP connection
+    codebase-memory-mcp config set auto_index true 2>/dev/null || true
+    echo "  ✅ auto_index enabled"
+    CBM_STATUS="$CBM_VERSION installed · auto_index on"
+  else
+    echo "  ⚠️  install.sh failed — install manually:"
+    echo "     curl -fsSL https://raw.githubusercontent.com/DeusData/codebase-memory-mcp/main/install.sh | bash"
+    CBM_STATUS="install failed — manual required"
+  fi
+
+else
+  echo "  ⚠️  codebase-memory-mcp skipped — curl not found"
+  CBM_STATUS="skipped (curl not found)"
+fi
+
+echo "  ✅ codebase-memory-mcp: $CBM_STATUS"
+
+# ═════════════════════════════════════════════════════════════════
+# SECTION 5: cocoindex-code (semantic vector search — Python 3.11+)
+# ═════════════════════════════════════════════════════════════════
+
+echo ""
+echo "🔌 Plugin Setup — cocoindex-code (semantic search)..."
+
+# Detect Python 3.11+ (cocoindex-code requires 3.11, vs graphify's 3.10)
+COCO_PYTHON=""
+for py_cmd in python3 python; do
+  if command -v "$py_cmd" &>/dev/null; then
+    PY_VER=$("$py_cmd" -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')" 2>/dev/null || true)
+    PY_MAJOR="${PY_VER%%.*}"
+    PY_MINOR="${PY_VER##*.}"
+    if [ "${PY_MAJOR:-0}" -ge 3 ] && [ "${PY_MINOR:-0}" -ge 11 ]; then
+      COCO_PYTHON="$py_cmd"
+      break
+    fi
+  fi
+done
+
+if [ -z "$COCO_PYTHON" ]; then
+  echo "  ⚠️  cocoindex-code skipped — Python 3.11+ not found"
+  echo "     (graphify uses 3.10+; cocoindex-code requires 3.11+)"
+  echo "     Install: brew install python@3.11"
+  COCO_STATUS="skipped (Python 3.11+ not found)"
+
+elif command -v ccc &>/dev/null; then
+  CCC_VERSION=$(ccc --version 2>/dev/null | head -1 || echo "unknown")
+  echo "  ✅ cocoindex-code ($CCC_VERSION) already installed"
+  COCO_STATUS="$CCC_VERSION installed"
+
+else
+  echo "  ⏳ Installing cocoindex-code[full] (local embeddings — ~1 GB first install)..."
+  # [full] = sentence-transformers + torch for local embedding, no API key needed
+  if "$COCO_PYTHON" -m pip install 'cocoindex-code[full]' -q 2>/dev/null \
+     || "$COCO_PYTHON" -m pip install 'cocoindex-code[full]' -q --break-system-packages 2>/dev/null; then
+    CCC_VERSION=$(ccc --version 2>/dev/null | head -1 || echo "unknown")
+    echo "  ✅ cocoindex-code $CCC_VERSION installed"
+    COCO_STATUS="$CCC_VERSION installed (local embeddings)"
+  else
+    echo "  ⚠️  pip install failed — try manually: pip install 'cocoindex-code[full]'"
+    COCO_STATUS="install failed — manual: pip install 'cocoindex-code[full]'"
+  fi
+fi
+
+# Create config files (non-interactive init bypass — ccc init hangs in non-TTY)
+if [ -n "$COCO_PYTHON" ] && command -v ccc &>/dev/null; then
+  # Global settings: embedding model selection
+  GLOBAL_CFG_DIR="$HOME/.cocoindex_code"
+  mkdir -p "$GLOBAL_CFG_DIR"
+  if [ ! -f "$GLOBAL_CFG_DIR/global_settings.yml" ]; then
+    cat > "$GLOBAL_CFG_DIR/global_settings.yml" <<'YAML'
+embedding:
+  provider: sentence-transformers
+  model: Snowflake/snowflake-arctic-embed-xs
+YAML
+    echo "  ✅ Global settings created (~/.cocoindex_code/global_settings.yml)"
+  fi
+
+  # Project settings: committed to repo (team-shared file patterns)
+  mkdir -p ".cocoindex_code"
+  if [ ! -f ".cocoindex_code/settings.yml" ]; then
+    cat > ".cocoindex_code/settings.yml" <<'YAML'
+include_patterns:
+  - "**/*.py"
+  - "**/*.ts"
+  - "**/*.tsx"
+  - "**/*.js"
+  - "**/*.jsx"
+  - "**/*.rs"
+  - "**/*.go"
+  - "**/*.java"
+  - "**/*.sh"
+  - "**/*.md"
+  - "**/*.yml"
+  - "**/*.yaml"
+  - "**/*.json"
+exclude_patterns:
+  - "**/.*"
+  - "**/node_modules/**"
+  - "**/target/**"
+  - "**/build/**"
+  - "**/dist/**"
+  - "**/__pycache__/**"
+  - "**/graphify-out/**"
+  - "**/.code-review-graph/**"
+YAML
+    echo "  ✅ Project settings created (.cocoindex_code/settings.yml)"
+  fi
+
+  # Gitignore: exclude index DBs (binary/large), keep settings.yml committed
+  if ! grep -q '\.cocoindex_code' .gitignore 2>/dev/null; then
+    printf '\n# cocoindex-code vector index (binary DBs — settings.yml is committed)\n.cocoindex_code/target_sqlite.db\n.cocoindex_code/cocoindex.db\n' >> .gitignore
+    echo "  ✅ .gitignore updated (index DBs excluded, settings.yml committed)"
+  fi
+
+  echo "  ℹ️  Run 'ccc index' to build the initial semantic index (~30s first run)"
+  echo "     Or: auto-builds on first 'ccc mcp' search call"
+fi
+
+echo "  ✅ cocoindex-code: $COCO_STATUS"
+
+# ═════════════════════════════════════════════════════════════════
+# SECTION 6: code-review-graph (change risk analysis — Python 3.10+)
+# ═════════════════════════════════════════════════════════════════
+
+echo ""
+echo "🔌 Plugin Setup — code-review-graph (change risk analysis)..."
+
+# Detect Python 3.10+ (same requirement as graphify)
+CRG_PYTHON=""
+for py_cmd in python3 python; do
+  if command -v "$py_cmd" &>/dev/null; then
+    PY_VER=$("$py_cmd" -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')" 2>/dev/null || true)
+    PY_MAJOR="${PY_VER%%.*}"
+    PY_MINOR="${PY_VER##*.}"
+    if [ "${PY_MAJOR:-0}" -ge 3 ] && [ "${PY_MINOR:-0}" -ge 10 ]; then
+      CRG_PYTHON="$py_cmd"
+      break
+    fi
+  fi
+done
+
+if [ -z "$CRG_PYTHON" ]; then
+  echo "  ⚠️  code-review-graph skipped — Python 3.10+ not found"
+  echo "     Install Python 3.10+: brew install python@3.10"
+  CRG_STATUS="skipped (Python 3.10+ not found)"
+
+elif command -v code-review-graph &>/dev/null; then
+  CRG_VERSION=$(code-review-graph --version 2>/dev/null | head -1 || echo "unknown")
+  echo "  ✅ code-review-graph ($CRG_VERSION) already installed"
+  CRG_STATUS="$CRG_VERSION installed"
+
+else
+  echo "  ⏳ Installing code-review-graph..."
+  # [communities] extra: Leiden algorithm for community detection (optional but recommended)
+  if "$CRG_PYTHON" -m pip install 'code-review-graph[communities]' -q 2>/dev/null \
+     || "$CRG_PYTHON" -m pip install 'code-review-graph[communities]' -q --break-system-packages 2>/dev/null \
+     || "$CRG_PYTHON" -m pip install 'code-review-graph' -q 2>/dev/null \
+     || "$CRG_PYTHON" -m pip install 'code-review-graph' -q --break-system-packages 2>/dev/null; then
+    CRG_VERSION=$(code-review-graph --version 2>/dev/null | head -1 || echo "unknown")
+    echo "  ✅ code-review-graph $CRG_VERSION installed"
+    CRG_STATUS="$CRG_VERSION installed"
+  else
+    echo "  ⚠️  pip install failed — try manually:"
+    echo "     pip install 'code-review-graph[communities]'"
+    CRG_STATUS="install failed — manual: pip install 'code-review-graph[communities]'"
+  fi
+fi
+
+# Post-install setup: git hook only (--no-instructions --no-hooks avoids global settings.json pollution)
+if [ -n "$CRG_PYTHON" ] && command -v code-review-graph &>/dev/null; then
+  # --no-instructions: skip CLAUDE.md injection (we manage CLAUDE.md ourselves — 4KB budget)
+  # --no-hooks: skip PostToolUse(Write|Edit|Bash) settings.json hook (~48% quota drain)
+  # postprocess: installs only git post-commit hook (SHA-256 re-index, no LLM, <2s)
+  if code-review-graph postprocess --no-instructions --no-hooks > /dev/null 2>&1; then
+    echo "  ✅ git post-commit hook installed (incremental re-index on commit)"
+    CRG_STATUS="${CRG_STATUS} · git hook active"
+  else
+    echo "  ℹ️  postprocess failed — run manually: code-review-graph postprocess --no-instructions --no-hooks"
+  fi
+
+  echo "  ℹ️  Run 'code-review-graph build .' to build the initial graph"
+  echo "     Or use MCP: mcp__code-review-graph__build_graph_tool"
+fi
+
+echo "  ✅ code-review-graph: $CRG_STATUS"
+
+# ═════════════════════════════════════════════════════════════════
 # SUMMARY (compact — avoids Claude Code UI collapse at ≥4 lines)
 # ═════════════════════════════════════════════════════════════════
 
 echo ""
-echo "✅ Plugins: claude-mem ${CLAUDE_MEM_STATUS:-skipped} · graphify ${GRAPHIFY_STATUS:-skipped} · rtk ${RTK_STATUS:-skipped}"
+echo "✅ Plugins: claude-mem ${CLAUDE_MEM_STATUS:-skipped} · graphify ${GRAPHIFY_STATUS:-skipped} · rtk ${RTK_STATUS:-skipped} · cbm ${CBM_STATUS:-skipped} · ccc ${COCO_STATUS:-skipped} · crg ${CRG_STATUS:-skipped}"
 if [ -f "claude/tasks/.bootstrap-plan.txt" ]; then echo "P4 $(date +%H:%M:%S)" >> "claude/tasks/.bootstrap-progress.txt" 2>/dev/null; fi
 
