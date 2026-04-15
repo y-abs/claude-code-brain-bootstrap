@@ -159,6 +159,9 @@ Task about [domain]?   → 📚 Read claude/[domain].md
 | `/research` | 🔍 Generate research questions + gather knowledge | ❌ Manual |
 | `/update-code-index` | 📋 Scan exports → generate CODE_INDEX.md; check before writing new functions | ❌ Manual |
 | `/health` | 🏥 Config health check — CLAUDE.md, settings, hooks, rules frontmatter, secrets scan | ❌ Manual |
+| `/worktree` | 🌿 Create git worktree for isolated parallel development | ❌ Manual |
+| `/worktree-status` | 📊 Show all worktrees with branch, dirty/clean status, and last commit | ❌ Manual |
+| `/clean-worktrees` | 🧹 Remove all worktrees for merged branches (`--dry-run` to preview) | ❌ Manual |
 
 ### 🤖 Subagents (`.claude/agents/`)
 
@@ -183,6 +186,9 @@ Agents declare their **optimal model** for best results — but gracefully fall 
 | `changelog` | 🔵 Invocable | Manual (context: fork) |
 | `careful` | 🔵 Invocable | Manual |
 | `cross-layer-check` | 🔵 Invocable | Manual (bundled script) |
+| `repo-recap` | 🔵 Invocable | Manual — `/repo-recap [fr]` |
+| `pr-triage` | 🔵 Invocable | Manual — `/pr-triage [all\|42 57] [fr]` |
+| `issue-triage` | 🔵 Invocable | Manual — `/issue-triage [all\|42 57] [fr]` |
 
 ### 🪝 Hooks (`.claude/hooks/`)
 
@@ -202,6 +208,7 @@ Agents declare their **optimal model** for best results — but gracefully fall 
 | `edit-accumulator.sh` | PostToolUse(Edit\|Write\|MultiEdit) | 📝 Accumulate edited file paths |
 | `permission-denied.sh` | PermissionDenied | 🔐 Audit trail — log denied operations to `.permission-denials.log` |
 | `warn-missing-test.sh` | PostToolUse(Write) | 🧪 Warn when source files lack tests (strict profile only) |
+| `rtk-rewrite.sh` | PreToolUse(Bash) | ⚡ RTK token optimizer — transparently rewrites commands for 60-90% savings (no-op if rtk absent) |
 
 ---
 
