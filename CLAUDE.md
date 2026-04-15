@@ -17,7 +17,7 @@
 | MR, PR, ticket, context management | `claude/templates.md` |
 | terminal, command, shell, subprocess, pager, interactive | `claude/terminal-safety.md` |
 | CVE, dependency upgrade, security scan | `claude/cve-policy.md` |
-| plugin, claude-mem, hook coexistence, API quota, obsidian-mind vault | `claude/plugins.md` |
+| plugin, claude-mem, hook coexistence, API quota, obsidian-mind vault, rtk | `claude/plugins.md` |
 <!-- {{DOMAIN_LOOKUP_TABLE}} — Add rows for each domain in your project:
 | domain-keyword-1, domain-keyword-2 | `claude/your-domain.md` |
 -->
@@ -187,6 +187,8 @@ bash claude/scripts/toggle-claude-mem.sh status   # Check state
 ```
 
 > **obsidian-mind** is a companion Obsidian vault (not a Claude Code plugin) — clone separately if you want AI-powered knowledge management: `git clone https://github.com/breferrari/obsidian-mind.git`. See `claude/plugins.md`.
+
+**rtk** — execution efficiency layer. Transparently rewrites Claude's bash commands for 60-90% output token savings. Auto-installed by `setup-plugins.sh` if `cargo` is available. No-op when absent. ROI: `rtk gain` · Gaps: `rtk discover`.
 
 ## graphify — Knowledge Graph
 

@@ -17,6 +17,7 @@ cd "$PROJECT_DIR"
 
 
 # ─── Portable helpers (sed_inplace, safe_pgrep, platform detection)
+# shellcheck disable=SC1091
 source "$(dirname "$0")/_platform.sh"
 
 # ═════════════════════════════════════════════════════════════════
@@ -55,7 +56,7 @@ else
   # 5. Kill any running worker process
   # [c] = anti-self-match pattern (prevents pgrep from matching its own command line)
   WORKER_PIDS=$(safe_pgrep '[c]laude-mem.*worker-service')
-  if [ -n "$WORKER_PIDS" ]; then kill $WORKER_PIDS 2>/dev/null || true; fi
+  if [ -n "$WORKER_PIDS" ]; then kill "$WORKER_PIDS" 2>/dev/null || true; fi
 
   # 6. Verify final state
   claude plugin list > claude/tasks/.plugin-list.log 2>&1 || true
@@ -141,10 +142,55 @@ else
 fi
 
 # ═════════════════════════════════════════════════════════════════
+# SECTION 3: rtk (token optimizer — Rust binary, installed via cargo)
+# ═════════════════════════════════════════════════════════════════
+
+echo ""
+echo "🔌 Plugin Setup — rtk (token optimizer)..."
+
+if command -v rtk &>/dev/null; then
+  # Already installed — just verify and report
+  RTK_VERSION=$(rtk --version 2>/dev/null | head -1 | awk '{print $2}' || echo "unknown")
+  echo "  ✅ rtk $RTK_VERSION already installed"
+
+  SETTINGS_FILE=".claude/settings.json"
+  if [ -f "$SETTINGS_FILE" ] && grep -q 'rtk-rewrite' "$SETTINGS_FILE" 2>/dev/null; then
+    echo "  ✅ rtk-rewrite hook active in .claude/settings.json"
+  else
+    echo "  ⚠️  rtk-rewrite hook missing from .claude/settings.json"
+  fi
+
+  RTK_STATUS="$RTK_VERSION installed · hook active"
+
+elif command -v cargo &>/dev/null; then
+  # cargo available — auto-install rtk (same pattern as graphify via pip)
+  echo "  ⏳ Installing rtk via cargo (this may take 1-2 min — compiling from source)..."
+  if cargo install rtk --quiet 2>/dev/null; then
+    RTK_VERSION=$(rtk --version 2>/dev/null | head -1 | awk '{print $2}' || echo "unknown")
+    echo "  ✅ rtk $RTK_VERSION installed"
+    echo "  ✅ rtk-rewrite hook active (.claude/settings.json already wired)"
+    RTK_STATUS="$RTK_VERSION installed · hook active"
+  else
+    echo "  ⚠️  cargo install rtk failed — install manually: cargo install rtk"
+    RTK_STATUS="install failed — manual: cargo install rtk"
+  fi
+
+else
+  # No cargo — inform user, hook remains a no-op until they install
+  echo "  ℹ️  rtk not installed (cargo not found)"
+  echo "     Hook is registered and ready — install Rust + rtk to activate:"
+  echo "     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
+  echo "     cargo install rtk"
+  RTK_STATUS="not installed (hook registered, no-op — needs cargo)"
+fi
+
+echo "  ✅ rtk: $RTK_STATUS"
+
+# ═════════════════════════════════════════════════════════════════
 # SUMMARY (compact — avoids Claude Code UI collapse at ≥4 lines)
 # ═════════════════════════════════════════════════════════════════
 
 echo ""
-echo "✅ Plugins: claude-mem ${CLAUDE_MEM_STATUS:-skipped} · graphify ${GRAPHIFY_STATUS:-skipped}"
+echo "✅ Plugins: claude-mem ${CLAUDE_MEM_STATUS:-skipped} · graphify ${GRAPHIFY_STATUS:-skipped} · rtk ${RTK_STATUS:-skipped}"
 if [ -f "claude/tasks/.bootstrap-plan.txt" ]; then echo "P4 $(date +%H:%M:%S)" >> "claude/tasks/.bootstrap-progress.txt" 2>/dev/null; fi
 

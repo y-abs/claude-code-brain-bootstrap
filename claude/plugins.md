@@ -10,6 +10,7 @@ The bootstrap installs and configures **two tools** that give your AI persistent
 |------|---------|:------------:|:------------:|
 | **claude-mem** | 🧠 Persistent cross-session memory — captures every tool interaction (SQLite + ChromaDB) | ⚠️ **Disabled** (quota protection) | ~48% of API quota when enabled |
 | **graphify** | 🗺️ Knowledge graph — turns your codebase into a queryable architecture map with **71.5× fewer tokens** per query vs reading raw files | ✅ **Installed** (graph built on demand) | Saves tokens on every file search |
+| **rtk** | ⚡ Execution efficiency — transparently rewrites Claude's bash commands for compressed output | ✅ **No-op** when absent; auto-active when installed | 60-90% output token savings |
 
 Claude Code plugins are **global extensions** installed at `~/.claude/plugins/`. Graphify is a Python tool that integrates via a global skill + PreToolUse hook + git hooks. Both fire **alongside** your project-level configuration — never replacing it.
 
@@ -139,6 +140,47 @@ graphify hook uninstall              # remove git hooks
 pip uninstall graphifyy              # remove package
 ```
 
+## rtk — Execution Efficiency Layer
+
+**Purpose:** Transparent command rewriting — intercepts every bash command Claude runs, rewrites it using RTK's registry to produce compressed output, then auto-allows it. Claude sees the rewritten command result with 60-90% fewer tokens, without changing behavior.
+
+**Why it's different from other plugins:** RTK is not a Claude Code plugin (`claude plugin install`). It's an external CLI binary that integrates via a PreToolUse(Bash) hook (`rtk-rewrite.sh`) registered in `.claude/settings.json`. The hook is self-guarding: exits 0 silently if `rtk` or `jq` are not installed — zero penalty when RTK is absent.
+
+**Default state:** ✅ **Hook always registered** — no-op when rtk not installed; auto-active once installed.
+
+**Install:**
+```bash
+# Automatic: setup-plugins.sh installs rtk via cargo if cargo is in PATH
+# Manual fallback:
+cargo install rtk           # Install the binary (~1-2 min compile)
+# No rtk init needed — bootstrap's .claude/hooks/rtk-rewrite.sh + settings.json are pre-wired
+```
+
+**What it provides:**
+- **`rtk rewrite`** — rewrites commands transparently at the `PreToolUse(Bash)` lifecycle event
+- **`rtk gain`** — shows ROI for the current session (tokens saved, % reduction)
+- **`rtk discover`** — shows commands not yet covered by the registry (coverage gaps)
+- **60-90% output token savings** — most `gh`, `git`, `cargo`, `grep` commands produce compressed output
+- **Exit code protocol**: 0=auto-allow rewrite, 1=no match pass-through, 2=deny pass-through, 3=rewrite + prompt user
+
+**Hook ordering (critical):** RTK hook runs FIRST among Bash PreToolUse hooks — rewrites the command, then the safety gate and quality gate check the already-rewritten command. Order: `rtk-rewrite → pre-commit-quality → terminal-safety-gate`.
+
+**Usage:**
+```bash
+rtk gain                    # Session ROI: how many tokens were saved
+rtk discover                # Which commands have no RTK equivalent yet
+rtk --version               # Current version
+```
+
+**When NOT installed:** The `rtk-rewrite.sh` hook exits 0 immediately — no error, no slowdown, no change to behavior. The hook slot is reserved so that installing RTK activates it instantly without config changes.
+
+**Manual install of hook (if not using setup-plugins.sh):**
+```bash
+# Already done — .claude/hooks/rtk-rewrite.sh + settings.json entry exist
+# Just install the binary:
+cargo install rtk
+```
+
 ## The Three-Tool Memory Stack — claude-mem × graphify × obsidian-mind
 
 Three tools, three layers of intelligence. Each answers a fundamentally different question:
@@ -218,7 +260,7 @@ Plugin hooks fire **in parallel** with project hooks on the same lifecycle event
 | `SessionStart(compact)` | on-compact.sh | ✅ | — | ✅ Additive |
 | `PreCompact` | pre-compact.sh | — | — | ✅ None |
 | `UserPromptSubmit` | identity-reinjection.sh | ✅ (context capture) | — | ✅ None |
-| `PreToolUse(Bash)` | terminal-safety-gate.sh | — | — | ✅ None |
+| `PreToolUse(Bash)` | rtk-rewrite.sh + terminal-safety-gate.sh | — | — | ✅ Ordered (rtk rewrites first, safety gate checks result) |
 | `PreToolUse(Write\|Edit)` | config-protection.sh | — | — | ✅ None |
 | `PreToolUse(Glob\|Grep)` | — | — | ✅ (graph hint) | ✅ None |
 | `PostToolUse(*)` | edit-accumulator.sh (Edit\|Write only) | ✅ (**every** tool) | — | ✅ Different concerns |

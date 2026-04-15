@@ -24,3 +24,4 @@
 
 <!-- Active tasks below this line -->
 
+**[Compaction at 2026-04-15 04:33 on branch main]** — Context was summarized. Run `/resume` to reload.
