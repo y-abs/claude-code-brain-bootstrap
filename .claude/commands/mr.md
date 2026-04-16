@@ -1,6 +1,5 @@
 ---
 description: Generate an MR description for the current branch after verifying build/test pass
-disable-model-invocation: true
 effort: high
 argument-hint: "[optional: ticket reference]"
 ---
@@ -12,8 +11,8 @@ Generate MR description for the current branch: $ARGUMENTS
 ## Pre-loaded context
 
 **Branch:** !`git branch --show-current`
-**Commits:** !`git --no-pager log $(git merge-base main HEAD)..HEAD --oneline 2>/dev/null || echo "N/A"`
-**Diff stat:** !`git --no-pager diff $(git merge-base main HEAD)..HEAD --stat 2>/dev/null || echo "N/A"`
+**Commits:** !`git --no-pager log main...HEAD --oneline 2>/dev/null || echo "N/A"`
+**Diff stat:** !`git --no-pager diff main...HEAD --stat 2>/dev/null || echo "N/A"`
 
 ## Instructions
 

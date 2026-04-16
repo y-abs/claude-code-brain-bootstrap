@@ -141,6 +141,7 @@ HOOKS=(
   ".claude/hooks/edit-accumulator.sh"
   ".claude/hooks/permission-denied.sh"
   ".claude/hooks/warn-missing-test.sh"
+  ".claude/hooks/rtk-rewrite.sh"
 )
 for h in "${HOOKS[@]}"; do
   if [ -f "$h" ]; then

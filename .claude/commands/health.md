@@ -1,3 +1,9 @@
+---
+description: Verify Claude Code configuration health — hooks, rules, settings, secrets scan
+effort: low
+allowed-tools: Bash, Read, Glob, Grep
+---
+
 # Health Check — Configuration Validation
 
 Verify that the Claude Code configuration is healthy and complete.
