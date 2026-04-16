@@ -38,3 +38,5 @@ test -f claude/bootstrap/PROMPT.md && echo "FOUND" || echo "MISSING"
 - `commands` — Only fill command placeholders (build, test, lint commands)
 - `docs` — Only generate domain knowledge docs
 - `full` or empty — Run all phases (auto-detect mode)
+
+> ✅ **After bootstrap completes:** Run `/health` to verify your setup is working — it checks that all hooks are executable, settings.json is valid, no placeholders remain unfilled, and at least one plugin is installed.

@@ -15,6 +15,18 @@ set -eo pipefail
 PROJECT_DIR="${1:-.}"
 cd "$PROJECT_DIR"
 
+# ─── Plugin opt-out — set any of these before running to skip that plugin ──
+# export SKIP_CLAUDE_MEM=1   # Skip claude-mem (requires claude CLI)
+# export SKIP_GRAPHIFY=1     # Skip graphify knowledge graph (Python 3.10+)
+# export SKIP_RTK=1          # Skip rtk command optimizer (requires cargo)
+# export SKIP_COCOINDEX=1    # Recommended for slow networks (~1 GB download)
+# export SKIP_CRG=1          # Skip code-review-graph (Python 3.10+)
+SKIP_CLAUDE_MEM="${SKIP_CLAUDE_MEM:-}"
+SKIP_GRAPHIFY="${SKIP_GRAPHIFY:-}"
+SKIP_RTK="${SKIP_RTK:-}"
+SKIP_COCOINDEX="${SKIP_COCOINDEX:-}"
+SKIP_CRG="${SKIP_CRG:-}"
+
 
 # ─── Portable helpers (sed_inplace, safe_pgrep, platform detection)
 # shellcheck disable=SC1091
@@ -24,7 +36,10 @@ source "$(dirname "$0")/_platform.sh"
 # SECTION 1: claude-mem (Claude Code plugin)
 # ═════════════════════════════════════════════════════════════════
 
-if ! command -v claude &>/dev/null; then
+if [ -n "$SKIP_CLAUDE_MEM" ]; then
+  echo "⏭️  claude-mem skipped (SKIP_CLAUDE_MEM set)"
+  CLAUDE_MEM_STATUS="skipped (opt-out)"
+elif ! command -v claude &>/dev/null; then
   echo "✅ claude-mem setup skipped (claude CLI not available — non-Claude Code environment)"
   # Still update CLAUDE.md placeholder even without plugin
   if [ -f "CLAUDE.md" ] && grep -q '{{INSTALLED_PLUGINS}}' "CLAUDE.md" 2>/dev/null; then
@@ -81,6 +96,10 @@ fi
 # ═════════════════════════════════════════════════════════════════
 
 echo ""
+if [ -n "$SKIP_GRAPHIFY" ]; then
+  echo "⏭️  graphify skipped (SKIP_GRAPHIFY set)"
+  GRAPHIFY_STATUS="skipped (opt-out)"
+else
 echo "🔌 Plugin Setup — graphify..."
 
 # Detect Python 3.10+ (required by graphify)
@@ -142,10 +161,17 @@ else
 fi
 
 # ═════════════════════════════════════════════════════════════════
+fi  # end SKIP_GRAPHIFY
+
+# ═════════════════════════════════════════════════════════════════
 # SECTION 3: rtk (token optimizer — Rust binary, installed via cargo)
 # ═════════════════════════════════════════════════════════════════
 
 echo ""
+if [ -n "$SKIP_RTK" ]; then
+  echo "⏭️  rtk skipped (SKIP_RTK set)"
+  RTK_STATUS="skipped (opt-out)"
+else
 echo "🔌 Plugin Setup — rtk (token optimizer)..."
 
 if command -v rtk &>/dev/null; then
@@ -183,8 +209,9 @@ else
   echo "     cargo install rtk"
   RTK_STATUS="not installed (hook registered, no-op — needs cargo)"
 fi
+fi  # end SKIP_RTK
 
-echo "  ✅ rtk: $RTK_STATUS"
+echo "  ✅ rtk: ${RTK_STATUS:-not installed}"
 
 # ═════════════════════════════════════════════════════════════════
 # SECTION 4: codebase-memory-mcp (C binary — zero runtime deps)
@@ -229,6 +256,10 @@ echo "  ✅ codebase-memory-mcp: $CBM_STATUS"
 # ═════════════════════════════════════════════════════════════════
 
 echo ""
+if [ -n "$SKIP_COCOINDEX" ]; then
+  echo "⏭️  cocoindex-code skipped (SKIP_COCOINDEX set)"
+  COCO_STATUS="skipped (opt-out)"
+else
 echo "🔌 Plugin Setup — cocoindex-code (semantic search)..."
 
 # Detect Python 3.11+ (cocoindex-code requires 3.11, vs graphify's 3.10)
@@ -259,8 +290,8 @@ elif command -v ccc &>/dev/null; then
 else
   echo "  ⏳ Installing cocoindex-code[full] (local embeddings — ~1 GB first install)..."
   # [full] = sentence-transformers + torch for local embedding, no API key needed
-  if "$COCO_PYTHON" -m pip install 'cocoindex-code[full]' -q 2>/dev/null \
-     || "$COCO_PYTHON" -m pip install 'cocoindex-code[full]' -q --break-system-packages 2>/dev/null; then
+  if "$COCO_PYTHON" -m pip install 'cocoindex-code[full]' 2>/dev/null \
+     || "$COCO_PYTHON" -m pip install 'cocoindex-code[full]' --break-system-packages 2>/dev/null; then
     CCC_VERSION=$(ccc --version 2>/dev/null | head -1 || echo "unknown")
     echo "  ✅ cocoindex-code $CCC_VERSION installed"
     COCO_STATUS="$CCC_VERSION installed (local embeddings)"
@@ -324,14 +355,19 @@ YAML
   echo "  ℹ️  Run 'ccc index' to build the initial semantic index (~30s first run)"
   echo "     Or: auto-builds on first 'ccc mcp' search call"
 fi
+fi  # end SKIP_COCOINDEX
 
-echo "  ✅ cocoindex-code: $COCO_STATUS"
+echo "  ✅ cocoindex-code: ${COCO_STATUS:-skipped}"
 
 # ═════════════════════════════════════════════════════════════════
 # SECTION 6: code-review-graph (change risk analysis — Python 3.10+)
 # ═════════════════════════════════════════════════════════════════
 
 echo ""
+if [ -n "$SKIP_CRG" ]; then
+  echo "⏭️  code-review-graph skipped (SKIP_CRG set)"
+  CRG_STATUS="skipped (opt-out)"
+else
 echo "🔌 Plugin Setup — code-review-graph (change risk analysis)..."
 
 # Detect Python 3.10+ (same requirement as graphify)
@@ -390,8 +426,9 @@ if [ -n "$CRG_PYTHON" ] && command -v code-review-graph &>/dev/null; then
   echo "  ℹ️  Run 'code-review-graph build .' to build the initial graph"
   echo "     Or use MCP: mcp__code-review-graph__build_graph_tool"
 fi
+fi  # end SKIP_CRG
 
-echo "  ✅ code-review-graph: $CRG_STATUS"
+echo "  ✅ code-review-graph: ${CRG_STATUS:-skipped}"
 
 # ═════════════════════════════════════════════════════════════════
 # SUMMARY (compact — avoids Claude Code UI collapse at ≥4 lines)

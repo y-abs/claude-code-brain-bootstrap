@@ -177,7 +177,7 @@ Before ending a session or when context is running low:
 
 > Full reference: `claude/plugins.md`. Toggle script: `claude/scripts/toggle-claude-mem.sh`.
 
-**Plugin hooks fire ALONGSIDE project hooks** — independent systems, zero conflicts across all 12 lifecycle events. Registered via separate mechanisms (`plugin/hooks/hooks.json` vs `.claude/settings.json`), merged at runtime.
+**Plugin hooks fire ALONGSIDE project hooks** — independent systems, zero conflicts. Registered via separate mechanisms (`plugin/hooks/hooks.json` vs `.claude/settings.json`), merged at runtime.
 
 **Installed plugins:**
 <!-- {{INSTALLED_PLUGINS}} — Auto-populated by bootstrap if plugins detected -->

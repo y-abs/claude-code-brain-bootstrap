@@ -88,7 +88,7 @@ Here's the mental model:
             "Here's everything we've learned together"
 ```
 
-**26 slash commands. 14 lifecycle hooks. 5 AI subagents. 5 skills. 2 tools. 120 validation checks. 8 domain-detection greps. Zero setup friction.**
+**29 slash commands. 15 lifecycle hooks. 5 AI subagents. 11 skills. 2 tools. 120 validation checks. 8 domain-detection greps. Zero setup friction.**
 
 > 💡 Battle-tested. Works with **any language, any framework, any repo**.
 
@@ -475,10 +475,16 @@ Background and invocable knowledge:
 - **Changelog** — generate release notes from git
 - **Careful** — block dangerous commands during sensitive ops
 - **Cross-Layer Check** — verify a symbol exists across all monorepo layers
+- **codebase-memory** — structural graph navigation (trace paths, blast radius, dead code)
+- **cocoindex-code** — semantic vector search (find code by meaning)
+- **code-review-graph** — change risk analysis (risk score 0–100, blast radius, breaking changes)
+- **repo-recap** — generate comprehensive release / activity summaries
+- **pr-triage** — audit open PRs, deep review selected ones, draft review comments
+- **issue-triage** — audit open issues, categorize, detect duplicates, cross-reference PRs
 
 #### 7. 🪝 Lifecycle Hooks (`.claude/hooks/`)
 
-Deterministic automation — zero token cost. 14 hooks across 8 lifecycle events:
+Deterministic automation — zero token cost. 15 hooks across 8 lifecycle events:
 - 🏁 **Session start** — inject branch, task state, reminders
 - 💾 **Compaction** — backup transcript, re-inject context
 - 🔒 **Config protection** — block editing linter/compiler configs
@@ -491,7 +497,7 @@ Deterministic automation — zero token cost. 14 hooks across 8 lifecycle events
 
 Centralized project config:
 - **Tool permissions** — allow/deny patterns for commands
-- **Hook registration** — all 14 hooks with unique IDs and timeouts
+- **Hook registration** — all 15 hooks with unique IDs and timeouts
 - **Environment** — autocompact threshold, token limits, bash timeouts
 - **Status line** — branch display in Claude Code UI
 
@@ -932,7 +938,7 @@ Update hooks, settings, and commands (generic layer). Don't overwrite your `clau
 </details>
 
 <details>
-<summary><strong>⚡ What if I don't use all 26 commands?</strong></summary>
+<summary><strong>⚡ What if I don't use all 29 commands?</strong></summary>
 
 No cost for unused commands — they only load when invoked. Delete what you don't need, or keep them around for the day you do.
 </details>
@@ -1252,10 +1258,10 @@ Brain replaces advisory text with real mechanisms:
 
 | What you get | How it actually works |
 |:---|:---|
-| 🔒 **Dangerous actions are blocked, not just discouraged** | Safety hooks intercept *before* execution — blocking dangerous commands before they run. 14 lifecycle hooks total across all events: bash scripts, deterministic, zero-token, unforgeable |
+| 🔒 **Dangerous actions are blocked, not just discouraged** | Safety hooks intercept *before* execution — blocking dangerous commands before they run. 15 lifecycle hooks total across all events: bash scripts, deterministic, zero-token, unforgeable |
 | 🧠 **The AI never makes the same mistake twice** | `lessons.md` persists across sessions, compactions, restarts — read at every session start, impossible to skip |
 | 🔄 **Knowledge never goes stale** | Exit checklist catches drift every turn · `/maintain` audits all docs · self-maintenance rule fires on every knowledge edit |
-| ⚡ **One command replaces 15 min of prompt engineering** | `/review` runs a 10-point protocol · `/mr` generates descriptions · `/debug` traces root causes — 26 commands, pre-built, consistent |
+| ⚡ **One command replaces 15 min of prompt engineering** | `/review` runs a 10-point protocol · `/mr` generates descriptions · `/debug` traces root causes — 29 commands, pre-built, consistent |
 | 🔍 **Your entire stack understood in 2 seconds, zero tokens** | `discover.sh` — 25+ languages, 1100+ frameworks, 21 package managers — pure bash, runs before the AI even wakes up |
 | 🤖 **Research doesn't eat your context window** | 5 subagents run in isolated contexts — explore 20+ files, review code, challenge plans — your main conversation stays clean |
 | 🤝 **One brain, three AI tools** | Write knowledge once → Claude Code, GitHub Copilot, and any LLM all read it — switch tools without starting over |
@@ -1267,10 +1273,10 @@ Brain replaces advisory text with real mechanisms:
 | Metric | Count |
 |:-------|------:|
 | 📂 Files | 100+ |
-| ⚡ Slash commands | 26 |
-| 🪝 Lifecycle hooks | 14 |
+| ⚡ Slash commands | 29 |
+| 🪝 Lifecycle hooks | 15 |
 | 📏 Golden rules | 24 |
-| 🎓 Skills | 5 |
+| 🎓 Skills | 11 |
 | ✅ Validation checks | 120 |
 | 🏷️ Configurable placeholders | 35+ |
 | 🔄 Bootstrap phases | 5 |

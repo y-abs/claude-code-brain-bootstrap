@@ -32,6 +32,13 @@ echo "📜 Recent commits:"
 cd "$PROJECT_DIR" && git --no-pager log --oneline -5 2>/dev/null || echo "  (no commits)"
 
 echo ""
+
+# jq check — three safety hooks depend on it; warn loudly if absent
+if ! command -v jq &>/dev/null; then
+  echo "⚠️  WARNING: jq not found — config-protection, terminal-safety, and commit-quality hooks"
+  echo "   are INACTIVE (they silently pass through without jq). Install: brew install jq"
+fi
+
 echo "⚡ First steps: Read claude/tasks/lessons.md + claude/architecture.md + claude/rules.md"
 echo "⚡ NEVER git push autonomously — present summary, wait for confirmation"
 echo "⚡ Temp files → ./claude/tasks/ — never /tmp/"

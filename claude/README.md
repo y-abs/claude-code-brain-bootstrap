@@ -111,7 +111,6 @@ Task about [domain]?   → 📚 Read claude/[domain].md
 | `generate-copilot-docs.sh` | 🐙 Mirrors `claude/*.md` → `.github/copilot/` for GitHub Copilot users |
 | `setup-plugins.sh` | 🔌 All-in-one plugin management — install, disable, verify, update CLAUDE.md (used in Phase 4) |
 | `check-creative-work.sh` | ✅ Creative work gate check — architecture, placeholders, domain docs, IDE (used in Phase 3) |
-| `tdd-loop-check.sh` | 🔁 TDD enforcement Stop hook — fails the loop if tests were skipped after code changes |
 
 ### 📏 Path-Scoped Rules (`.claude/rules/`)
 
@@ -212,6 +211,7 @@ Agents declare their **optimal model** for best results — but gracefully fall 
 | `permission-denied.sh` | PermissionDenied | 🔐 Audit trail — log denied operations to `.permission-denials.log` |
 | `warn-missing-test.sh` | PostToolUse(Write) | 🧪 Warn when source files lack tests (strict profile only) |
 | `rtk-rewrite.sh` | PreToolUse(Bash) | ⚡ RTK token optimizer — transparently rewrites commands for 60-90% savings (no-op if rtk absent) |
+| `tdd-loop-check.sh` | Stop | 🔁 TDD enforcement — fails the loop if tests were skipped after code changes |
 
 ---
 
