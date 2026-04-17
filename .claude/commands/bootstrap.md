@@ -38,7 +38,12 @@ test -f claude/bootstrap/PROMPT.md && echo "FOUND" || echo "MISSING"
 - `commands` — Only fill command placeholders (build, test, lint commands)
 - `docs` — Only generate domain knowledge docs
 - `architecture` — Re-run Phase 2 AI writing only: re-fill `claude/architecture.md` sections with fresh analysis of the current codebase (stack, modules, service catalog, key infrastructure). Does not touch any other files.
+- `plugins` — Re-run Phase 4 only: run `bash claude/scripts/setup-plugins.sh --interactive .` to install or upgrade plugins. Safe to re-run (idempotent). The user chooses a strategy: none/full/recommended/personalize.
+- `validate` — Re-run Phase 5 only: run `bash claude/scripts/post-bootstrap-validate.sh` and generate a fresh `claude/tasks/bootstrap-report.md`. No files are modified.
+- `architecture` — Re-run Phase 2 AI writing only: re-fill `claude/architecture.md` sections with fresh analysis of the current codebase (stack, modules, service catalog, key infrastructure). Does not touch any other files.
 - `plugins` — Re-run Phase 4 only: run `bash claude/scripts/setup-plugins.sh` to install or upgrade plugins. Safe to re-run (idempotent).
+> ✅ **After bootstrap completes:** Run `/health` to verify your setup is working — it checks that all hooks are executable, settings.json is valid, no placeholders remain unfilled, and at least one plugin is installed.
+
 - `validate` — Re-run Phase 5 only: run `bash claude/scripts/post-bootstrap-validate.sh` and generate a fresh `claude/tasks/bootstrap-report.md`. No files are modified.
 - `full` or empty — Run all phases (auto-detect mode)
 

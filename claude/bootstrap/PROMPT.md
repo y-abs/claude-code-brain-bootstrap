@@ -106,10 +106,14 @@ Auto-detects in ~2 seconds: project name, languages (with file counts), package 
 # Start plugin install in background NOW (runs during Phase 2/3 — saves 30-60s)
 if grep -q 'HAS_CLAUDE_MEM=false' claude/tasks/.discovery.env 2>/dev/null; then
   setsid claude plugin install claude-mem@thedotmack > claude/tasks/.plugin-install.log 2>&1 &
-  echo "⏳ Plugin install started (PID $!)"
+  echo "⏳ claude-mem install started in background (PID $!)"
 else
   echo "✅ claude-mem already installed"
 fi
+# Report all plugin statuses discovered (so the plan reflects true state)
+echo "📦 Plugin status from discovery:"
+grep -E '^HAS_(CLAUDE_MEM|GRAPHIFY|RTK|CBM|COCOINDEX|CRG|CODEBURN|CAVEMAN|SERENA)=' \
+  claude/tasks/.discovery.env 2>/dev/null | sed 's/^/  /' || true
 echo "P1 $(date +%H:%M:%S)" > claude/tasks/.bootstrap-progress.txt
 ```
 
@@ -295,13 +299,20 @@ Add a **"💡 MCP Suggestions"** bullet list to the final report. User configure
 
 ### Phase 4: Plugin Setup (1 command)
 
-> TL;DR: one script handles everything — claude-mem (wait, disable, verify) + graphify (pip install, skill, git hooks).
+> TL;DR: one script handles everything. Plugins extend Claude Code with persistent capabilities it doesn't have natively.
 
 ```bash
 bash claude/scripts/setup-plugins.sh . 2>&1
 ```
 
-The script handles two tools in sequence:
+**Why plugins matter — each solves a specific Claude Code limitation:**
+
+| Plugin | What it solves | Value |
+|--------|---------------|-------|
+| **claude-mem** | Claude Code forgets everything between sessions | Cross-session memory: observations from every tool use are persisted in SQLite + ChromaDB. Next session, Claude recalls past decisions, mistakes, and patterns without re-exploring. **Disabled by default** — saves ~48% API quota. Enable when doing multi-session work. |
+| **graphify** | Claude Code re-reads files every time you ask an architecture question | Knowledge graph: builds a navigable map of your codebase (entities, relationships, communities). After first build (~5 min), architecture questions cost **71.5× fewer tokens**. Auto-rebuilds on git commit/checkout via hooks. |
+
+The script handles installation in sequence:
 1. **claude-mem** — waits for background install → disables (quota protection) → kills worker → verifies → updates CLAUDE.md plugin placeholder. If install failed, documents in report with manual command.
 2. **graphify** — detects Python 3.10+ → `pip install graphifyy` → `graphify install` (global skill) → `graphify hook install` (git hooks for auto-rebuild on commit/branch switch). If Python not available, skips gracefully with manual instructions.
 

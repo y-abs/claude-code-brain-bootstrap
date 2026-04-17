@@ -167,5 +167,8 @@ graphify-out/graph.html
 graphify-out/graph.json
 graphify-out/transcripts/
 
+# ── cocoindex-code plugin (semantic search index — runtime artifact) ──
+.cocoindex_code/
+
 # <!-- Add project-specific exclusions below -->
 

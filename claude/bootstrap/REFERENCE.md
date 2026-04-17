@@ -65,9 +65,16 @@
 
 ```
 🔌 claude-mem v[X] — DISABLED (saves ~48% API quota)
-   → Enable when you want cross-session memory:
+   What it does: Persistent cross-session memory — Claude remembers past decisions,
+   mistakes, and patterns without re-exploring your codebase each session.
+   → Enable when doing multi-session work:
      bash claude/scripts/toggle-claude-mem.sh on
    → Check status: bash claude/scripts/toggle-claude-mem.sh status
+
+🗺️ graphify — [INSTALLED/NOT INSTALLED]
+   What it does: Knowledge graph of your codebase — architecture questions cost
+   71.5× fewer tokens after first build. Auto-rebuilds on git commit/checkout.
+   → Build the graph: /graphify .  (first run ~5 min, then incremental)
 ```
 
 ## 🤝 Collaboration Mode

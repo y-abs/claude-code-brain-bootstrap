@@ -46,12 +46,15 @@ for DOMAIN_ENTRY in "${DOMAINS[@]}"; do
   IFS='@' read -r SIGNAL PATTERN DOC_NAME RULE_NAME <<< "$DOMAIN_ENTRY"
 
   # Run detection grep (exclude node_modules, dist, .git)
-  HITS=$(grep -rl "$PATTERN" . \
+  # NOTE: grep exits 1 when no matches found. With `set -eo pipefail`, that kills
+  # the script on fresh repos (no domain code yet). Trailing `|| echo 0` guarantees
+  # the command substitution always emits a numeric value and never triggers set -e.
+  HITS=$( { grep -rl "$PATTERN" . \
     --include='*.js' --include='*.ts' --include='*.tsx' --include='*.jsx' \
     --include='*.py' --include='*.go' --include='*.rs' --include='*.java' \
     --exclude-dir=node_modules --exclude-dir=dist --exclude-dir=.git \
     --exclude-dir=build --exclude-dir=coverage --exclude-dir=.next \
-    2>/dev/null | wc -l | tr -d ' ')
+    2>/dev/null || true; } | wc -l | tr -d ' ')
 
   [ "$HITS" -eq 0 ] && continue  # Signal not detected — skip entirely
 
@@ -91,7 +94,7 @@ for DOMAIN_ENTRY in "${DOMAINS[@]}"; do
   ACTION=""
   if [ "$DOC_STATUS" = "MISSING" ]; then
     # Before CREATE, check if any existing claude/*.md already covers this domain
-    COVERED_BY=$(grep -rl "$PATTERN" claude/*.md 2>/dev/null | grep -v 'claude/architecture.md' | grep -v 'claude/rules.md' | grep -v 'claude/README.md' | head -1 || true)
+    COVERED_BY=$(grep -rl "$PATTERN" claude/*.md 2>/dev/null | grep -v 'claude/architecture.md' | grep -v 'claude/rules.md' | grep -v 'claude/README.md' | head -1) || true
     if [ -n "$COVERED_BY" ]; then
       ACTION="SKIP"
       DOC_STATUS="ALIAS($(basename "$COVERED_BY"))"
