@@ -1,0 +1,360 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "_comment": "Claude Code project settings — team-shared configuration",
+
+  "plansDirectory": "./claude/tasks/",
+  "respectGitignore": true,
+  "alwaysThinkingEnabled": true,
+  "showThinkingSummaries": true,
+  "autoUpdatesChannel": "stable",
+
+  "statusLine": {
+    "type": "command",
+    "command": "echo \"$(git branch --show-current 2>/dev/null || echo 'detached')\"",
+    "padding": 0
+  },
+
+  "env": {
+    "_comment_env": "Battle-tested environment overrides — each one prevents a known session issue",
+    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "80",
+    "CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR": "1",
+    "CLAUDE_CODE_MAX_OUTPUT_TOKENS": "64000",
+    "CLAUDE_CODE_RESUME_INTERRUPTED_TURN": "1",
+    "CLAUDE_CODE_MAX_TOOL_USE_CONCURRENCY": "10",
+    "BASH_MAX_TIMEOUT_MS": "600000",
+    "CLAUDE_CODE_SUBPROCESS_ENV_SCRUB": "1",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+    "DISABLE_COST_WARNINGS": "1",
+    "MAX_THINKING_TOKENS": "32000"
+  },
+
+  "spinnerTipsOverride": {
+    "tips": [
+      "Plan first → claude/tasks/todo.md",
+      "Subagents preserve your main context window",
+      "NEVER git push autonomously — wait for user",
+      "Exit checklist is mandatory before every yield",
+      "Temp files go in ./claude/tasks/ — never /tmp/",
+      "Read claude/tasks/lessons.md at session start",
+      "Stale docs are bugs — fix them",
+      "merge-base aware diff: git --no-pager diff main...HEAD",
+      "Terminal safety: always git --no-pager, always | head -N",
+      "TDD loop active — Stop hook runs tests; exit 2 feeds failures back to Claude until green"
+    ],
+    "excludeDefault": true
+  },
+
+  "companyAnnouncements": [
+    "📋 Exit Checklist is MANDATORY — check all 6 items before yielding",
+    "🚫 NEVER git push without user confirmation"
+  ],
+
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR:-.}\"/.claude/hooks/session-start.sh",
+            "timeout": 10
+          }
+        ],
+        "description": "Inject branch, task state, and critical reminders on fresh session start, resume, or clear",
+        "id": "session:start:cold"
+      },
+      {
+        "matcher": "compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR:-.}\"/.claude/hooks/on-compact.sh",
+            "timeout": 10
+          }
+        ],
+        "description": "Re-inject branch, task state, and critical reminders after context compaction",
+        "id": "session:start:on-compact"
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR:-.}\"/.claude/hooks/pre-compact.sh",
+            "timeout": 15
+          }
+        ],
+        "description": "Backup transcript, append compaction marker to todo.md, emit project-aware summarizer instructions",
+        "id": "pre:compact:save-state"
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR:-.}\"/.claude/hooks/config-protection.sh",
+            "timeout": 5
+          }
+        ],
+        "description": "Block modifications to linter/formatter config files (biome.json, tsconfig, etc.)",
+        "id": "pre:edit:config-protection"
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR:-.}\"/.claude/hooks/rtk-rewrite.sh",
+            "timeout": 5
+          }
+        ],
+        "description": "RTK: transparently rewrites commands for 60-90% output token savings (no-op if rtk not installed)",
+        "id": "pre:bash:rtk-rewrite"
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR:-.}\"/.claude/hooks/pre-commit-quality.sh",
+            "timeout": 30
+          }
+        ],
+        "description": "Pre-commit quality gate: block secrets/debugger, warn console.log",
+        "id": "pre:bash:commit-quality"
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR:-.}\"/.claude/hooks/terminal-safety-gate.sh",
+            "timeout": 5
+          }
+        ],
+        "description": "Block dangerous terminal patterns: interactive editors, bare psql, docker exec -it, standalone sleep",
+        "id": "pre:bash:terminal-safety"
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR:-.}\"/.claude/hooks/suggest-compact.sh",
+            "timeout": 5
+          }
+        ],
+        "description": "Suggest /compact at strategic intervals (50 tool calls)",
+        "id": "pre:all:suggest-compact"
+      },
+      {
+        "matcher": "Glob|Grep",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ -f graphify-out/graph.json ] && echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"graphify: Knowledge graph exists. Read graphify-out/GRAPH_REPORT.md for god nodes and community structure before searching raw files.\"}}' || true",
+            "timeout": 5
+          }
+        ],
+        "description": "graphify: remind AI to consult the knowledge graph before file searches (no-op when graph absent)",
+        "id": "pre:glob-grep:graphify-hint"
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR:-.}\"/.claude/hooks/identity-reinjection.sh",
+            "timeout": 5
+          }
+        ],
+        "description": "Re-inject agent identity and active domain context on every user prompt",
+        "id": "user:prompt:identity"
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR:-.}\"/.claude/hooks/subagent-stop.sh",
+            "timeout": 5
+          }
+        ],
+        "description": "Log subagent completion with timing and output quality reminder",
+        "id": "subagent:stop:log"
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR:-.}\"/.claude/hooks/tdd-loop-check.sh",
+            "timeout": 120,
+            "statusMessage": "Running tests (TDD loop check)..."
+          }
+        ],
+        "description": "TDD loop: run tests+lint+typecheck; exit 2 feeds failures back to Claude for auto-fix",
+        "id": "stop:tdd-loop"
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR:-.}\"/.claude/hooks/stop-batch-format.sh",
+            "timeout": 120
+          }
+        ],
+        "description": "Batch format all files edited this response + check for console.log",
+        "id": "stop:batch-format"
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR:-.}\"/.claude/hooks/exit-nudge.sh",
+            "timeout": 5
+          }
+        ],
+        "description": "Nudge the 6-item exit checklist verification before yielding to user",
+        "id": "stop:exit-nudge"
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR:-.}\"/.claude/hooks/edit-accumulator.sh",
+            "timeout": 5
+          }
+        ],
+        "description": "Accumulate edited file paths for batch formatting at Stop",
+        "id": "post:edit:accumulator"
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR:-.}\"/.claude/hooks/warn-missing-test.sh",
+            "timeout": 5
+          }
+        ],
+        "description": "Warn when creating source files without corresponding tests (strict profile only)",
+        "id": "post:write:warn-missing-test"
+      }
+    ],
+    "PermissionDenied": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR:-.}\"/.claude/hooks/permission-denied.sh",
+            "timeout": 5
+          }
+        ],
+        "description": "Audit trail for permission denials — logs to claude/tasks/.permission-denials.log",
+        "id": "permissiondenied:audit-trail"
+      }
+    ]
+  },
+
+  "permissions": {
+    "allow": [
+      "Bash(git *)",
+      "Bash(grep *)",
+      "Bash(find *)",
+      "Bash(cat *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(wc *)",
+      "Bash(sort *)",
+      "Bash(diff *)",
+      "Bash(awk *)",
+      "Bash(sed *)",
+      "Bash(ls *)",
+      "Bash(echo *)",
+      "Bash(pwd)",
+      "Bash(mkdir *)",
+      "Bash(jq *)",
+      "Bash(curl *)",
+      "Bash(chmod *)",
+      "Bash(date *)",
+      "Bash(timeout *)",
+      "Bash(touch *)",
+      "Bash(mv *)",
+      "Bash(cp *)",
+      "Bash(rm claude/tasks/*)",
+      "Bash(xargs *)",
+      "Bash(tr *)",
+      "Bash(cut *)",
+      "Bash(uniq *)",
+      "Bash(comm *)",
+      "Bash(env *)",
+      "Bash(test *)",
+      "Bash(printf *)",
+      "Bash(which *)",
+      "Bash(file *)",
+      "Bash(realpath *)",
+      "Bash(dirname *)",
+      "Bash(basename *)",
+      "Bash(bash *)",
+      "Bash(setsid *)",
+      "Bash(tar *)",
+      "Bash(node *)",
+      "Bash(tee *)",
+      "Bash(stat *)",
+      "Bash(claude *)",
+      "Bash(python3 *)",
+      "Bash(python *)",
+      "Bash(pip *)",
+      "Bash(pip3 *)",
+      "Bash(uvx *)",
+      "Bash(uv *)",
+      "Bash(cargo *)",
+      "Bash(npx *)",
+      "Bash(rtk *)",
+      "Bash(ccc *)",
+      "Bash(graphify *)",
+      "Bash(codeburn *)",
+      "Bash(code-review-graph *)",
+      "Bash(codebase-memory-mcp *)",
+      "Edit",
+      "Write",
+      "MultiEdit"
+    ],
+    "deny": [
+      "Bash(git push *)",
+      "Bash(git push)",
+      "Bash(rm -rf /*)",
+      "Bash(rm -rf .*)",
+      "Bash(docker rm *)",
+      "Bash(docker rmi *)",
+      "Bash(kubectl delete *)",
+      "Edit(.idea/*)",
+      "Write(.idea/*)",
+      "Write(.env)",
+      "Write(.env.*)",
+      "Edit(.env)",
+      "Edit(.env.*)",
+      "Write(yarn.lock)",
+      "Write(package-lock.json)",
+      "Write(pnpm-lock.yaml)",
+      "Write(bun.lockb)"
+    ]
+  }
+}

@@ -137,7 +137,8 @@ PLACEHOLDER_FILES["FORMATTER"]="claude/build.md .github/instructions/general.ins
 PLACEHOLDER_FILES["LINTER"]="claude/build.md .claude/commands/lint.md"
 PLACEHOLDER_FILES["LINTER_CONFIG_FILE"]=".claude/commands/lint.md"
 PLACEHOLDER_FILES["FORMATTER_COMMAND"]=".claude/hooks/stop-batch-format.sh"
-PLACEHOLDER_FILES["LINT_CHECK_CMD"]="claude/build.md .claude/commands/lint.md .claude/commands/mr.md claude/scripts/tdd-loop-check.sh"
+PLACEHOLDER_FILES["LINT_CHECK_CMD"]="claude/build.md .claude/commands/lint.md .claude/commands/mr.md"
+PLACEHOLDER_FILES["LINT_CHECK_PRIMARY"]=".claude/hooks/tdd-loop-check.sh"
 PLACEHOLDER_FILES["LINT_FIX_CMD"]="claude/build.md .claude/commands/lint.md"
 PLACEHOLDER_FILES["FORMAT_CMD"]="claude/build.md .claude/commands/lint.md"
 PLACEHOLDER_FILES["STYLE_RULES"]=".claude/commands/lint.md .github/instructions/general.instructions.md"
@@ -145,7 +146,8 @@ PLACEHOLDER_FILES["STYLE_RULES"]=".claude/commands/lint.md .github/instructions/
 # Test
 PLACEHOLDER_FILES["TEST_FRAMEWORK"]=".github/instructions/testing.instructions.md .github/prompts/generate-tests.prompt.md"
 PLACEHOLDER_FILES["COVERAGE_TOOL"]=".github/instructions/testing.instructions.md"
-PLACEHOLDER_FILES["TEST_CMD_ALL"]="claude/build.md .claude/commands/test.md claude/scripts/tdd-loop-check.sh"
+PLACEHOLDER_FILES["TEST_CMD_ALL"]="claude/build.md .claude/commands/test.md"
+PLACEHOLDER_FILES["TEST_CMD_PRIMARY"]=".claude/hooks/tdd-loop-check.sh"
 PLACEHOLDER_FILES["TEST_CMD_SINGLE"]="claude/build.md .claude/commands/test.md"
 PLACEHOLDER_FILES["TEST_CMD_CI"]="claude/build.md .claude/commands/test.md .claude/commands/mr.md"
 PLACEHOLDER_FILES["TEST_CMD_COVERAGE"]="claude/build.md .claude/commands/test.md"
@@ -215,6 +217,12 @@ for PLACEHOLDER in "${!PLACEHOLDER_FILES[@]}"; do
 
   # Skip empty values — these need AI creative work
   if [ -z "$VALUE" ]; then
+    SKIPPED=$((SKIPPED + 1))
+    continue
+  fi
+
+  # Validate placeholder name is in our known set (guard against injection)
+  if ! [[ "$PLACEHOLDER" =~ ^[A-Z][A-Z0-9_]*$ ]]; then
     SKIPPED=$((SKIPPED + 1))
     continue
   fi
@@ -371,13 +379,15 @@ if [ -f "$SETTINGS" ]; then
   fi
 
   # Language-specific tool permissions
-  # Detect primary + secondary languages and add their tool commands
+  # ONLY add tools for PRIMARY language (secondary = build utilities, not dev language)
   PRIMARY="${VALUES[PRIMARY_LANGUAGE]:-}"
-  SECONDARY="${VALUES[SECONDARY_LANGUAGES]:-}"
-  ALL_LANGS="${PRIMARY},${SECONDARY}"
 
-  # Python tools
-  if echo "$ALL_LANGS" | grep -q 'py'; then
+  # Python tools — ONLY if primary language or primary package manager
+  PKG_MGR="${VALUES[PACKAGE_MANAGER]:-}"
+  PYTHON_PRIMARY=false
+  case "$PRIMARY" in py|python) PYTHON_PRIMARY=true ;; esac
+  case "$PKG_MGR" in pip|poetry|uv|pdm) PYTHON_PRIMARY=true ;; esac
+  if $PYTHON_PRIMARY; then
     for TOOL in "python3" "python" "pytest" "ruff" "black" "mypy" "pip"; do
       if ! grep -qF "Bash($TOOL " "$SETTINGS" 2>/dev/null; then
         if ! $DRY_RUN; then
@@ -388,8 +398,8 @@ if [ -f "$SETTINGS" ]; then
     $QUIET || echo "  ⚙️  Added Python tool permissions (python3, pytest, ruff, etc.)"
   fi
 
-  # Go tools
-  if echo "$ALL_LANGS" | grep -q 'go'; then
+  # Go tools — ONLY if primary language
+  if [ "$PRIMARY" = "go" ]; then
     # shellcheck disable=SC2043  # Single item now; ready for future Go tools (golint, air, etc.)
     for TOOL in "go"; do
       if ! grep -qF "Bash($TOOL " "$SETTINGS" 2>/dev/null; then
@@ -401,8 +411,8 @@ if [ -f "$SETTINGS" ]; then
     $QUIET || echo "  ⚙️  Added Go tool permissions"
   fi
 
-  # Rust tools
-  if echo "$ALL_LANGS" | grep -q 'rs'; then
+  # Rust tools — ONLY if primary language
+  if [ "$PRIMARY" = "rs" ] || [ "$PRIMARY" = "rust" ]; then
     for TOOL in "cargo" "rustfmt" "clippy"; do
       if ! grep -qF "Bash($TOOL " "$SETTINGS" 2>/dev/null; then
         if ! $DRY_RUN; then

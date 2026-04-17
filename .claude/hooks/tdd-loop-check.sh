@@ -68,9 +68,9 @@ fi
 if [ -f 'package.json' ]; then
   # ── JavaScript / TypeScript project ──
 
-  TEST_CMD='{{TEST_CMD_ALL}}'
+  TEST_CMD='{{TEST_CMD_PRIMARY}}'
   # Fallback detection if placeholder not replaced by bootstrap
-  if [ "$TEST_CMD" = '{{TEST_CMD_ALL}}' ]; then
+  if [ "$TEST_CMD" = '{{TEST_CMD_PRIMARY}}' ]; then
     if grep -q '"vitest"' package.json 2>/dev/null; then
       TEST_CMD='npx vitest run'
     elif grep -q '"jest"' package.json 2>/dev/null; then
@@ -89,11 +89,11 @@ if [ -f 'package.json' ]; then
   }
 
   # Lint
-  LINT_CMD='{{LINT_CHECK_CMD}}'
-  if [ "$LINT_CMD" = '{{LINT_CHECK_CMD}}' ] && grep -q '"lint"' package.json 2>/dev/null; then
+  LINT_CMD='{{LINT_CHECK_PRIMARY}}'
+  if [ "$LINT_CMD" = '{{LINT_CHECK_PRIMARY}}' ] && grep -q '"lint"' package.json 2>/dev/null; then
     LINT_CMD='npm run lint'
   fi
-  if [ "$LINT_CMD" != '{{LINT_CHECK_CMD}}' ] && [ -n "$LINT_CMD" ]; then
+  if [ "$LINT_CMD" != '{{LINT_CHECK_PRIMARY}}' ] && [ -n "$LINT_CMD" ]; then
     LINT_OUTPUT=$(eval "$LINT_CMD" 2>&1) || {
       echo "ITERATION $count/$MAX_ITERATIONS — Lint errors:" >&2
       echo "$LINT_OUTPUT" | tail -30 >&2
@@ -113,8 +113,8 @@ if [ -f 'package.json' ]; then
 elif [ -f 'pyproject.toml' ] || [ -f 'setup.py' ] || [ -f 'setup.cfg' ]; then
   # ── Python project ──
 
-  TEST_CMD='{{TEST_CMD_ALL}}'
-  if [ "$TEST_CMD" = '{{TEST_CMD_ALL}}' ]; then
+  TEST_CMD='{{TEST_CMD_PRIMARY}}'
+  if [ "$TEST_CMD" = '{{TEST_CMD_PRIMARY}}' ]; then
     TEST_CMD='python3 -u -m pytest -v'
   fi
 

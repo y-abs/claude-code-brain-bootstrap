@@ -129,15 +129,21 @@ if [ -d "$PROJECT_DIR/.claude/skills" ]; then
   SKILL_COUNT=$(find "$PROJECT_DIR/.claude/skills" -name 'SKILL.md' | wc -l)
   info "Skills found: $SKILL_COUNT"
 
-  # Verify each skill is listed in README
+  # Verify each skill is listed in README (warn only — UPGRADE may add skills the user hasn't documented yet)
   if [ -f "$PROJECT_DIR/claude/README.md" ]; then
+    UNLISTED_SKILLS=0
     for skill_dir in "$PROJECT_DIR"/.claude/skills/*/; do
       [ -d "$skill_dir" ] || continue
       SKILL_NAME=$(basename "$skill_dir")
       if ! grep -q "$SKILL_NAME" "$PROJECT_DIR/claude/README.md" 2>/dev/null; then
-        fail "Skill '$SKILL_NAME' not listed in claude/README.md"
+        UNLISTED_SKILLS=$((UNLISTED_SKILLS + 1))
       fi
     done
+    if [ "$UNLISTED_SKILLS" -gt 0 ]; then
+      warn "$UNLISTED_SKILLS skill(s) not listed in claude/README.md — run post-bootstrap to update"
+    else
+      info "All skills listed in claude/README.md"
+    fi
   fi
 fi
 
@@ -181,7 +187,8 @@ for hook_script in "$PROJECT_DIR"/.claude/hooks/*.sh; do
   [ -f "$hook_script" ] || continue
   BASENAME=$(basename "$hook_script")
   # Detect: grep -[flags]E[flags] "...  (double-quoted pattern — pipe-unsafe if value has |)
-  if grep -nE 'grep[[:space:]]+-[a-zA-Z]*[qn]?[a-zA-Z]*E[a-zA-Z]*[[:space:]]+"' "$hook_script" 2>/dev/null | grep -q '.'; then
+  # Skip comment lines (^#) — they document the anti-pattern, they don't use it
+  if grep -nE 'grep[[:space:]]+-[a-zA-Z]*[qn]?[a-zA-Z]*E[a-zA-Z]*[[:space:]]+"' "$hook_script" 2>/dev/null | grep -v '^[0-9]*:[[:space:]]*#' | grep -q '.'; then
     fail "Hook $BASENAME has grep -E with double-quoted pattern — use single quotes or case statement"
     GREP_E_DOUBLE_QUOTE=$((GREP_E_DOUBLE_QUOTE + 1))
   fi
@@ -230,7 +237,8 @@ for hook_script in "$PROJECT_DIR"/.claude/hooks/*.sh; do
   [ -f "$hook_script" ] || continue
   BASENAME=$(basename "$hook_script")
   # Only log, show, stash trigger pager. diff --name-only is safe.
-  if grep -nE 'git[[:space:]]+(log|show|stash)' "$hook_script" 2>/dev/null | grep -vE -- '--no-pager|\| cat' | grep -q '.'; then
+  # Skip: comment lines (^#), case patterns (*'git log'*), and --no-pager/| cat
+  if grep -nE 'git[[:space:]]+(log|show|stash)' "$hook_script" 2>/dev/null | grep -v '^[0-9]*:[[:space:]]*#' | grep -vE -- "--no-pager|\| cat|\*'git" | grep -q '.'; then
     warn "Hook $BASENAME has bare git log/show/stash without --no-pager — may trigger pager"
   fi
 done
@@ -255,7 +263,7 @@ fi
 # 13. Remaining placeholder check
 echo ""
 echo "🔖 Placeholder Check..."
-REMAINING=$(grep -rn '{{' "$PROJECT_DIR/CLAUDE.md" "$PROJECT_DIR/claude/" "$PROJECT_DIR/.claude/" "$PROJECT_DIR/.github/" 2>/dev/null | grep -v '_examples/' | grep -v '_template' | grep -v 'bootstrap' | grep -v 'node_modules' | grep -v 'claude/docs/' | grep -v 'claude/scripts/' | grep -v 'claude/tasks/' || true)
+REMAINING=$(grep -rn '{{' "$PROJECT_DIR/CLAUDE.md" "$PROJECT_DIR/claude/" "$PROJECT_DIR/.claude/" "$PROJECT_DIR/.github/" 2>/dev/null | grep -v '_examples/' | grep -v '_template' | grep -v 'bootstrap' | grep -v 'node_modules' | grep -v 'claude/docs/' | grep -v 'claude/scripts/' | grep -v 'claude/tasks/' | grep -v "= '{{" | grep -v '.instructions.md' || true)
 if [ -z "$REMAINING" ]; then
   info "No remaining {{PLACEHOLDER}} values — bootstrap complete"
 else

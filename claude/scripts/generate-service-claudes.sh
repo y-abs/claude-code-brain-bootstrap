@@ -36,7 +36,7 @@ has_manifest() {
 
 # Create a CLAUDE.md stub for a service directory
 create_stub() {
-  local service_dir="$1"
+  local service_dir="${1%/}"
   local SERVICE_NAME
   SERVICE_NAME=$(basename "$service_dir")
 
@@ -95,10 +95,10 @@ create_stub() {
 
   # Detect key directories
   local KEY_FILES=""
-  [ -d "${service_dir}src" ] && KEY_FILES="$KEY_FILES\n- \`src/\` — source code"
-  [ -d "${service_dir}test" ] || [ -d "${service_dir}tests" ] || [ -d "${service_dir}__tests__" ] && KEY_FILES="$KEY_FILES\n- \`test/\` — tests"
-  [ -f "${service_dir}Dockerfile" ] && KEY_FILES="$KEY_FILES\n- \`Dockerfile\` — container build"
-  [ -d "${service_dir}migrations" ] && KEY_FILES="$KEY_FILES\n- \`migrations/\` — database migrations"
+  [ -d "${service_dir}/src" ] && KEY_FILES="$KEY_FILES\n- \`src/\` — source code"
+  [ -d "${service_dir}/test" ] || [ -d "${service_dir}/tests" ] || [ -d "${service_dir}/__tests__" ] && KEY_FILES="$KEY_FILES\n- \`test/\` — tests"
+  [ -f "${service_dir}/Dockerfile" ] && KEY_FILES="$KEY_FILES\n- \`Dockerfile\` — container build"
+  [ -d "${service_dir}/migrations" ] && KEY_FILES="$KEY_FILES\n- \`migrations/\` — database migrations"
 
   # Build the CLAUDE.md content
   local CONTENT="# $SERVICE_NAME\n> $DESCRIPTION\n\n## Stack\n$STACK\n\n## Key files"

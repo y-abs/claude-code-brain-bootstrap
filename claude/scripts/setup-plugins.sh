@@ -2,9 +2,10 @@
 # setup-plugins.sh — All-in-one plugin management for bootstrap
 # Handles: wait for bg install → disable claude-mem → kill worker → verify → update CLAUDE.md
 #          + graphify knowledge graph: pip install → skill install → git hooks
-# Usage: bash claude/scripts/setup-plugins.sh [--lite] [--interactive|--non-interactive] [project-dir]
+# Usage: bash claude/scripts/setup-plugins.sh [--lite] [--yes] [--interactive|--non-interactive] [project-dir]
 #   --lite             Skip heavy plugins (graphify, cocoindex, code-review-graph ~1-3 GB total)
 #                      Installs only: rtk + codebase-memory-mcp + claude-mem (~2 min total)
+#   --yes              Non-interactive, auto-accept all plugins (ideal for CI and AI orchestration)
 #   --interactive      Prompt yes/no for each plugin (default when stdin is a TTY)
 #   --non-interactive  Never prompt; respect SKIP_* env vars (default in CI / piped input)
 # Safe: exits cleanly if claude CLI not available (non-Claude Code environments)
@@ -25,9 +26,10 @@ PROJECT_DIR=""
 for arg in "$@"; do
   case "$arg" in
     --lite)             LITE_MODE=1 ;;
+    --yes)              INTERACTIVE_FLAG="non-interactive" ;;
     --interactive)      INTERACTIVE_FLAG="interactive" ;;
     --non-interactive)  INTERACTIVE_FLAG="non-interactive" ;;
-    -*)                 echo "Unknown flag: $arg (valid: --lite --interactive --non-interactive)" >&2; exit 1 ;;
+    -*)                 echo "Unknown flag: $arg (valid: --lite --yes --interactive --non-interactive)" >&2; exit 1 ;;
     *)                  PROJECT_DIR="$arg" ;;
   esac
 done
@@ -175,14 +177,15 @@ else
   fi
 
   # 3. Check if installed; if not, try synchronous install once
-  claude plugin list > claude/tasks/.plugin-list.log 2>&1 || true
+  # timeout guards against TUI hangs in non-TTY environments (Claude Code IntelliJ, CI)
+  timeout 15 claude plugin list > claude/tasks/.plugin-list.log 2>&1 || true
   if ! sed 's/\x1b\[[0-9;]*[A-Za-z]//g; s/\r//g' claude/tasks/.plugin-list.log 2>/dev/null | grep -qi 'claude-mem'; then
     echo "  ⏳ Installing claude-mem..."
-    claude plugin install claude-mem@thedotmack > claude/tasks/.plugin-install.log 2>&1 || true
+    timeout 60 claude plugin install claude-mem@thedotmack > claude/tasks/.plugin-install.log 2>&1 || true
   fi
 
   # 4. Disable claude-mem (quota protection — PostToolUse(*) uses ~48% API quota)
-  claude plugin disable claude-mem@thedotmack > claude/tasks/.plugin-disable.log 2>&1 || true
+  timeout 15 claude plugin disable claude-mem@thedotmack > claude/tasks/.plugin-disable.log 2>&1 || true
 
   # 5. Kill any running worker process
   # [c] = anti-self-match pattern (prevents pgrep from matching its own command line)
@@ -190,7 +193,7 @@ else
   if [ -n "$WORKER_PIDS" ]; then kill "$WORKER_PIDS" 2>/dev/null || true; fi
 
   # 6. Verify final state
-  claude plugin list > claude/tasks/.plugin-list.log 2>&1 || true
+  timeout 15 claude plugin list > claude/tasks/.plugin-list.log 2>&1 || true
   CLEAN_LIST=$(sed 's/\x1b\[[0-9;]*[A-Za-z]//g; s/\r//g' claude/tasks/.plugin-list.log 2>/dev/null | grep -v '^[[:space:]]*$' || true)
   if echo "$CLEAN_LIST" | grep -qi 'claude-mem'; then
     CLAUDE_MEM_STATUS="installed (disabled)"

@@ -1,6 +1,6 @@
 # Bootstrap Upgrade Guide — ᗺB Brain Bootstrap
 
-> **Read this ONLY when `MODE=UPGRADE`.** Follow steps A through H, then return to `claude/bootstrap/PROMPT.md` → Phase 3.
+> **Read this ONLY when `MODE=UPGRADE`.** Follow steps 0 through 4, then return to `claude/bootstrap/PROMPT.md` → Phase 3.
 > Powered by [Brain Bootstrap](https://github.com/y-abs/claude-code-brain-bootstrap) · by y-abs
 
 ---
@@ -25,103 +25,94 @@ echo "✅ Pre-upgrade backup saved to claude/tasks/.pre-upgrade-backup.tar.gz"
 
 > **Restore at any time**: `tar xzf claude/tasks/.pre-upgrade-backup.tar.gz`
 
-Check discovery output for `LAYOUT_MIGRATION_NEEDED=true` or `=merge`. Apply strategies below in order:
+---
 
-## A. Normalize Directory Structure
+## Step 0: Dry Run Preview (MANDATORY)
 
-**If `LAYOUT_MIGRATION_NEEDED=true`** (tasks at `tasks/` or `.tasks/` root, not `claude/tasks/`):
-- Create `claude/tasks/` if missing
-- Move `tasks/lessons.md` or `.tasks/lessons.md` → `claude/tasks/lessons.md` (ONLY if destination doesn't exist)
-- Move `tasks/todo.md` or `.tasks/todo.md` → `claude/tasks/todo.md` (ONLY if destination doesn't exist)
-- Move `tasks/bootstrap-report.md`, `tasks/session-logs/`, `tasks/.claude-*` temp files → `claude/tasks/`
-- Delete now-empty `tasks/` or `.tasks/` (only if truly empty — do NOT touch non-Claude files)
-- Update `plansDirectory` in `.claude/settings.json` to `"./claude/tasks/"`
-- Scan `.claude/hooks/*.sh` for bare `tasks/` refs → replace with `claude/tasks/`
+> **See what will change BEFORE changing anything.**
 
-**If `LAYOUT_MIGRATION_NEEDED=merge`** (`claude/tasks/` exists AND old location has real user data):
-- Append user lessons to `claude/tasks/lessons.md` (after the template header)
-- Copy `todo.md` only if user's has real task data
-- Delete old directory, update `plansDirectory`
+```bash
+bash claude/scripts/dry-run.sh . 2>&1
+```
 
-## B. Enhance — `CLAUDE.md`
+Review the output. If anything looks wrong, stop and investigate. The dry run changes nothing on disk.
 
-Read the user's CLAUDE.md. For each **missing** section below: append it with `<!-- Added by template upgrade [date] -->`. For existing sections missing items: add only the missing items marked `<!-- template upgrade -->`. **NEVER remove or overwrite user content.**
+---
 
-Required sections: `@import directives` · `Mandatory Reads table` · `Operating Protocol (8 items)` · `Token Cost Strategy` · `Meta-Cognition` · `Exit Checklist (6 items)` · `Terminal Rules` · `Critical Patterns` · `Review Protocol (10-point)` · `Hard Constraints` · `Compact Instructions` · `Session Continuity Protocol` · `Plugin Ecosystem` · `Core Principles` · `IDE Integration`
+## Step 1: Tasks Directory Migration (deterministic script)
 
-Conditional sections (add ONLY if not already covered by `Critical Patterns`):
-- `Key Decisions` — skip if architectural decisions are already bullet points in Critical Patterns
-- `Don't list` — skip if prohibitions are already in Critical Patterns or Hard Constraints
-- **Rationale**: Mature hand-crafted configs often flatten decisions + prohibitions into Critical Patterns for faster scanning. Adding separate sections would create duplication. Only add these sections for FRESH installs or if Critical Patterns is sparse (<5 items).
+> Moves ONLY known Claude files (lessons.md, todo.md, CLAUDE_ERRORS.md, session-logs/) from old layout to `claude/tasks/`. NEVER moves non-Claude files. NEVER deletes the source directory.
 
-Also: update any `tasks/lessons.md` references → `claude/tasks/lessons.md` if migration occurred.
+```bash
+bash claude/scripts/migrate-tasks.sh --discovery-env claude/tasks/.discovery.env --target . 2>&1
+```
 
-## C. Deep Merge — `.claude/settings.json`
+If exit code is 2 → nothing to migrate (already correct layout). Move on.
 
-Parse both files. Produce merged settings.json:
-1. **`plansDirectory`**: `"./claude/tasks/"` (required)
-2. **`env`**: Template defaults; user values WIN
-3. **`hooks`**: Keep ALL user hooks. Add template hooks with different `id`. Same `id` → keep user's
-4. **`permissions.allow`**: Union, deduplicate. **Stack-aware**: only add permissions for tools detected by `discover.sh`.
-   - **Python tools** (`Bash(pytest *)`, `Bash(ruff *)`, `Bash(black *)`, `Bash(mypy *)`, `Bash(pip *)`) → ONLY if `PRIMARY_LANGUAGE=python` OR `PACKAGE_MANAGER=pip/poetry/uv/pdm`. **Do NOT add** when Python appears only in `SECONDARY_LANGUAGES` (e.g., 65 `.py` scripts in a TypeScript/Java monorepo — those are build tools, not the dev language).
-   - **Docker tools** (`Bash(docker compose *)`, `Bash(docker build *)`, etc.) → only if Docker Compose file detected
-   - **Java tools** (`Bash(mvn *)`, `Bash(gradle *)`) → only if `PRIMARY_LANGUAGE=java` or build file detected
-5. **`permissions.deny`**: Union, deduplicate
-6. **`spinnerTipsOverride`**: Normalize to `{"tips": [...], "excludeDefault": true}`, merge tips
-7. **`companyAnnouncements`**: Union
-8. **Other fields**: Template default; user's value wins if present
+---
 
+## Step 2: CLAUDE.md Section Enhancement (deterministic script)
+
+> Appends ONLY genuinely missing sections from the template. Never modifies existing content. Uses heading similarity matching (emoji-tolerant, keyword-aware) to detect equivalent sections.
+
+```bash
+bash claude/scripts/merge-claude-md.sh --template claude/bootstrap/_CLAUDE.md.template --target CLAUDE.md 2>&1
+```
+
+If exit code is 2 → all sections already covered. Move on.
+
+---
+
+## Step 3: settings.json Deep Merge (deterministic script)
+
+> Pure jq merge. Hooks merged by ID (same ID → keep yours). Permissions union with stack-aware filtering (no Python tools in a TypeScript project). User values always win.
+
+```bash
+bash claude/scripts/merge-settings.sh --template claude/bootstrap/_settings.json.template --target .claude/settings.json --discovery-env claude/tasks/.discovery.env 2>&1
+```
+
+Validate:
 ```bash
 jq . .claude/settings.json > /dev/null && echo "✅ settings.json valid" || echo "❌ FIX REQUIRED"
 ```
 
-## D. Add Missing — Commands, Hooks, Agents, Skills, Rules
+---
 
-For each dir (`.claude/commands/`, `.claude/hooks/`, `.claude/agents/`, `.claude/rules/`, `.claude/skills/*/`):
-- File exists → **keep exactly as-is**
-- File missing → **add from template**
-- After adding hooks: `chmod +x .claude/hooks/*.sh`
+## Step 3b: .claudeignore Union (deterministic script)
 
-If `claude/scripts/tdd-loop-check.sh` missing from repo root, add from template. (Its `{{TEST_CMD_ALL}}` and `{{LINT_CHECK_CMD}}` placeholders are replaced by the populate script in Phase 3 Step 1.)
+> Preserves ALL your patterns. Adds only missing template patterns with stack-aware filtering.
 
-## E. Preserve + Add — `claude/*.md` Knowledge Docs
+```bash
+bash claude/scripts/merge-claudeignore.sh --template claude/bootstrap/_claudeignore.template --target .claudeignore --discovery-env claude/tasks/.discovery.env 2>&1
+```
 
-- **NEVER overwrite existing `claude/*.md` files**
-- Add only missing files from template
-- `claude/tasks/lessons.md`, `claude/tasks/todo.md`, `claude/tasks/CLAUDE_ERRORS.md`: **ABSOLUTELY NEVER modify existing content** (CLAUDE_ERRORS.md: append only)
-- If missing: add `claude/docs/DETAILED_GUIDE.md`, `claude/_examples/`, `claude/scripts/`, `.claude/rules/domain/_template.md`
+---
 
-**Phase 3 Step 2 scope for UPGRADE — creative work is EQUALLY mandatory.** Do NOT skip creative population because config already exists. Your goal: discover patterns in the codebase that are NOT yet documented in existing `claude/*.md` files, and create new docs for them. Decision rule per domain:
-- Domain doc exists with ≥5 real patterns → skip (already covered)
-- Domain doc exists but is shallow (< 5 quality lines, TODO markers) → treat as MANDATORY to enrich
-- Domain entirely missing → treat as MANDATORY to create
-Using "existing config" as an excuse to skip reading the actual source code is the #1 cause of UPGRADE output being worse than hand-crafted config. Phase 3 Step 2 always runs at full depth.
+## Step 3c: Add Missing Commands, Hooks, Agents, Skills, Rules
 
-**🔎 UPGRADE gap scan (MANDATORY):** Before Phase 3, run the 8 domain detection greps from PROMPT.md item 2. For each grep that returns results, check: does a corresponding `claude/<domain>.md` exist with ≥5 real patterns? If NOT, you MUST create that domain doc during Phase 3 Step 2. Common gap domains in UPGRADE mode: `lifecycle.md`, `adapters.md`, `enrollment.md`, `reporting.md` (these are often missing from first-pass bootstraps but EXIST in hand-crafted configs). Do NOT skip them.
+> **Already handled by install.sh Phase C.** install.sh adds missing files without overwriting. No action needed here. Verify:
 
-**🔎 Rules gap scan (MANDATORY):** For each `claude/<domain>.md` that exists (excluding architecture/rules/terminal-safety/build/cve-policy/templates/decisions), check: does `.claude/rules/<domain>.md` exist with `paths:` set to actual project directories? If NOT, create it during Phase 3 Step 2 item 7.
+```bash
+echo "Commands: $(ls .claude/commands/*.md 2>/dev/null | wc -l | tr -d ' ')"
+echo "Hooks: $(ls .claude/hooks/*.sh 2>/dev/null | wc -l | tr -d ' ')"
+echo "Agents: $(ls .claude/agents/*.md 2>/dev/null | wc -l | tr -d ' ')"
+```
 
-**Stub enrichment**: `generate-copilot-docs.sh` automatically enriches `.github/instructions/` stub files (< 4 content lines or containing TODO). Re-run after creating domain docs to propagate your new content.
+---
 
-## F. Union — `.claudeignore`
+## Step 3d: Add Missing Knowledge Docs
 
-Keep ALL user patterns. Add missing template patterns preceded by `# Added by template upgrade [date]`.
+> **Already handled by install.sh Phase D.** Missing `claude/*.md` files were added. Existing docs are NEVER overwritten. No action needed here.
 
-**Stack-awareness (important):** Only add patterns for tools/languages **actually used as the primary dev language** in the project. Use `PRIMARY_LANGUAGE` and `PACKAGE_MANAGER` from `discover.sh` — not just file counts. For example:
-- `yarn.lock` / `bun.lockb` / `.yarnrc` → only if `PACKAGE_MANAGER=yarn` or `PACKAGE_MANAGER=bun`
-- `__pycache__/` / `.venv/` / `.pytest_cache/` / `*.pyc` → only if `PRIMARY_LANGUAGE=python` OR `PACKAGE_MANAGER=pip/poetry/uv/pdm`. **CRITICAL**: if Python appears only in `SECONDARY_LANGUAGES` (e.g., shell scripts, build utilities alongside a TypeScript primary), do **not** add Python ignores — those files are in-use and shouldn't be excluded
-- `.gradle/` / `.bsp/` / `.metals/` → only if Gradle/Scala detected
-- `vendor/` → only if Go or PHP detected
-- `.turbo/` → only if Turborepo detected
+---
 
-Universal patterns (always safe to add): `**/*.zip`, `**/*.exe`, `**/*.dll`, `**/*.so`, `**/*.wasm`, `**/*.min.js`, `**/*.min.css`, `**/*.map`, `**/out/`, `**/generated/`, `**/.cache/`, `tasks/.claude-*`, `tasks/session-logs/`, `tasks/.permission-denials.log`
+## Step 3e: Add Missing GitHub Copilot Files
 
-## G. Add Missing — `.github/` Copilot Files
+> **Already handled by install.sh Phase D.** Missing `.github/` files were added. Existing `copilot-instructions.md` is NEVER overwritten.
 
-- **NEVER overwrite** existing `.github/copilot-instructions.md`
-- Add any missing instruction/prompt files from template
+---
 
-## H. Post-Merge Verification (MANDATORY — every line must show ✅)
+## Step 4: Post-Merge Verification (MANDATORY)
 
 ```bash
 bash claude/scripts/phase2-verify.sh .
@@ -131,5 +122,23 @@ Fix any ❌ by restoring from backup before proceeding.
 
 ---
 
-> ✅ **Phase 2 complete.** Return to `claude/bootstrap/PROMPT.md` → Phase 3.
+## Phase 3 Step 2 Scope for UPGRADE — Creative Work
 
+> **Creative work is EQUALLY mandatory for UPGRADE.** Do NOT skip it because config exists.
+
+Before starting creative work, run the quality gate:
+
+```bash
+bash claude/scripts/pre-creative-check.sh . 2>&1
+```
+
+**You MUST follow the manifest output:**
+- **SKIP** domains: do NOT create or modify their docs (they already have ≥5 real patterns)
+- **ENRICH** domains: read source files, add real patterns to the existing doc
+- **CREATE** domains: create `claude/<domain>.md` + `.claude/rules/<domain>.md`
+
+This prevents duplicate docs while ensuring gaps are filled.
+
+---
+
+> ✅ **Phase 2 complete.** Return to `claude/bootstrap/PROMPT.md` → Phase 3.

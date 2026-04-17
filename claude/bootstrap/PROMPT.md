@@ -164,6 +164,19 @@ Handles in one pass: `PROJECT_NAME` (8 files), build/test/lint/serve commands, p
 
 ##### 🔴 MANDATORY — Complete ALL (items 1-6). Skipping any = broken config.
 
+**Step 0 (BEFORE any creative work): Run the quality gate**
+
+```bash
+bash claude/scripts/pre-creative-check.sh . 2>&1
+```
+
+**You MUST follow the manifest output:**
+- **SKIP** domains → do NOT create or modify their docs (they already have ≥5 real patterns)
+- **ENRICH** domains → read source files, add real patterns to the existing doc
+- **CREATE** domains → create `claude/<domain>.md` + `.claude/rules/<domain>.md`
+
+This prevents duplicate docs while ensuring gaps are filled. The manifest overrides item 2's greps below — if the manifest says SKIP, do NOT create that domain doc even if the grep returns hits.
+
 1. **`claude/architecture.md`** — Fill workspace layout, service/module catalog, shared packages, infrastructure. Use `TOP_DIRS` from discovery plus:
    ```bash
    ls -d */ 2>/dev/null

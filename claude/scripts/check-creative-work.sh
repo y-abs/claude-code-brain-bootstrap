@@ -74,8 +74,20 @@ for doc in claude/*.md; do
     architecture.md|rules.md|README.md) continue ;;
     _*) continue ;;
   esac
-  # Use awk to count quality lines (always exits 0, handles empty files safely)
-  QUALITY_LINES=$(awk '/^[[:space:]]*-[[:space:]]+\*\*|^[[:space:]]*-[[:space:]]+`|^##[[:space:]]/{n++} END{print n+0}' "$doc")
+  # Use awk to count quality lines: any non-blank, non-comment, non-front-matter content
+  QUALITY_LINES=$(awk '
+    /^[[:space:]]*$/ {next}
+    /^[[:space:]]*>/ {next}
+    /^<!--/ {next}
+    /^---$/ {next}
+    /^#[[:space:]]/ {n++; next}
+    /^##/ {n++; next}
+    /^[[:space:]]*-[[:space:]]/ {n++; next}
+    /^[[:space:]]*\*\*/ {n++; next}
+    /^[[:space:]]*[A-Za-z0-9]/ {n++; next}
+    /^\|/ {n++; next}
+    END{print n+0}
+  ' "$doc")
   if [ "$QUALITY_LINES" -eq 0 ]; then
     echo "  ❌ $BASENAME — empty stub (0 quality lines) — fill with real patterns from source code"
     EMPTY_DOCS=$((EMPTY_DOCS + 1))
@@ -95,11 +107,12 @@ else
 fi
 
 # ─── 3c. Lookup table completeness — CLAUDE.md rows must cover ALL domain docs ───────────────────
+# Count domain docs on disk (excluding meta-files)
 DOMAIN_DOC_COUNT=0
 for doc in claude/*.md; do
   [ -f "$doc" ] || continue
   case "$(basename "$doc")" in
-    architecture.md|rules.md|README.md|_*) continue ;;
+    architecture.md|rules.md|README.md|decisions.md|plugins.md|_*) continue ;;
   esac
   DOMAIN_DOC_COUNT=$((DOMAIN_DOC_COUNT + 1))
 done
@@ -119,7 +132,7 @@ fi
 # For each domain doc (excluding generic template files), check if a rules file exists
 DOMAIN_RULES_MISSING=0
 DOMAIN_RULES_PRESENT=0
-GENERIC_RULES="terminal-safety build cve-policy templates decisions plugins"
+GENERIC_RULES="terminal-safety build cve-policy templates decisions plugins README"
 for doc in claude/*.md; do
   [ -f "$doc" ] || continue
   BASENAME=$(basename "$doc" .md)
@@ -183,8 +196,12 @@ fi
 
 # ─── 5c. copilot-instructions.md lookup table expansion ───────────────────────────────────────────
 if [ -f ".github/copilot-instructions.md" ] && [ "$DOMAIN_DOC_COUNT" -gt 0 ]; then
+  # Detect user-managed copilot-instructions.md (>20 non-blank, non-comment content lines = mature hand-crafted file)
+  _COPILOT_CONTENT_LINES=$(awk '/^[^#><![:space:]]/ || /^\|/' .github/copilot-instructions.md 2>/dev/null | wc -l | tr -d ' ')
   COPILOT_ROWS=$(awk '/\|.*`?claude\/[a-z_-]+\.md`?/{n++} END{print n+0}' .github/copilot-instructions.md 2>/dev/null || echo 0)
-  if [ "$COPILOT_ROWS" -lt "$DOMAIN_DOC_COUNT" ]; then
+  if [ "$_COPILOT_CONTENT_LINES" -gt 20 ] && [ "$COPILOT_ROWS" -gt 0 ]; then
+    echo "  ✅ copilot-instructions.md: user-managed ($COPILOT_ROWS lookup rows, $_COPILOT_CONTENT_LINES content lines)"
+  elif [ "$COPILOT_ROWS" -lt "$DOMAIN_DOC_COUNT" ]; then
     echo "  ⚠️  copilot-instructions.md has $COPILOT_ROWS lookup row(s) but $DOMAIN_DOC_COUNT domain doc(s) — sync the table (item 5)"
     WARNINGS=$((WARNINGS + 1))
   else

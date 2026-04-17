@@ -1392,6 +1392,10 @@ fi
 # When PRIMARY_LANG is JS/TS but Python test files also exist, or vice versa,
 # combine commands so TEST_CMD_ALL and LINT_CHECK_CMD cover both stacks.
 
+# Save primary-only test command BEFORE augmentation (for tdd-loop-check.sh)
+TEST_PRIMARY="$TEST_ALL"
+LINT_CHECK_PRIMARY="$LINT_CHECK"
+
 # Case A: JS/TS primary + Python backend (e.g. TypeScript frontend + Python API/NVR)
 if [ "$PRIMARY_LANG" = "ts" ] || [ "$PRIMARY_LANG" = "tsx" ] || [ "$PRIMARY_LANG" = "js" ]; then
   # Detect Python test suite
@@ -1469,9 +1473,11 @@ emit "TEST_FRAMEWORK" "${TEST_FW:-unknown}"
 emit "COVERAGE_TOOL" "${COVERAGE:-unknown}"
 emit "E2E_FRAMEWORKS" "${E2E_FW%,}"
 emit "TEST_CMD_ALL" "$TEST_ALL"
+emit "TEST_CMD_PRIMARY" "$TEST_PRIMARY"
 emit "TEST_CMD_SINGLE" "$TEST_SINGLE"
 emit "TEST_CMD_CI" "$TEST_CI"
 emit "TEST_CMD_COVERAGE" "$TEST_COV"
+emit "LINT_CHECK_PRIMARY" "$LINT_CHECK_PRIMARY"
 
 echo ""
 
