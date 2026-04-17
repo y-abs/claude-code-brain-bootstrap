@@ -520,7 +520,7 @@ Extending the Brain is simple — one file, one registration:
 
 Three worked examples in `claude/_examples/` — API domain, database domain, messaging domain.
 
-> 📚 **Full reference:** [claude/docs/DETAILED_GUIDE.md](claude/docs/DETAILED_GUIDE.md) — complete file inventory, architecture diagrams, all 31 commands, all 15 hooks, placeholder reference, stack-specific examples, FAQ.
+> 📚 **Full reference:** [claude/docs/DETAILED_GUIDE.md](claude/docs/DETAILED_GUIDE.md) — complete file inventory, architecture diagrams, all 31 commands, all 16 hooks, placeholder reference, stack-specific examples, FAQ.
 
 ---
 

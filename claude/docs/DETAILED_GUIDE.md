@@ -30,14 +30,14 @@
   - [🏠 Root Files (8)](#-root-files-8)
   - [🧠 Bootstrap Scaffolding — `claude/bootstrap/`](#-bootstrap-scaffolding--claudebootstrap-3-files-auto-deleted)
   - [📚 Knowledge Docs — `claude/`](#-knowledge-docs--claude-13-files)
-  - [⚡ Slash Commands — `.claude/commands/`](#-slash-commands--claudecommands-26-files)
-  - [🪝 Lifecycle Hooks — `.claude/hooks/`](#-lifecycle-hooks--claudehooks-14-files)
+  - [⚡ Slash Commands — `.claude/commands/`](#-slash-commands--claudecommands-31-files)
+  - [🪝 Lifecycle Hooks — `.claude/hooks/`](#-lifecycle-hooks--claudehooks-16-files)
   - [🤖 AI Subagents — `.claude/agents/`](#-ai-subagents--claudeagents-5-files)
-  - [🎓 Skills — `.claude/skills/`](#-skills--claudeskills-5-files)
+  - [🎓 Skills — `.claude/skills/`](#-skills--claudeskills-18-files)
   - [📏 Path-Scoped Rules — `.claude/rules/`](#-path-scoped-rules--clauderules-13-files)
   - [🤝 GitHub Copilot — `.github/`](#-github-copilot--github-8-files)
   - [🧠 Memory — `claude/tasks/`](#-memory--claudetasks-5-files)
-  - [🔧 Scripts — `claude/scripts/`](#-scripts--claudescripts-15-files)
+  - [🔧 Scripts — `claude/scripts/`](#-scripts--claudescripts-14-files)
 - [🔬 Deep Dives](#-deep-dives)
   - [📂 The 10 Configuration Categories](#-the-10-configuration-categories)
   - [🔄 Bootstrap: How It Actually Works](#-bootstrap-how-it-actually-works)
@@ -247,7 +247,7 @@ These are the AI's textbooks. Some load automatically, others on-demand:
 
 > 💡 **The examples are training wheels.** Study them → create your own → delete them.
 
-### ⚡ Slash Commands — `.claude/commands/` (26 files)
+### ⚡ Slash Commands — `.claude/commands/` (31 files)
 
 Every command you'll reach for, pre-built and ready:
 
@@ -324,7 +324,7 @@ Your AI has a team. Each subagent runs in an **isolated context window** — res
 | 📊 **session-reviewer** | Sonnet | Conversation pattern analysis — detects corrections, frustrations, recurring issues | 15 |
 | 🔐 **security-auditor** | Opus | Security scanning — secrets, auth gaps, injection, CVEs, DEPLOY/HOLD/BLOCK verdict | 20 |
 
-### 🎓 Skills — `.claude/skills/` (11 files)
+### 🎓 Skills — `.claude/skills/` (18 files)
 
 Skills are specialized knowledge that activates at the right moment:
 
