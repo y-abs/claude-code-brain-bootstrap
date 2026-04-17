@@ -64,6 +64,23 @@ for doc in "$COPILOT_DIR"/*.md; do
 
   INSTRUCTION_FILE="$INSTRUCTIONS_DIR/${BASENAME}.instructions.md"
 
+  # ─── Near-duplicate detection (singular/plural) ────────────────────
+  # If "webhooks.instructions.md" is about to be created but "webhook.instructions.md"
+  # already exists (or vice versa), consolidate into the canonical name (from the domain doc).
+  # This prevents two files covering the same domain with slightly different names.
+  if [ ! -f "$INSTRUCTION_FILE" ]; then
+    # Try the opposite plural form
+    case "$BASENAME" in
+      *s) ALT_BASE="${BASENAME%s}" ;;         # webhooks → webhook
+      *)  ALT_BASE="${BASENAME}s" ;;           # webhook → webhooks
+    esac
+    ALT_FILE="$INSTRUCTIONS_DIR/${ALT_BASE}.instructions.md"
+    if [ -f "$ALT_FILE" ]; then
+      echo "  ⚠ Consolidating near-duplicate: ${ALT_BASE}.instructions.md → ${BASENAME}.instructions.md"
+      mv "$ALT_FILE" "$INSTRUCTION_FILE"
+    fi
+  fi
+
   # Stub detection: overwrite if the file is a bootstrap-generated stub (hollow content).
   # A stub has < 4 content lines OR contains TODO markers — a human-written file won't have either.
   # This ensures UPGRADE enriches stubs from prior runs instead of leaving them hollow forever.

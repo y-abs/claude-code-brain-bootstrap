@@ -3889,6 +3889,52 @@ emit "PLUGINS" "$PLUGIN_LIST"
 emit "HAS_CLAUDE_MEM" "$HAS_CLAUDE_MEM"
 emit "CLAUDE_MEM_WORKER" "$CLAUDE_MEM_WORKER"
 
+# ─── Other plugin detection (named flags for AI Phase 1 awareness) ─
+# graphify: pip package + global skill (NOT a Claude plugin — lives in ~/.claude/skills/)
+HAS_GRAPHIFY="false"
+if python3 -c "from importlib.metadata import version; version('graphifyy')" 2>/dev/null \
+   || command -v graphify >/dev/null 2>&1 \
+   || [ -f "$HOME/.claude/skills/graphify/SKILL.md" ]; then
+  HAS_GRAPHIFY="true"
+fi
+
+# rtk: Rust binary token optimizer (cargo install rtk)
+HAS_RTK="false"
+command -v rtk >/dev/null 2>&1 && HAS_RTK="true"
+
+# codebase-memory-mcp: C binary structural graph (curl install.sh)
+HAS_CBM="false"
+command -v codebase-memory-mcp >/dev/null 2>&1 && HAS_CBM="true"
+
+# cocoindex-code: Python semantic vector search (pip install cocoindex-code)
+HAS_COCOINDEX="false"
+command -v ccc >/dev/null 2>&1 && HAS_COCOINDEX="true"
+
+# code-review-graph: Python change risk analysis (pip install code-review-graph)
+HAS_CRG="false"
+command -v code-review-graph >/dev/null 2>&1 && HAS_CRG="true"
+
+# codeburn: Node.js token cost dashboard (npm install -g codeburn)
+HAS_CODEBURN="false"
+command -v codeburn >/dev/null 2>&1 && HAS_CODEBURN="true"
+
+# caveman: response-text compression hooks (~/.claude/settings.json)
+HAS_CAVEMAN="false"
+grep -q 'caveman-activate' "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/settings.json" 2>/dev/null && HAS_CAVEMAN="true"
+
+# serena: LSP refactoring MCP via uvx (ready if uvx present)
+HAS_SERENA="false"
+command -v uvx >/dev/null 2>&1 && HAS_SERENA="uvx-ready"
+
+emit "HAS_GRAPHIFY" "$HAS_GRAPHIFY"
+emit "HAS_RTK" "$HAS_RTK"
+emit "HAS_CBM" "$HAS_CBM"
+emit "HAS_COCOINDEX" "$HAS_COCOINDEX"
+emit "HAS_CRG" "$HAS_CRG"
+emit "HAS_CODEBURN" "$HAS_CODEBURN"
+emit "HAS_CAVEMAN" "$HAS_CAVEMAN"
+emit "HAS_SERENA" "$HAS_SERENA"
+
 echo ""
 echo "# ============================================="
 echo "# End of Discovery"

@@ -5,9 +5,9 @@ user-invocable: false
 paths:
   - "**/*.test.*"
   - "**/*.spec.*"
-  - "**/test/**"
-  - "**/tests/**"
-  - "**/__tests__/**"
+  - "**/*Test.*"
+  - "**/*Spec.*"
+  - "**/__tests__/**/*.{js,ts,jsx,tsx}"
 ---
 
 # Explore-Plan-Act TDD Workflow

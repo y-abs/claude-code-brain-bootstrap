@@ -1,14 +1,13 @@
 #!/bin/bash
 # setup-plugins.sh — All-in-one plugin management for bootstrap
-# Handles: wait for bg install → disable claude-mem → kill worker → verify → update CLAUDE.md
-#          + graphify knowledge graph: pip install → skill install → git hooks
-# Usage: bash claude/scripts/setup-plugins.sh [--lite] [--yes] [--interactive|--non-interactive] [project-dir]
+# Handles: strategy selection → per-plugin install/skip → verify → update CLAUDE.md
+# Usage: bash claude/scripts/setup-plugins.sh [--lite] [--yes] [--interactive|--non-interactive] [--strategy=STRATEGY] [project-dir]
 #   --lite             Skip heavy plugins (graphify, cocoindex, code-review-graph ~1-3 GB total)
-#                      Installs only: rtk + codebase-memory-mcp + claude-mem (~2 min total)
 #   --yes              Non-interactive, auto-accept all plugins (ideal for CI and AI orchestration)
-#   --interactive      Prompt yes/no for each plugin (default when stdin is a TTY)
+#   --interactive      Prompt user for plugin strategy + per-plugin confirmation (default when TTY)
 #   --non-interactive  Never prompt; respect SKIP_* env vars (default in CI / piped input)
-# Safe: exits cleanly if claude CLI not available (non-Claude Code environments)
+#   --strategy=none|full|recommended|personalize  Pre-set strategy (skips strategy prompt)
+# Safe: no error breaks the flow. Exits cleanly if claude CLI not available.
 
 # ─── Source guard — prevent env corruption if sourced ─────────────
 if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
@@ -16,25 +15,33 @@ if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
   return 1 2>/dev/null || exit 1
 fi
 
-set -eo pipefail
+# NOTE: no set -e — we guard every failing command with || true
+# so that no error path breaks the plugin installation flow.
+set -o pipefail
 
 # ─── Argument parsing ──────────────────────────────────────────────
 LITE_MODE=""
 INTERACTIVE_FLAG=""   # "", "interactive", or "non-interactive"
+PLUGIN_STRATEGY=""    # "", "none", "full", "recommended", "personalize"
 PROJECT_DIR=""
 
 for arg in "$@"; do
   case "$arg" in
-    --lite)             LITE_MODE=1 ;;
-    --yes)              INTERACTIVE_FLAG="non-interactive" ;;
-    --interactive)      INTERACTIVE_FLAG="interactive" ;;
-    --non-interactive)  INTERACTIVE_FLAG="non-interactive" ;;
-    -*)                 echo "Unknown flag: $arg (valid: --lite --yes --interactive --non-interactive)" >&2; exit 1 ;;
-    *)                  PROJECT_DIR="$arg" ;;
+    --lite)                 LITE_MODE=1 ;;
+    --yes)                  INTERACTIVE_FLAG="non-interactive" ;;
+    --interactive)          INTERACTIVE_FLAG="interactive" ;;
+    --non-interactive)      INTERACTIVE_FLAG="non-interactive" ;;
+    --strategy=none)        PLUGIN_STRATEGY="none" ;;
+    --strategy=full)        PLUGIN_STRATEGY="full" ;;
+    --strategy=recommended) PLUGIN_STRATEGY="recommended" ;;
+    --strategy=personalize) PLUGIN_STRATEGY="personalize" ;;
+    --strategy=*)           echo "⚠️  Unknown strategy: $arg (valid: none, full, recommended, personalize)" >&2 ;;
+    -*)                     echo "⚠️  Unknown flag: $arg" >&2 ;;
+    *)                      PROJECT_DIR="$arg" ;;
   esac
 done
 PROJECT_DIR="${PROJECT_DIR:-.}"
-cd "$PROJECT_DIR"
+cd "$PROJECT_DIR" || exit 1
 
 # ─── Interactive mode detection ────────────────────────────────────
 # Default: interactive when stdin is a TTY and not in CI; non-interactive otherwise.
@@ -79,21 +86,29 @@ if [ -n "$LITE_MODE" ]; then
 fi
 
 # ─── ask_plugin — interactive yes/no prompt with full context ──────
-# Usage: ask_plugin SKIP_VAR "Plugin Name" TIER INSTALL_TIME "what it does" "manual install later"
+# Usage: ask_plugin SKIP_VAR "Plugin Name" TIER INSTALL_TIME TOKEN_COST "what it does" "manual install later"
 # TIER: RECOMMENDED | OPTIONAL | HEAVY
+# TOKEN_COST: token/runtime cost description
 # Sets SKIP_VAR=1 if the user answers no.
+# In non-personalize strategies, this is a no-op (decisions already made by apply_strategy).
 ask_plugin() {
   local var_name="$1"
   local plugin_name="$2"
   local tier="$3"
   local install_time="$4"
-  local description="$5"
-  local manual_later="$6"
+  local token_cost="$5"
+  local description="$6"
+  local manual_later="$7"
 
-  # If already opted out via env var, skip the prompt
+  # If already opted out via env var or strategy, skip the prompt
   local current_val
   current_val="$(eval echo "\${$var_name:-}")"
   if [ -n "$current_val" ]; then
+    return 0
+  fi
+
+  # Only show interactive card in personalize mode
+  if [ "$PLUGIN_STRATEGY" != "personalize" ]; then
     return 0
   fi
 
@@ -109,34 +124,97 @@ ask_plugin() {
     HEAVY)       echo "  │ 📋 Recommendation : ⚠️  HEAVY — large download, skip on slow networks" ;;
   esac
   echo "  │ ⏱️  Install time   : $install_time"
+  echo "  │ 🪙 Token cost     : $token_cost"
   echo "  │"
-  echo "  │ 📌 Skip now & install later:"
+  echo "  │ 📌 Install later:"
   echo "  │    $manual_later"
   echo "  └─────────────────────────────────────────────────────────"
 
   local answer
   printf "  Install %s? [Y/n] " "$plugin_name"
-  read -r answer </dev/tty
+  read -r answer </dev/tty || answer=""
   case "$answer" in
-    [Nn]*) eval "$var_name=1"; echo "  ⏭️  $plugin_name skipped — you can install later with the command above" ;;
+    [Nn]*) eval "$var_name=1"; echo "  ⏭️  $plugin_name skipped — install later with the command above" ;;
     *)     echo "  ✅ $plugin_name will be installed" ;;
   esac
   echo ""
 }
 
 
-# ─── Interactive mode banner ───────────────────────────────────────
-if [ -n "$INTERACTIVE_MODE" ]; then
+# ═════════════════════════════════════════════════════════════════
+# STRATEGY GATE — Top-level plugin choice (interactive only)
+# ═════════════════════════════════════════════════════════════════
+
+# Plugin tier catalog (used by strategy routing)
+PLUGIN_TIER_RECOMMENDED="SKIP_CLAUDE_MEM SKIP_RTK SKIP_CBM"
+PLUGIN_TIER_OPTIONAL="SKIP_PLAYWRIGHT SKIP_CODEBURN SKIP_CAVEMAN SKIP_SERENA"
+PLUGIN_TIER_HEAVY="SKIP_GRAPHIFY SKIP_COCOINDEX SKIP_CRG"
+
+apply_strategy() {
+  local strategy="$1"
+  case "$strategy" in
+    none)
+      # Skip ALL plugins
+      for v in $PLUGIN_TIER_RECOMMENDED $PLUGIN_TIER_OPTIONAL $PLUGIN_TIER_HEAVY; do
+        eval "$v=1"
+      done
+      echo "  ⏭️  All plugins skipped. Each section below shows how to install later."
+      ;;
+    full)
+      # Install ALL (respect --lite and env var overrides only)
+      echo "  ✅ Installing all plugins (env var overrides and --lite still apply)"
+      ;;
+    recommended)
+      # Install RECOMMENDED only, skip OPTIONAL and HEAVY
+      for v in $PLUGIN_TIER_OPTIONAL $PLUGIN_TIER_HEAVY; do
+        eval "$v=1"
+      done
+      echo "  ✅ Installing recommended plugins only (claude-mem, rtk, codebase-memory-mcp)"
+      echo "  ⏭️  Optional/heavy plugins skipped — install later with the commands shown below"
+      ;;
+    personalize)
+      echo "  🎯 Cherry-pick mode — you'll choose each plugin individually"
+      ;;
+  esac
+}
+
+if [ -n "$INTERACTIVE_MODE" ] && [ -z "$PLUGIN_STRATEGY" ]; then
   echo ""
-  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-  echo "  🔌 Plugin Setup — Interactive Mode"
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo "  🔌 Plugin Setup"
+  echo ""
+  echo "  Brain Bootstrap includes 10 optional plugins that extend"
+  echo "  Claude Code with memory, code graphs, token savings, and more."
+  echo ""
+  echo "  How would you like to proceed?"
+  echo ""
+  echo "    [0] NO          — Skip all plugins (install any later, instructions provided)"
+  echo "    [1] FULL        — Install everything (~10-20 min, ~2 GB disk)"
+  echo "    [2] RECOMMENDED — Install core 3 only: claude-mem, rtk, codebase-memory-mcp (~3 min)"
+  echo "    [3] PERSONALIZE — Cherry-pick: review each plugin and decide"
+  echo ""
   if [ -n "$LITE_MODE" ]; then
-    echo "  ⚡ Lite mode: graphify, cocoindex, and code-review-graph are pre-skipped"
+    echo "  ⚡ Lite mode active: graphify, cocoindex, code-review-graph pre-skipped"
+    echo ""
   fi
-  echo "  For each plugin you'll see: what it does, recommendation,"
-  echo "  estimated install time, and how to install it later."
-  echo "  Press Enter or type Y to install. Type N to skip."
-  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  printf "  Your choice [0/1/2/3] (default: 2 — recommended): "
+  read -r STRATEGY_CHOICE </dev/tty || STRATEGY_CHOICE=""
+  case "$STRATEGY_CHOICE" in
+    0|[Nn]*)  PLUGIN_STRATEGY="none" ;;
+    1|[Ff]*)  PLUGIN_STRATEGY="full" ;;
+    3|[Pp]*)  PLUGIN_STRATEGY="personalize" ;;
+    *)        PLUGIN_STRATEGY="recommended" ;;  # default = recommended (Enter or 2)
+  esac
+  echo ""
+  apply_strategy "$PLUGIN_STRATEGY"
+  echo ""
+elif [ -n "$PLUGIN_STRATEGY" ]; then
+  # Strategy set via --strategy= CLI flag
+  apply_strategy "$PLUGIN_STRATEGY"
+elif [ -z "$INTERACTIVE_MODE" ] && [ -z "$PLUGIN_STRATEGY" ]; then
+  # Non-interactive without explicit strategy: default to full (backward compat)
+  PLUGIN_STRATEGY="full"
 fi
 
 # ─── Portable helpers (sed_inplace, safe_pgrep, platform detection)
@@ -149,8 +227,9 @@ source "$(dirname "$0")/_platform.sh"
 
 if [ -n "$INTERACTIVE_MODE" ]; then
   ask_plugin SKIP_CLAUDE_MEM "claude-mem" RECOMMENDED "~30 sec" \
+    "LOW at rest (disabled by default) · HIGH when enabled (~48% API quota from PostToolUse hooks)" \
     "Persistent cross-session memory (SQLite + ChromaDB). Remembers what Claude learns across sessions.
-  Disabled by default after install (quota protection — re-enable with: bash claude/scripts/toggle-claude-mem.sh on)." \
+  │ Disabled by default after install (quota protection — re-enable: bash claude/scripts/toggle-claude-mem.sh on)." \
     "claude plugin install claude-mem@thedotmack && claude plugin disable claude-mem@thedotmack"
 fi
 
@@ -217,8 +296,9 @@ fi
 echo ""
 if [ -n "$INTERACTIVE_MODE" ] && [ -z "$LITE_MODE" ]; then
   ask_plugin SKIP_GRAPHIFY "graphify" HEAVY "~3-5 min (first run)" \
+    "ZERO runtime (offline graph build) · ~5 min first build, then incremental (~10s) on commit" \
     "Knowledge graph over your codebase — reveals god nodes, community structure, and hidden connections.
-  Installs a /graphify slash command. Git hooks auto-rebuild the graph on every commit." \
+  │ Installs a /graphify slash command. Git hooks auto-rebuild the graph on every commit." \
     "pip install graphifyy && graphify install && graphify hook install"
 fi
 
@@ -296,8 +376,9 @@ fi  # end SKIP_GRAPHIFY
 echo ""
 if [ -n "$INTERACTIVE_MODE" ]; then
   ask_plugin SKIP_RTK "rtk" RECOMMENDED "~1-2 min (compiles from source, needs cargo)" \
+    "HIGH savings (60-90% fewer output tokens) · ZERO runtime cost (rewrites tool output before Claude sees it)" \
     "Token optimizer — transparently rewrites Claude's bash commands for 60-90% output token savings.
-  No-op if absent. Requires Rust/cargo. Hook is already registered in .claude/settings.json." \
+  │ No-op if absent. Requires Rust/cargo. Hook is already registered in .claude/settings.json." \
     "cargo install rtk"
 fi
 
@@ -353,8 +434,9 @@ echo "  ✅ rtk: ${RTK_STATUS:-not installed}"
 echo ""
 if [ -n "$INTERACTIVE_MODE" ]; then
   ask_plugin SKIP_CBM "codebase-memory-mcp" RECOMMENDED "~10 sec" \
+    "LOW (14 MCP tools, structured results — 120x fewer tokens than file exploration)" \
     "Live structural graph of your codebase — 14 MCP tools for call tracing, blast radius detection,
-  dead code hunting, and architecture queries. Uses 120x fewer tokens than file exploration." \
+  │ dead code hunting, and architecture queries. Uses 120x fewer tokens than file exploration." \
     "curl -fsSL https://raw.githubusercontent.com/DeusData/codebase-memory-mcp/main/install.sh | bash -s -- --skip-config"
 fi
 
@@ -405,8 +487,9 @@ fi  # end SKIP_CBM
 echo ""
 if [ -n "$INTERACTIVE_MODE" ] && [ -z "$LITE_MODE" ]; then
   ask_plugin SKIP_COCOINDEX "cocoindex-code" HEAVY "~5-15 min (~1 GB — sentence-transformers + torch)" \
+    "ZERO API cost (local embeddings) · ~30s index build · LOW per-query token cost" \
     "Semantic vector search — find code by meaning, not exact names. No API key needed (local embeddings).
-  Run 'ccc index' to build the initial index, then search with mcp__cocoindex-code__search." \
+  │ Run 'ccc index' to build the initial index, then search with mcp__cocoindex-code__search." \
     "pip install 'cocoindex-code[full]'"
 fi
 
@@ -520,8 +603,9 @@ echo "  ✅ cocoindex-code: ${COCO_STATUS:-skipped}"
 echo ""
 if [ -n "$INTERACTIVE_MODE" ] && [ -z "$LITE_MODE" ]; then
   ask_plugin SKIP_CRG "code-review-graph" HEAVY "~3-5 min" \
+    "LOW per-query (29 MCP tools, structured) · ~2s incremental re-index on commit (git hook)" \
     "Change risk analysis — risk score 0-100, blast radius, breaking changes before any PR.
-  29 MCP tools. Git post-commit hook for incremental re-index. Pre-PR safety gate." \
+  │ 29 MCP tools. Git post-commit hook for incremental re-index. Pre-PR safety gate." \
     "pip install 'code-review-graph[communities]'"
 fi
 
@@ -598,10 +682,10 @@ echo "  ✅ code-review-graph: ${CRG_STATUS:-skipped}"
 echo ""
 if [ -n "$INTERACTIVE_MODE" ]; then
   ask_plugin SKIP_PLAYWRIGHT "playwright-mcp" OPTIONAL "~2-3 min (~300 MB Chromium download)" \
+    "LOW-MEDIUM (structured accessibility snapshots, not pixels — no vision model needed)" \
     "Browser automation MCP — navigate, click, fill, snapshot web pages via accessibility tree.
-  No vision model needed. Token cost: LOW-MEDIUM (structured snapshots, not pixels).
-  Use for: UI testing, documentation scraping, OAuth flows, web research.
-  MCP entry already in .mcp.json — this step pre-installs Chromium browsers." \
+  │ No vision model needed. Use for: UI testing, doc scraping, OAuth flows, web research.
+  │ MCP entry already in .mcp.json — this step pre-installs Chromium browsers." \
     "npx playwright install chromium"
 fi
 
@@ -657,9 +741,9 @@ echo "  ✅ playwright-mcp: ${PLAYWRIGHT_STATUS:-skipped}"
 echo ""
 if [ -n "$INTERACTIVE_MODE" ]; then
   ask_plugin SKIP_CODEBURN "codeburn" OPTIONAL "~10 sec" \
+    "ZERO (reads ~/.claude/projects/ locally — no API calls, no hooks, no runtime overhead)" \
     "Token cost observability dashboard — see WHERE tokens go: by task type (13 categories), model,
-  one-shot rate, and USD cost. Reads ~/.claude/projects/ directly. No API keys needed.
-  Complements rtk: rtk reduces tokens spent; codeburn shows which tasks to optimize." \
+  │ one-shot rate, and USD cost. Complements rtk: rtk reduces tokens; codeburn shows which tasks to optimize." \
     "npm install -g codeburn"
 fi
 
@@ -705,10 +789,10 @@ echo "  ✅ codeburn: ${CODEBURN_STATUS:-skipped}"
 echo ""
 if [ -n "$INTERACTIVE_MODE" ]; then
   ask_plugin SKIP_CAVEMAN "caveman" OPTIONAL "~10 sec" \
+    "HIGH savings (65-87% fewer response tokens) · installs hooks in ~/.claude/settings.json (user-level)" \
     "Response-text compression — makes Claude reply in terse caveman speak (65-87% fewer response tokens).
-  Covers token surface #2 (response text), complementing rtk (#1 tool outputs).
-  Adds: /caveman, /caveman-commit, /caveman-review, /caveman:compress <file>.
-  Installs hooks into ~/.claude/settings.json (user-level, no project conflict)." \
+  │ Covers token surface #2 (response text), complementing rtk (#1 tool outputs).
+  │ Adds: /caveman, /caveman-commit, /caveman-review, /caveman:compress <file>." \
     "bash <(curl -fsSL https://raw.githubusercontent.com/JuliusBrussee/caveman/main/hooks/install.sh)"
 fi
 
@@ -767,10 +851,10 @@ echo "  ✅ caveman: ${CAVEMAN_STATUS:-skipped}"
 echo ""
 if [ -n "$INTERACTIVE_MODE" ]; then
   ask_plugin SKIP_SERENA "serena" OPTIONAL "~30 sec (uvx auto-downloads on first use)" \
+    "LOW (MCP tools return structured symbol data — no large file reads needed)" \
     "LSP-backed symbol refactoring — rename/move/inline across the entire codebase atomically.
-  Type-aware, 100% recall. Rename a symbol in 50 files in one call.
-  MCP server using uvx (isolated env — no global Python dependency conflicts).
-  Fills gap: cocoindex/codebase-memory find code; serena transforms it." \
+  │ Type-aware, 100% recall. Rename a symbol in 50 files in one call.
+  │ Fills gap: cocoindex/codebase-memory find code; serena transforms it." \
     "Add to .mcp.json: {\"serena\": {\"type\": \"stdio\", \"command\": \"uvx\", \"args\": [\"serena-agent\", \"--project\", \".\"]}}"
 fi
 
@@ -830,6 +914,19 @@ echo "  ✅ serena: ${SERENA_STATUS:-skipped}"
 # ═════════════════════════════════════════════════════════════════
 
 echo ""
-echo "✅ Plugins: claude-mem ${CLAUDE_MEM_STATUS:-skipped} · graphify ${GRAPHIFY_STATUS:-skipped} · rtk ${RTK_STATUS:-skipped} · cbm ${CBM_STATUS:-skipped} · ccc ${COCO_STATUS:-skipped} · crg ${CRG_STATUS:-skipped} · playwright ${PLAYWRIGHT_STATUS:-skipped} · codeburn ${CODEBURN_STATUS:-skipped} · caveman ${CAVEMAN_STATUS:-skipped} · serena ${SERENA_STATUS:-skipped}"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "  🔌 Plugin Setup Complete — Strategy: ${PLUGIN_STRATEGY:-auto}"
+echo ""
+echo "  claude-mem   : ${CLAUDE_MEM_STATUS:-skipped}"
+echo "  graphify     : ${GRAPHIFY_STATUS:-skipped}"
+echo "  rtk          : ${RTK_STATUS:-skipped}"
+echo "  cbm          : ${CBM_STATUS:-skipped}"
+echo "  cocoindex    : ${COCO_STATUS:-skipped}"
+echo "  crg          : ${CRG_STATUS:-skipped}"
+echo "  playwright   : ${PLAYWRIGHT_STATUS:-skipped}"
+echo "  codeburn     : ${CODEBURN_STATUS:-skipped}"
+echo "  caveman      : ${CAVEMAN_STATUS:-skipped}"
+echo "  serena       : ${SERENA_STATUS:-skipped}"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 if [ -f "claude/tasks/.bootstrap-plan.txt" ]; then echo "P4 $(date +%H:%M:%S)" >> "claude/tasks/.bootstrap-progress.txt" 2>/dev/null; fi
 

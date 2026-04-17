@@ -23,9 +23,12 @@ if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
 fi
 
 # ─── Bootstrap guard — skip during bootstrap ──────────────────────
-# claude/bootstrap/PROMPT.md exists only during bootstrap;
-# deleted by Phase 5 cleanup (rm -rf claude/bootstrap/) → self-resetting.
-if [ -f "claude/bootstrap/PROMPT.md" ]; then
+# Multiple signals: PROMPT.md (phases 1-4), progress file (all phases),
+# or bootstrap dir still present. Phase 5 deletes PROMPT.md but the
+# progress file persists until the session ends → robust detection.
+if [ -f "claude/bootstrap/PROMPT.md" ] \
+   || [ -f "claude/tasks/.bootstrap-progress.txt" ] \
+   || [ -d "claude/bootstrap" ]; then
   exit 0
 fi
 
@@ -67,6 +70,12 @@ fi
 
 if [ -f 'package.json' ]; then
   # ── JavaScript / TypeScript project ──
+
+  # Skip if dependencies not installed — can't test without node_modules
+  if [ ! -d 'node_modules' ]; then
+    rm -f "$ITERATION_FILE"
+    exit 0
+  fi
 
   TEST_CMD='{{TEST_CMD_PRIMARY}}'
   # Fallback detection if placeholder not replaced by bootstrap
@@ -112,6 +121,12 @@ if [ -f 'package.json' ]; then
 
 elif [ -f 'pyproject.toml' ] || [ -f 'setup.py' ] || [ -f 'setup.cfg' ]; then
   # ── Python project ──
+
+  # Skip if pytest not available
+  if ! command -v pytest &>/dev/null && ! python3 -c "import pytest" 2>/dev/null; then
+    rm -f "$ITERATION_FILE"
+    exit 0
+  fi
 
   TEST_CMD='{{TEST_CMD_PRIMARY}}'
   if [ "$TEST_CMD" = '{{TEST_CMD_PRIMARY}}' ]; then

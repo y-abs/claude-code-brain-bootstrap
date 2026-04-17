@@ -25,6 +25,7 @@ fi
 set -euo pipefail
 
 # ── Platform helpers ───────────────────────────────────────────────
+# shellcheck disable=SC1091  # _platform.sh provides OS-specific utilities, shellcheck doesn't need to follow
 source "$(dirname "$0")/claude/scripts/_platform.sh"
 
 # ── Pre-flight check mode ─────────────────────────────────────────
@@ -33,6 +34,7 @@ if [ "${1:-}" = "--check" ]; then
   echo "🔍 Brain Bootstrap — Pre-flight Check"
   echo ""
   echo "  Platform: $BRAIN_PLATFORM"
+  # shellcheck disable=SC2015  # Intentional: || true ensures script continues if version check fails
   require_tool git "required for repo detection" && echo "  ✅ git $(git --version 2>/dev/null | head -1)" || true
   if command -v jq &>/dev/null; then
     echo "  ✅ jq $(jq --version 2>/dev/null)"
@@ -352,6 +354,24 @@ if [ "$MODE" = "FRESH" ]; then
 
   total=$(find "$TARGET/claude" "$TARGET/.claude" -type f 2>/dev/null | wc -l)
   echo ""
+  # Ensure always-personal files are gitignored (regardless of SOLO/TEAM)
+  GITIGNORE_FILE="$TARGET/.gitignore"
+  if [ -f "$GITIGNORE_FILE" ]; then
+    ALWAYS_PERSONAL=".mcp.json CLAUDE.local.md .cocoindex_code/"
+    FRESH_GITIGNORE_ADDED=""
+    for pf in $ALWAYS_PERSONAL; do
+      if ! grep -qF "$pf" "$GITIGNORE_FILE" 2>/dev/null; then
+        FRESH_GITIGNORE_ADDED="$FRESH_GITIGNORE_ADDED$pf
+"
+      fi
+    done
+    if [ -n "$FRESH_GITIGNORE_ADDED" ]; then
+      printf '\n# Claude Code — personal/local files (never committed)\n' >> "$GITIGNORE_FILE"
+      printf '%s' "$FRESH_GITIGNORE_ADDED" >> "$GITIGNORE_FILE"
+      echo "  🔒 Added always-personal entries to .gitignore"
+    fi
+  fi
+
   echo "✅ Fresh install complete! $total files installed."
   echo ""
   echo "👉 Next step:"
@@ -644,6 +664,58 @@ ADDED_COUNT=$((ADDED_COUNT + phase_d_added))
 
 if [ "$phase_d_added" -eq 0 ]; then
   echo "  ✅ All files present — nothing to add"
+fi
+
+echo ""
+
+# ── Phase E — Ensure personal files are gitignored ────────────────
+# When the target repo already gitignores CLAUDE.md (SOLO mode or pre-existing),
+# newly copied files (.mcp.json, .graphifyignore, CLAUDE.local.md.example) would
+# appear as untracked. This phase appends missing entries.
+echo "🔒 Phase E — Gitignore guard for personal files:"
+
+GITIGNORE_FILE="$TARGET/.gitignore"
+GITIGNORE_ADDED=0
+
+if [ -f "$GITIGNORE_FILE" ]; then
+  # Always-personal files: gitignored regardless of SOLO/TEAM
+  ALWAYS_PERSONAL=".mcp.json CLAUDE.local.md .cocoindex_code/"
+  # SOLO-only files: gitignored when repo already gitignores CLAUDE.md
+  SOLO_PERSONAL=".graphifyignore CLAUDE.local.md.example .claude/settings.local.json"
+
+  IS_SOLO=false
+  if grep -qE '^CLAUDE\.md$' "$GITIGNORE_FILE" 2>/dev/null; then
+    IS_SOLO=true
+  fi
+
+  MISSING_ENTRIES=""
+  for pf in $ALWAYS_PERSONAL; do
+    if [ -e "$TARGET/$pf" ] && ! grep -qF "$pf" "$GITIGNORE_FILE" 2>/dev/null; then
+      MISSING_ENTRIES="$MISSING_ENTRIES$pf
+"
+      GITIGNORE_ADDED=$((GITIGNORE_ADDED + 1))
+    fi
+  done
+
+  if [ "$IS_SOLO" = true ]; then
+    for pf in $SOLO_PERSONAL; do
+      if [ -e "$TARGET/$pf" ] && ! grep -qF "$pf" "$GITIGNORE_FILE" 2>/dev/null; then
+        MISSING_ENTRIES="$MISSING_ENTRIES$pf
+"
+        GITIGNORE_ADDED=$((GITIGNORE_ADDED + 1))
+      fi
+    done
+  fi
+
+  if [ -n "$MISSING_ENTRIES" ]; then
+    printf '\n# Brain Bootstrap — personal/local files (added by install.sh)\n' >> "$GITIGNORE_FILE"
+    printf '%s' "$MISSING_ENTRIES" >> "$GITIGNORE_FILE"
+    echo "  ➕ Added $GITIGNORE_ADDED entry/entries to .gitignore"
+  else
+    echo "  ✅ All personal files already gitignored"
+  fi
+else
+  echo "  ⏭️  Skipped — no .gitignore found"
 fi
 
 echo ""
