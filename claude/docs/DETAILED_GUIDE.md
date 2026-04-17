@@ -88,7 +88,7 @@ Here's the mental model:
             "Here's everything we've learned together"
 ```
 
-**31 slash commands. 16 lifecycle hooks. 5 AI subagents. 11 skills. 2 tools. 120 validation checks. 8 domain-detection greps. Zero setup friction.**
+**31 slash commands. 16 lifecycle hooks. 5 AI subagents. 18 skills. 10 tools. 127+ validation checks. 8 domain-detection greps. Zero setup friction.**
 
 > 💡 Battle-tested. Works with **any language, any framework, any repo**.
 
@@ -115,12 +115,13 @@ Open Claude Code in your repo and run:
 ```
 
 The AI will:
+
 1. 🔍 **Discover** your tech stack (language, framework, package manager, linter, test runner, DB, CI…)
 2. 🏗️ **Analyze** your architecture (services, domains, patterns, aliases)
 3. 📝 **Populate** all `{{PLACEHOLDER}}` values across every template file
 4. 🧠 **Generate** domain-specific knowledge docs (adaptive depth — 8 domain greps, mandatory when ≥3 domains found)
 5. 🔌 **Install** plugin (claude-mem)
-6. ✅ **Validate** everything works (`claude/scripts/validate.sh` — 120 checks)
+6. ✅ **Validate** everything works (`claude/scripts/validate.sh` — 127+ checks)
 
 > 💡 **No Claude Code?** Paste `claude/bootstrap/PROMPT.md` into any AI chat — it works with any LLM.
 
@@ -162,9 +163,9 @@ Your repo
 │   ├── settings.json               ← Permissions, hooks, env vars
 │   ├── settings.local.json.example ← Personal overrides template
 │   ├── commands/  (31 files)       ← /build, /test, /review, /mr, /worktree...
-│   ├── hooks/     (15 files)       ← Safety, quality, recovery, TDD loop
+│   ├── hooks/     (16 files)       ← Safety, quality, recovery, TDD loop
 │   ├── agents/    (5 files)        ← research, reviewer, plan-challenger, session-reviewer, security-auditor
-│   ├── skills/    (11 files)       ← TDD, triage, root-cause, code review, semantic search...
+│   ├── skills/    (18 files)       ← TDD, triage, root-cause, code review, semantic search...
 │   └── rules/     (13 files)       ← Path-scoped auto-loading rules
 │
 ├── 📚 claude/
@@ -190,11 +191,11 @@ Your repo
 
 Your AI shouldn't drown in 50K tokens when you ask it to fix a typo. So the system loads knowledge in three layers:
 
-| Layer | What loads | When | Token cost |
-|:------|:-----------|:-----|:----------:|
-| 🟢 **Always on** | `CLAUDE.md` + `@import`s (architecture, rules) | Every conversation | ~3-4K |
-| 🟡 **Auto-loaded** | `.claude/rules/*.md` with `paths:` globs | When editing matching files | ~200-400 each |
-| 🔵 **On-demand** | `claude/*.md` domain docs (build, auth, DB…) | When the task requires it | ~1-2K each |
+| Layer              | What loads                                     | When                        |  Token cost   |
+| :----------------- | :--------------------------------------------- | :-------------------------- | :-----------: |
+| 🟢 **Always on**   | `CLAUDE.md` + `@import`s (architecture, rules) | Every conversation          |     ~3-4K     |
+| 🟡 **Auto-loaded** | `.claude/rules/*.md` with `paths:` globs       | When editing matching files | ~200-400 each |
+| 🔵 **On-demand**   | `claude/*.md` domain docs (build, auth, DB…)   | When the task requires it   |  ~1-2K each   |
 
 > 🎯 **Result:** Minimal cost for simple tasks, deep context exactly when needed.
 
@@ -204,46 +205,46 @@ Your AI shouldn't drown in 50K tokens when you ask it to fix a typo. So the syst
 
 ### 🏠 Root Files (8)
 
-| File | What it does |
-|:-----|:------------|
-| 📋 `CLAUDE.md` | The brain — operating protocol, exit checklist, critical patterns, lookup table |
-| 👤 `CLAUDE.local.md.example` | Your personal overrides (gitignored in use) |
-| 🚫 `.claudeignore` | Keeps binaries, lock files, and build artifacts out of context |
-| 🗺️ `.graphifyignore` | Tells graphify what to exclude from the knowledge graph (node_modules, dist, lockfiles) |
-| 📖 `README.md` | The pitch + quick start |
-| ⚖️ `LICENSE` | MIT |
-| 🔌 `.mcp.json` | MCP server configuration — tells Claude Code which external tool servers to start and how. See [What Is MCP?](#-what-is-mcp-start-here-if-youre-new) |
-| 🐚 `.shellcheckrc` | ShellCheck configuration for script linting |
+| File                         | What it does                                                                                                                                         |
+| :--------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 📋 `CLAUDE.md`               | The brain — operating protocol, exit checklist, critical patterns, lookup table                                                                      |
+| 👤 `CLAUDE.local.md.example` | Your personal overrides (gitignored in use)                                                                                                          |
+| 🚫 `.claudeignore`           | Keeps binaries, lock files, and build artifacts out of context                                                                                       |
+| 🗺️ `.graphifyignore`         | Tells graphify what to exclude from the knowledge graph (node_modules, dist, lockfiles)                                                              |
+| 📖 `README.md`               | The pitch + quick start                                                                                                                              |
+| ⚖️ `LICENSE`                 | MIT                                                                                                                                                  |
+| 🔌 `.mcp.json`               | MCP server configuration — tells Claude Code which external tool servers to start and how. See [What Is MCP?](#-what-is-mcp-start-here-if-youre-new) |
+| 🐚 `.shellcheckrc`           | ShellCheck configuration for script linting                                                                                                          |
 
 ### 🧠 Bootstrap Scaffolding — `claude/bootstrap/` (3 files, auto-deleted)
 
 > These files exist only during bootstrap. They are automatically deleted after Phase 5 cleanup. For future upgrades, re-clone the template.
 
-| File | What it does |
-|:-----|:------------|
-| 🪄 `PROMPT.md` | Paste into any AI to auto-configure — works with any LLM |
-| 📖 `REFERENCE.md` | Report templates for Phase 5 — kept separate to save working context |
-| 🔄 `UPGRADE_GUIDE.md` | Smart Merge guide (Phase 2) — loaded only for UPGRADE mode |
+| File                  | What it does                                                         |
+| :-------------------- | :------------------------------------------------------------------- |
+| 🪄 `PROMPT.md`        | Paste into any AI to auto-configure — works with any LLM             |
+| 📖 `REFERENCE.md`     | Report templates for Phase 5 — kept separate to save working context |
+| 🔄 `UPGRADE_GUIDE.md` | Smart Merge guide (Phase 2) — loaded only for UPGRADE mode           |
 
 ### 📚 Knowledge Docs — `claude/` (13 files)
 
 These are the AI's textbooks. Some load automatically, others on-demand:
 
-| File | What it teaches | Auto-loaded? |
-|:-----|:---------------|:------------:|
-| `architecture.md` | Workspace layout, services, packages, aliases | ✅ `@import` |
-| `rules.md` | 24 golden rules — the non-negotiables | ✅ `@import` |
-| `terminal-safety.md` | Shell anti-patterns that hang sessions | 🔒 Via rule |
-| `build.md` | Build, test, lint, CI commands and gotchas | 📖 On-demand |
-| `templates.md` | MR/ticket templates, context management | 📖 On-demand |
-| `cve-policy.md` | CVE decision tree, override checklist | 📖 On-demand |
-| `plugins.md` | Plugin config — claude-mem, quota management, obsidian-mind vault guide | 📖 On-demand |
-| `decisions.md` | Architectural decision log — settled choices with rationale | 📖 On-demand |
-| `README.md` | Meta-docs: how to extend the knowledge base | 📖 Reference |
-| `docs/DETAILED_GUIDE.md` | Complete guide — architecture, all files, deep dives, FAQ | 📖 Reference |
-| `_examples/api-domain.md` | Worked example: REST API domain | 🗑️ Delete after use |
-| `_examples/database-domain.md` | Worked example: Database domain | 🗑️ Delete after use |
-| `_examples/messaging-domain.md` | Worked example: Event-driven domain | 🗑️ Delete after use |
+| File                            | What it teaches                                                         |    Auto-loaded?     |
+| :------------------------------ | :---------------------------------------------------------------------- | :-----------------: |
+| `architecture.md`               | Workspace layout, services, packages, aliases                           |    ✅ `@import`     |
+| `rules.md`                      | 24 golden rules — the non-negotiables                                   |    ✅ `@import`     |
+| `terminal-safety.md`            | Shell anti-patterns that hang sessions                                  |     🔒 Via rule     |
+| `build.md`                      | Build, test, lint, CI commands and gotchas                              |    📖 On-demand     |
+| `templates.md`                  | MR/ticket templates, context management                                 |    📖 On-demand     |
+| `cve-policy.md`                 | CVE decision tree, override checklist                                   |    📖 On-demand     |
+| `plugins.md`                    | Plugin config — claude-mem, quota management, obsidian-mind vault guide |    📖 On-demand     |
+| `decisions.md`                  | Architectural decision log — settled choices with rationale             |    📖 On-demand     |
+| `README.md`                     | Meta-docs: how to extend the knowledge base                             |    📖 Reference     |
+| `docs/DETAILED_GUIDE.md`        | Complete guide — architecture, all files, deep dives, FAQ               |    📖 Reference     |
+| `_examples/api-domain.md`       | Worked example: REST API domain                                         | 🗑️ Delete after use |
+| `_examples/database-domain.md`  | Worked example: Database domain                                         | 🗑️ Delete after use |
+| `_examples/messaging-domain.md` | Worked example: Event-driven domain                                     | 🗑️ Delete after use |
 
 > 💡 **The examples are training wheels.** Study them → create your own → delete them.
 
@@ -251,39 +252,39 @@ These are the AI's textbooks. Some load automatically, others on-demand:
 
 Every command you'll reach for, pre-built and ready:
 
-| Command | What it does | ✨ Special sauce |
-|:--------|:------------|:----------------|
-| `/plan` | Structure a task before coding | 🧠 `ultrathink` for deep reasoning |
-| `/review` | Full 10-point MR review | 📊 Auto-fetches git diff |
-| `/mr` | Generate MR description | 🧠 `ultrathink` + pre-fetches git data |
-| `/ticket` | Create issue/ticket description | High-effort reasoning |
-| `/build` | Build services | Side-effect safe |
-| `/test` | Run tests by scope | Auto-diagnoses failures |
-| `/lint` | Lint and format | Formatter-aware |
-| `/debug` | Investigate failures | 🧠 `ultrathink` for root cause |
-| `/serve` | Start services locally | Background-aware |
-| `/migrate` | Database migrations | Safety checklist |
-| `/db` | Query the database | Non-interactive enforced |
-| `/context` | Load all relevant domain docs | High-effort research |
-| `/docker` | Docker build, scan, compose | Scanner-integrated |
-| `/deps` | Upgrade dependencies, fix CVEs | Decision tree |
-| `/diff` | Analyze branch differences | Pre-fetches git data |
-| `/git` | Git workflow helpers | Pre-fetches status |
-| `/cleanup` | Clean workspace artifacts | Safe defaults |
-| `/maintain` | Audit knowledge docs for drift | Full maintenance cycle |
-| `/checkpoint` | Save session state | Pre-fetches branch/task |
-| `/resume` | Pick up where you left off | Re-loads all context |
-| `/bootstrap` | Auto-configure from repo | 🧠 `ultrathink` + 5-phase process |
-| `/mcp` | Manage MCP servers | List, add, configure integrations |
-| `/squad-plan` | Parallel workstream plan | Claude Squad ACTION_PLAN.md |
-| `/research` | Research questions + knowledge | Targeted exploration |
-| `/update-code-index` | Scan exports → CODE_INDEX.md | Check before writing new functions |
-| `/health` | Config health check | CLAUDE.md, settings, hooks, secrets, MCP binaries |
-| `/status` | One-glance project status | Budget, placeholders, plugins, hooks, graph |
-| `/ask` | Route codebase question to right tool | graph · semantic search · risk analysis |
-| `/worktree` | Create isolated git worktree | Parallel feature development |
-| `/worktree-status` | Show all worktrees with branch + status | At-a-glance multi-branch view |
-| `/clean-worktrees` | Remove worktrees for merged branches | `--dry-run` to preview first |
+| Command              | What it does                            | ✨ Special sauce                                  |
+| :------------------- | :-------------------------------------- | :------------------------------------------------ |
+| `/plan`              | Structure a task before coding          | 🧠 `ultrathink` for deep reasoning                |
+| `/review`            | Full 10-point MR review                 | 📊 Auto-fetches git diff                          |
+| `/mr`                | Generate MR description                 | 🧠 `ultrathink` + pre-fetches git data            |
+| `/ticket`            | Create issue/ticket description         | High-effort reasoning                             |
+| `/build`             | Build services                          | Side-effect safe                                  |
+| `/test`              | Run tests by scope                      | Auto-diagnoses failures                           |
+| `/lint`              | Lint and format                         | Formatter-aware                                   |
+| `/debug`             | Investigate failures                    | 🧠 `ultrathink` for root cause                    |
+| `/serve`             | Start services locally                  | Background-aware                                  |
+| `/migrate`           | Database migrations                     | Safety checklist                                  |
+| `/db`                | Query the database                      | Non-interactive enforced                          |
+| `/context`           | Load all relevant domain docs           | High-effort research                              |
+| `/docker`            | Docker build, scan, compose             | Scanner-integrated                                |
+| `/deps`              | Upgrade dependencies, fix CVEs          | Decision tree                                     |
+| `/diff`              | Analyze branch differences              | Pre-fetches git data                              |
+| `/git`               | Git workflow helpers                    | Pre-fetches status                                |
+| `/cleanup`           | Clean workspace artifacts               | Safe defaults                                     |
+| `/maintain`          | Audit knowledge docs for drift          | Full maintenance cycle                            |
+| `/checkpoint`        | Save session state                      | Pre-fetches branch/task                           |
+| `/resume`            | Pick up where you left off              | Re-loads all context                              |
+| `/bootstrap`         | Auto-configure from repo                | 🧠 `ultrathink` + 5-phase process                 |
+| `/mcp`               | Manage MCP servers                      | List, add, configure integrations                 |
+| `/squad-plan`        | Parallel workstream plan                | Claude Squad ACTION_PLAN.md                       |
+| `/research`          | Research questions + knowledge          | Targeted exploration                              |
+| `/update-code-index` | Scan exports → CODE_INDEX.md            | Check before writing new functions                |
+| `/health`            | Config health check                     | CLAUDE.md, settings, hooks, secrets, MCP binaries |
+| `/status`            | One-glance project status               | Budget, placeholders, plugins, hooks, graph       |
+| `/ask`               | Route codebase question to right tool   | graph · semantic search · risk analysis           |
+| `/worktree`          | Create isolated git worktree            | Parallel feature development                      |
+| `/worktree-status`   | Show all worktrees with branch + status | At-a-glance multi-branch view                     |
+| `/clean-worktrees`   | Remove worktrees for merged branches    | `--dry-run` to preview first                      |
 
 > 🎯 **Unused commands cost zero tokens** — they only load when invoked. Keep them all or delete what you don't need.
 
@@ -291,24 +292,24 @@ Every command you'll reach for, pre-built and ready:
 
 These are your guardrails. They run automatically — no tokens, no AI reasoning, just deterministic protection:
 
-| Hook | Fires on | What it does | ⏱️ |
-|:-----|:---------|:------------|:---:|
-| 🏁 `session-start.sh` | Startup / resume / clear | Injects branch, task state, reminders | 10s |
-| 💾 `on-compact.sh` | After compaction | Re-injects context (you never lose track) | 10s |
-| 📸 `pre-compact.sh` | Before compaction | Backs up transcript to session-logs | 10s |
-| 🔒 `config-protection.sh` | File write/edit | Blocks editing `biome.json`, `tsconfig.json`… | 5s |
-| ⚡ `rtk-rewrite.sh` | Bash command | Rewrites commands for 60-90% token savings (no-op without rtk) | 5s |
-| 🚧 `terminal-safety-gate.sh` | Bash command | Blocks pagers, `vi`, unbounded output | 5s |
-| 🧹 `pre-commit-quality.sh` | Bash command (git) | Catches `debugger`, secrets, `console.log` | 30s |
-| 💡 `suggest-compact.sh` | Any tool use | Nudges `/compact` when context is growing | 5s |
-| 🪪 `identity-reinjection.sh` | User prompt | Periodic identity refresh (prevents drift) | 5s |
-| 📓 `subagent-stop.sh` | Subagent completes | Logs completion + quality nudge | 5s |
-| 🔁 `tdd-loop-check.sh` | Session end | TDD enforcement — blocks yield if tests were skipped | 120s |
-| 🎨 `stop-batch-format.sh` | Session end | Auto-formats all edited files | 120s |
-| 📝 `edit-accumulator.sh` | After file edit | Tracks edited files for batch format | 5s |
-| 👋 `exit-nudge.sh` | Session end | 6-item exit checklist reminder | 5s |
-| 🔐 `permission-denied.sh` | Permission denied | Audit trail — logs denied operations | 5s |
-| 🧪 `warn-missing-test.sh` | After file write | Warns on source files without tests (strict profile) | 5s |
+| Hook                         | Fires on                 | What it does                                                   |  ⏱️  |
+| :--------------------------- | :----------------------- | :------------------------------------------------------------- | :--: |
+| 🏁 `session-start.sh`        | Startup / resume / clear | Injects branch, task state, reminders                          | 10s  |
+| 💾 `on-compact.sh`           | After compaction         | Re-injects context (you never lose track)                      | 10s  |
+| 📸 `pre-compact.sh`          | Before compaction        | Backs up transcript to session-logs                            | 10s  |
+| 🔒 `config-protection.sh`    | File write/edit          | Blocks editing `biome.json`, `tsconfig.json`…                  |  5s  |
+| ⚡ `rtk-rewrite.sh`          | Bash command             | Rewrites commands for 60-90% token savings (no-op without rtk) |  5s  |
+| 🚧 `terminal-safety-gate.sh` | Bash command             | Blocks pagers, `vi`, unbounded output                          |  5s  |
+| 🧹 `pre-commit-quality.sh`   | Bash command (git)       | Catches `debugger`, secrets, `console.log`                     | 30s  |
+| 💡 `suggest-compact.sh`      | Any tool use             | Nudges `/compact` when context is growing                      |  5s  |
+| 🪪 `identity-reinjection.sh` | User prompt              | Periodic identity refresh (prevents drift)                     |  5s  |
+| 📓 `subagent-stop.sh`        | Subagent completes       | Logs completion + quality nudge                                |  5s  |
+| 🔁 `tdd-loop-check.sh`       | Session end              | TDD enforcement — blocks yield if tests were skipped           | 120s |
+| 🎨 `stop-batch-format.sh`    | Session end              | Auto-formats all edited files                                  | 120s |
+| 📝 `edit-accumulator.sh`     | After file edit          | Tracks edited files for batch format                           |  5s  |
+| 👋 `exit-nudge.sh`           | Session end              | 6-item exit checklist reminder                                 |  5s  |
+| 🔐 `permission-denied.sh`    | Permission denied        | Audit trail — logs denied operations                           |  5s  |
+| 🧪 `warn-missing-test.sh`    | After file write         | Warns on source files without tests (strict profile)           |  5s  |
 
 > 🛡️ **Hooks are not suggestions — they're enforcement.** A blocked action returns an error message explaining what to do instead.
 
@@ -316,66 +317,73 @@ These are your guardrails. They run automatically — no tokens, no AI reasoning
 
 Your AI has a team. Each subagent runs in an **isolated context window** — research doesn't pollute your main conversation:
 
-| Agent | Model | What it does | Max turns |
-|:------|:------|:------------|:---------:|
-| 🔍 **research** | Sonnet | Deep codebase exploration (read-only) — explores 20+ files without touching your context | 20 |
-| 📋 **reviewer** | Opus | Expert 10-point MR review with severity classification | 30 |
-| ⚔️ **plan-challenger** | Opus | Adversarial plan review — finds real risks before you write code | 20 |
-| 📊 **session-reviewer** | Sonnet | Conversation pattern analysis — detects corrections, frustrations, recurring issues | 15 |
-| 🔐 **security-auditor** | Opus | Security scanning — secrets, auth gaps, injection, CVEs, DEPLOY/HOLD/BLOCK verdict | 20 |
+| Agent                   | Model  | What it does                                                                             | Max turns |
+| :---------------------- | :----- | :--------------------------------------------------------------------------------------- | :-------: |
+| 🔍 **research**         | Sonnet | Deep codebase exploration (read-only) — explores 20+ files without touching your context |    20     |
+| 📋 **reviewer**         | Opus   | Expert 10-point MR review with severity classification                                   |    30     |
+| ⚔️ **plan-challenger**  | Opus   | Adversarial plan review — finds real risks before you write code                         |    20     |
+| 📊 **session-reviewer** | Sonnet | Conversation pattern analysis — detects corrections, frustrations, recurring issues      |    15     |
+| 🔐 **security-auditor** | Opus   | Security scanning — secrets, auth gaps, injection, CVEs, DEPLOY/HOLD/BLOCK verdict       |    20     |
 
 ### 🎓 Skills — `.claude/skills/` (18 files)
 
 Skills are specialized knowledge that activates at the right moment:
 
-| Skill | Type | When it kicks in |
-|:------|:-----|:----------------|
-| 🧪 **TDD** | Background | Auto-loads when you edit `*.test.*` or `*.spec.*` — enforces test-first discipline |
-| 🔎 **Root Cause Trace** | Invocable | 5-step systematic error investigation — no more guessing |
-| 📝 **Changelog** | Invocable | Generates release notes from git commits (runs in isolated context) |
-| ⚠️ **Careful** | Invocable | Activates safety guards — blocks dangerous commands during sensitive ops |
-| 🔍 **Cross-Layer Check** | Invocable | Verifies a symbol exists across all monorepo layers (bundled script) |
-| 🗺️ **codebase-memory** | Invocable | Live structural graph — trace call paths, blast radius, dead code (120× fewer tokens than file reads) |
-| 🔭 **cocoindex-code** | Invocable | Semantic vector search — find code by meaning, not exact names |
-| 🛡️ **code-review-graph** | Invocable | Change risk analysis — risk score 0–100, blast radius, breaking changes before any PR |
-| 📋 **repo-recap** | Invocable | Generate comprehensive release / activity summaries ready to share with the team |
-| 🔀 **pr-triage** | Invocable | Audit open PRs, deep review selected ones, draft and post review comments |
-| 🐛 **issue-triage** | Invocable | Audit open issues, categorize, detect duplicates, cross-reference PRs |
+| Skill                              | Type       | When it kicks in                                                                                      |
+| :--------------------------------- | :--------- | :---------------------------------------------------------------------------------------------------- |
+| 🧪 **TDD**                         | Background | Auto-loads when you edit `*.test.*` or `*.spec.*` — enforces test-first discipline                    |
+| 🔎 **Root Cause Trace**            | Invocable  | 5-step systematic error investigation — no more guessing                                              |
+| 📝 **Changelog**                   | Invocable  | Generates release notes from git commits (runs in isolated context)                                   |
+| ⚠️ **Careful**                     | Invocable  | Activates safety guards — blocks dangerous commands during sensitive ops                              |
+| 🔍 **Cross-Layer Check**           | Invocable  | Verifies a symbol exists across all monorepo layers (bundled script)                                  |
+| 🗺️ **codebase-memory**             | Invocable  | Live structural graph — trace call paths, blast radius, dead code (120× fewer tokens than file reads) |
+| 🔭 **cocoindex-code**              | Invocable  | Semantic vector search — find code by meaning, not exact names                                        |
+| 🛡️ **code-review-graph**           | Invocable  | Change risk analysis — risk score 0–100, blast radius, breaking changes before any PR                 |
+| 📋 **repo-recap**                  | Invocable  | Generate comprehensive release / activity summaries ready to share with the team                      |
+| 🔀 **pr-triage**                   | Invocable  | Audit open PRs, deep review selected ones, draft and post review comments                             |
+| 🐛 **issue-triage**                | Invocable  | Audit open issues, categorize, detect duplicates, cross-reference PRs                                 |
+| 🌐 **playwright**                  | Invocable  | Browser automation — navigate, snapshot, fill, click web pages                                        |
+| 📊 **codeburn**                    | Invocable  | Token cost observability — cost breakdown by task, model, USD                                         |
+| 🔧 **serena**                      | Invocable  | LSP-backed rename/move/inline across the entire codebase atomically                                   |
+| 💡 **brainstorming**               | Invocable  | Requirements exploration and design before writing code                                               |
+| 🤝 **receiving-code-review**       | Invocable  | Process review feedback safely before implementing suggestions                                        |
+| 🤖 **subagent-driven-development** | Invocable  | Dispatch independent tasks to fresh subagents with two-stage review                                   |
+| ✍️ **writing-skills**              | Invocable  | Create and maintain SKILL.md files with quality standards                                             |
 
 ### 📏 Path-Scoped Rules — `.claude/rules/` (13 files)
 
 Short, sharp rules that auto-load when the AI touches matching files:
 
-| Rule | Loads on | Key patterns |
-|:-----|:---------|:------------|
-| 🚧 `terminal-safety.md` | _(always — no paths)_ | Never pager, never interactive, output limits |
-| 📏 `quality-gates.md` | _(always — no paths)_ | Function/file size limits, nesting depth, test coverage |
-| 🔧 `self-maintenance.md` | Knowledge files | Consistency checks, DRY, quality limits |
-| 🧠 `memory.md` | _(always — globs: `**/*`)_ | Read CLAUDE_ERRORS.md before code, memory layers |
-| 📖 `domain-learning.md` | _(always — globs: `**/*`)_ | Persist business facts to `.claude/rules/domain/` |
-| 💡 `practice-capture.md` | _(always — globs: `**/*`)_ | Capture lessons on workarounds/backtracks |
-| 🤖 `agents.md` | _(always — globs: `**/*`)_ | Delegation tree, agent teams, model routing |
-| 📘 `typescript.md` | `**/*.ts`, `**/*.tsx` | Strict mode, Zod at boundaries, no barrel re-exports |
-| 🐍 `python.md` | `**/*.py` | Type hints, Pydantic, pytest, ruff, pathlib |
-| 🖥️ `nodejs-backend.md` | `src/api/**`, `routes/**` | Repository pattern, typed routes, async middleware |
-| ⚛️ `react.md` | `**/*.tsx`, `**/*.jsx` | TanStack Query, stable keys, custom hook extraction |
-| 📂 `domain/_template.md` | _(template)_ | Business domain template — copy for each domain |
-| 📄 `_template-domain-rule.md` | _(template)_ | Copy → customize → profit |
+| Rule                          | Loads on                   | Key patterns                                            |
+| :---------------------------- | :------------------------- | :------------------------------------------------------ |
+| 🚧 `terminal-safety.md`       | _(always — no paths)_      | Never pager, never interactive, output limits           |
+| 📏 `quality-gates.md`         | _(always — no paths)_      | Function/file size limits, nesting depth, test coverage |
+| 🔧 `self-maintenance.md`      | Knowledge files            | Consistency checks, DRY, quality limits                 |
+| 🧠 `memory.md`                | _(always — globs: `**/*`)_ | Read CLAUDE_ERRORS.md before code, memory layers        |
+| 📖 `domain-learning.md`       | _(always — globs: `**/*`)_ | Persist business facts to `.claude/rules/domain/`       |
+| 💡 `practice-capture.md`      | _(always — globs: `**/*`)_ | Capture lessons on workarounds/backtracks               |
+| 🤖 `agents.md`                | _(always — globs: `**/*`)_ | Delegation tree, agent teams, model routing             |
+| 📘 `typescript.md`            | `**/*.ts`, `**/*.tsx`      | Strict mode, Zod at boundaries, no barrel re-exports    |
+| 🐍 `python.md`                | `**/*.py`                  | Type hints, Pydantic, pytest, ruff, pathlib             |
+| 🖥️ `nodejs-backend.md`        | `src/api/**`, `routes/**`  | Repository pattern, typed routes, async middleware      |
+| ⚛️ `react.md`                 | `**/*.tsx`, `**/*.jsx`     | TanStack Query, stable keys, custom hook extraction     |
+| 📂 `domain/_template.md`      | _(template)_               | Business domain template — copy for each domain         |
+| 📄 `_template-domain-rule.md` | _(template)_               | Copy → customize → profit                               |
 
 ### 🤝 GitHub Copilot — `.github/` (8 files)
 
 Same brain, different interface. Copilot gets its own optimized config:
 
-| File | What it does |
-|:-----|:------------|
-| `copilot-instructions.md` | Root Copilot instructions (mirrors CLAUDE.md essentials) |
-| `instructions/general.instructions.md` | Global style/arch/safety rules (`**/*`) |
-| `instructions/terminal-safety.instructions.md` | Terminal safety for all files (`**/*`) |
-| `instructions/testing.instructions.md` | Test file rules (`**/*.{test,spec}.*`) |
-| `instructions/_template.instructions.md` | Template for new scoped instructions |
-| `prompts/generate-tests.prompt.md` | One-click test generation |
-| `prompts/review-rules.prompt.md` | One-click code review against project rules |
-| `prompts/_template.prompt.md` | Template for new prompts |
+| File                                           | What it does                                             |
+| :--------------------------------------------- | :------------------------------------------------------- |
+| `copilot-instructions.md`                      | Root Copilot instructions (mirrors CLAUDE.md essentials) |
+| `instructions/general.instructions.md`         | Global style/arch/safety rules (`**/*`)                  |
+| `instructions/terminal-safety.instructions.md` | Terminal safety for all files (`**/*`)                   |
+| `instructions/testing.instructions.md`         | Test file rules (`**/*.{test,spec}.*`)                   |
+| `instructions/_template.instructions.md`       | Template for new scoped instructions                     |
+| `prompts/generate-tests.prompt.md`             | One-click test generation                                |
+| `prompts/review-rules.prompt.md`               | One-click code review against project rules              |
+| `prompts/_template.prompt.md`                  | Template for new prompts                                 |
 
 **Model selection enforcement:** Unlike Claude Code (which sets `model: opus` in agent frontmatter), Copilot has no API-level model control — the model is selected by the user in the IDE dropdown. Brain Bootstrap solves this via **instruction-level enforcement**: `copilot-instructions.md` instructs the AI to **stop and warn** if a "mini"/"flash"/"lite" model is active during planning/review/architecture tasks, requesting the user switch to the most capable model available. Quick tasks (build, lint, test, grep) run on any model. This guarantees the best available model is always used for high-reasoning work, without blocking simple tasks.
 
@@ -383,34 +391,34 @@ Same brain, different interface. Copilot gets its own optimized config:
 
 The AI's persistent memory across sessions:
 
-| File | What it stores |
-|:-----|:--------------|
-| 📓 `lessons.md` | Accumulated wisdom — mistakes, corrections, discoveries. Read at every session start. |
-| 📝 `todo.md` | Current task plan with checkable items. Survives compaction. |
-| 🐛 `CLAUDE_ERRORS.md` | Structured error log — promotes to rules after 3+ recurrences. |
-| `.gitkeep` | Ensures directory is tracked in git |
-| `.gitignore` | Excludes temp files (counters, accumulators) from git tracking |
+| File                  | What it stores                                                                        |
+| :-------------------- | :------------------------------------------------------------------------------------ |
+| 📓 `lessons.md`       | Accumulated wisdom — mistakes, corrections, discoveries. Read at every session start. |
+| 📝 `todo.md`          | Current task plan with checkable items. Survives compaction.                          |
+| 🐛 `CLAUDE_ERRORS.md` | Structured error log — promotes to rules after 3+ recurrences.                        |
+| `.gitkeep`            | Ensures directory is tracked in git                                                   |
+| `.gitignore`          | Excludes temp files (counters, accumulators) from git tracking                        |
 
 ### 🔧 Scripts — `claude/scripts/` (14 files)
 
 The automation backbone — pure bash, zero token cost:
 
-| Script | What it does | Speed |
-|:-------|:------------|:-----:|
-| 🔍 `discover.sh` | Single-pass repo scanner — detects stack, frameworks, commands (replaces 15+ manual commands) | ~2s |
-| 📝 `populate-templates.sh` | Batch fills ~70 `{{PLACEHOLDER}}` values + generates per-service `CLAUDE.md` stubs for monorepo services | ~3s |
-| ✅ `post-bootstrap-validate.sh` | Unified validation — runs validate + canary + auto-fix | ~10s |
-| 🔎 `validate.sh` | 120-check template validator — file existence, hook executability, JSON validity, placeholder integrity | ~5s |
-| 🏥 `canary-check.sh` | LIVE config health — token budget, stale refs, rule count, @imports | ~2s |
-| 🛡️ `phase2-verify.sh` | Phase 2 data-integrity check — confirms lessons/todo/settings survived Smart Merge | ~1s |
-| 📂 `generate-service-claudes.sh` | Auto-generates per-service `CLAUDE.md` stubs for each monorepo service directory | ~2s |
-| 🐙 `generate-copilot-docs.sh` | Mirrors `claude/*.md` → `.github/copilot/` for GitHub Copilot users | ~2s |
-| 🔌 `toggle-claude-mem.sh` | Toggle claude-mem plugin on/off — saves API quota | instant |
-| 🔌 `setup-plugins.sh` | All-in-one bootstrap plugin management — install, disable, verify, update CLAUDE.md | ~5s |
-| ✅ `check-creative-work.sh` | Creative work gate check — architecture, placeholders, domain docs, IDE section | ~1s |
-| 🖥️ `_platform.sh` | Portable shell helper library — detects `BRAIN_PLATFORM`, provides `sed_inplace()`, `safe_pgrep()`, `require_tool()`, `supports_unicode()` | instant |
-| 🔍 `portability-lint.sh` | GNU-only pattern detector — 9 checks: `head -n -N`, `grep -P`, `readlink -f`, `stat --format/stat -c`, `date -d`, bare `sed -i`, awk `\\s`/`\\w`, `< <()`. Extensible: add patterns to the top of the script | ~1s |
-| 🧪 `integration-test.sh` | 17 assertions: FRESH install (9), UPGRADE (4), --check mode (1), and 3 guard scenarios: self-bootstrap, subdirectory, non-existent dir. Runs on all 3 platforms in CI | ~10s |
+| Script                           | What it does                                                                                                                                                                                                 |  Speed  |
+| :------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-----: |
+| 🔍 `discover.sh`                 | Single-pass repo scanner — detects stack, frameworks, commands (replaces 15+ manual commands)                                                                                                                |   ~2s   |
+| 📝 `populate-templates.sh`       | Batch fills ~70 `{{PLACEHOLDER}}` values + generates per-service `CLAUDE.md` stubs for monorepo services                                                                                                     |   ~3s   |
+| ✅ `post-bootstrap-validate.sh`  | Unified validation — runs validate + canary + auto-fix                                                                                                                                                       |  ~10s   |
+| 🔎 `validate.sh`                 | 127+-check template validator — file existence, hook executability, JSON validity, placeholder integrity                                                                                                     |   ~5s   |
+| 🏥 `canary-check.sh`             | LIVE config health — token budget, stale refs, rule count, @imports                                                                                                                                          |   ~2s   |
+| 🛡️ `phase2-verify.sh`            | Phase 2 data-integrity check — confirms lessons/todo/settings survived Smart Merge                                                                                                                           |   ~1s   |
+| 📂 `generate-service-claudes.sh` | Auto-generates per-service `CLAUDE.md` stubs for each monorepo service directory                                                                                                                             |   ~2s   |
+| 🐙 `generate-copilot-docs.sh`    | Mirrors `claude/*.md` → `.github/copilot/` for GitHub Copilot users                                                                                                                                          |   ~2s   |
+| 🔌 `toggle-claude-mem.sh`        | Toggle claude-mem plugin on/off — saves API quota                                                                                                                                                            | instant |
+| 🔌 `setup-plugins.sh`            | All-in-one bootstrap plugin management — install, disable, verify, update CLAUDE.md                                                                                                                          |   ~5s   |
+| ✅ `check-creative-work.sh`      | Creative work gate check — architecture, placeholders, domain docs, IDE section                                                                                                                              |   ~1s   |
+| 🖥️ `_platform.sh`                | Portable shell helper library — detects `BRAIN_PLATFORM`, provides `sed_inplace()`, `safe_pgrep()`, `require_tool()`, `supports_unicode()`                                                                   | instant |
+| 🔍 `portability-lint.sh`         | GNU-only pattern detector — 9 checks: `head -n -N`, `grep -P`, `readlink -f`, `stat --format/stat -c`, `date -d`, bare `sed -i`, awk `\\s`/`\\w`, `< <()`. Extensible: add patterns to the top of the script |   ~1s   |
+| 🧪 `integration-test.sh`         | 17 assertions: FRESH install (9), UPGRADE (4), --check mode (1), and 3 guard scenarios: self-bootstrap, subdirectory, non-existent dir. Runs on all 3 platforms in CI                                        |  ~10s   |
 
 ---
 
@@ -423,6 +431,7 @@ Every file in the Brain belongs to one of these categories. Here's what each one
 #### 1. 📋 Root Instructions (`CLAUDE.md`)
 
 The brain of the brain. Auto-loaded every conversation. Contains:
+
 - **Operating Protocol** (8 rules) — plan first, delegate, prove it works, fix bugs yourself
 - **Exit Checklist** (6 items) — the secret weapon against knowledge drift
 - **Token Cost Strategy** (9 optimizations) — subagents, effort levels, on-demand loading
@@ -449,8 +458,8 @@ Short (≤40 lines) rules that auto-load when the AI touches matching files:
 ```yaml
 ---
 paths:
-  - "core/auth/**"
-  - "**/keycloak*"
+  - 'core/auth/**'
+  - '**/keycloak*'
 ---
 # Auth Domain Rules
 - Never store tokens in localStorage — use httpOnly cookies
@@ -468,13 +477,14 @@ Pre-built commands with YAML frontmatter for effort level, tool permissions, and
 description: Run tests for services
 disable-model-invocation: true
 effort: low
-argument-hint: "[all|service-name|ci|coverage]"
+argument-hint: '[all|service-name|ci|coverage]'
 ---
 ```
 
 #### 5. 🤖 AI Subagents (`.claude/agents/`)
 
 Isolated context windows for expensive operations. Your main conversation stays clean:
+
 - **Research** — explore 20+ files without polluting main context
 - **Reviewer** — 10-point code review with severity classification
 - **Plan-Challenger** — find real risks before writing a single line
@@ -482,6 +492,7 @@ Isolated context windows for expensive operations. Your main conversation stays 
 #### 6. 🎓 Skills (`.claude/skills/`)
 
 Background and invocable knowledge:
+
 - **TDD** — auto-loads on test files, enforces write-test-first
 - **Root Cause Trace** — 5-step systematic error investigation
 - **Changelog** — generate release notes from git
@@ -493,10 +504,18 @@ Background and invocable knowledge:
 - **repo-recap** — generate comprehensive release / activity summaries
 - **pr-triage** — audit open PRs, deep review selected ones, draft review comments
 - **issue-triage** — audit open issues, categorize, detect duplicates, cross-reference PRs
+- **brainstorming** — requirements exploration and design before writing code
+- **playwright** — browser automation patterns (navigate, snapshot, fill, click)
+- **codeburn** — token cost observability (cost by task type, model, USD)
+- **serena** — LSP-backed rename/move/inline across the entire codebase atomically
+- **receiving-code-review** — process review feedback before implementing suggestions
+- **subagent-driven-development** — dispatch independent tasks to fresh subagents
+- **writing-skills** — create and maintain SKILL.md files with quality standards
 
 #### 7. 🪝 Lifecycle Hooks (`.claude/hooks/`)
 
-Deterministic automation — zero token cost. 15 hooks across 8 lifecycle events:
+Deterministic automation — zero token cost. 16 hooks across 8 lifecycle events:
+
 - 🏁 **Session start** — inject branch, task state, reminders
 - 💾 **Compaction** — backup transcript, re-inject context
 - 🔒 **Config protection** — block editing linter/compiler configs
@@ -508,14 +527,16 @@ Deterministic automation — zero token cost. 15 hooks across 8 lifecycle events
 #### 8. ⚙️ Settings (`.claude/settings.json`)
 
 Centralized project config:
+
 - **Tool permissions** — allow/deny patterns for commands
-- **Hook registration** — all 15 hooks with unique IDs and timeouts
+- **Hook registration** — all 16 hooks with unique IDs and timeouts
 - **Environment** — autocompact threshold, token limits, bash timeouts
 - **Status line** — branch display in Claude Code UI
 
 #### 9. 🤝 GitHub Copilot (`.github/`)
 
 Parallel config for Copilot users:
+
 - **Scoped instructions** — different rules for different file types
 - **Reusable prompts** — one-click test generation, code review
 
@@ -523,13 +544,13 @@ Parallel config for Copilot users:
 
 Five tools are auto-installed by bootstrap — each occupies a distinct, non-overlapping niche:
 
-| Tool | Axis | Default state |
-|:-----|:-----|:------------:|
-| 🧠 **claude-mem** | *"What happened last Tuesday?"* — cross-session event log (SQLite + ChromaDB) | ⚠️ Disabled (~48% quota) |
-| 🗺️ **graphify** | *"Show me the architecture"* — static knowledge graph, 71.5× fewer tokens per query | ✅ On demand |
-| ⚡ **rtk** | *Every bash command* — transparent token optimizer, 60-90% output savings | ✅ Auto-active (cargo) |
-| 🔍 **codebase-memory-mcp** | *"Who calls this function?"* — live structural graph, 14 MCP tools, 120× fewer tokens | ✅ Auto-installed (curl) |
-| 🔎 **cocoindex-code** | *"Find code related to X"* — semantic vector search, local embeddings, no API key | ✅ Auto-installed (Python 3.11+) |
+| Tool                       | Axis                                                                                  |          Default state           |
+| :------------------------- | :------------------------------------------------------------------------------------ | :------------------------------: |
+| 🧠 **claude-mem**          | _"What happened last Tuesday?"_ — cross-session event log (SQLite + ChromaDB)         |     ⚠️ Disabled (~48% quota)     |
+| 🗺️ **graphify**            | _"Show me the architecture"_ — static knowledge graph, 71.5× fewer tokens per query   |           ✅ On demand           |
+| ⚡ **rtk**                 | _Every bash command_ — transparent token optimizer, 60-90% output savings             |      ✅ Auto-active (cargo)      |
+| 🔍 **codebase-memory-mcp** | _"Who calls this function?"_ — live structural graph, 14 MCP tools, 120× fewer tokens |     ✅ Auto-installed (curl)     |
+| 🔎 **cocoindex-code**      | _"Find code related to X"_ — semantic vector search, local embeddings, no API key     | ✅ Auto-installed (Python 3.11+) |
 
 **MCP servers (codebase-memory-mcp, cocoindex-code) register zero hooks** — they're pure JSON-RPC stdio servers started on demand. **rtk** is a single `PreToolUse(Bash)` hook, first in chain. **graphify** adds one `PreToolUse(Glob|Grep)` hint hook (no-op when graph absent). **claude-mem** adds `PostToolUse(*)` — which is why it's disabled by default. Zero conflicts by design. See `claude/plugins.md` for the full coexistence matrix.
 
@@ -558,17 +579,17 @@ Runs `claude/scripts/discover.sh` — a single script that replaces 15+ individu
 
 The most important phase when upgrading. Your stuff is **sacred**:
 
-| What | Strategy | Guarantee |
-|:-----|:---------|:----------|
-| 📓 `lessons.md` | **NEVER TOUCH** | Your accumulated wisdom is untouchable |
-| 📝 `todo.md` | **NEVER TOUCH** | Your active task state is untouchable |
-| 📚 Domain docs | **PRESERVE** existing, add missing | Your knowledge stays intact |
-| ⚙️ `settings.json` | **DEEP MERGE** by hook ID | Your settings win on conflict |
-| ⚡ Commands | **ADD MISSING** | Your commands kept, new ones added |
-| 🪝 Hooks | **ADD MISSING** | Your hooks kept, new ones added |
-| 📋 `CLAUDE.md` | **ENHANCE** | Missing sections appended with markers |
-| 🚫 `.claudeignore` | **UNION** | Your exclusions kept, new ones added |
-| 🤝 `.github/` | **ADD MISSING** | Your Copilot config kept, new ones added |
+| What               | Strategy                           | Guarantee                                |
+| :----------------- | :--------------------------------- | :--------------------------------------- |
+| 📓 `lessons.md`    | **NEVER TOUCH**                    | Your accumulated wisdom is untouchable   |
+| 📝 `todo.md`       | **NEVER TOUCH**                    | Your active task state is untouchable    |
+| 📚 Domain docs     | **PRESERVE** existing, add missing | Your knowledge stays intact              |
+| ⚙️ `settings.json` | **DEEP MERGE** by hook ID          | Your settings win on conflict            |
+| ⚡ Commands        | **ADD MISSING**                    | Your commands kept, new ones added       |
+| 🪝 Hooks           | **ADD MISSING**                    | Your hooks kept, new ones added          |
+| 📋 `CLAUDE.md`     | **ENHANCE**                        | Missing sections appended with markers   |
+| 🚫 `.claudeignore` | **UNION**                          | Your exclusions kept, new ones added     |
+| 🤝 `.github/`      | **ADD MISSING**                    | Your Copilot config kept, new ones added |
 
 #### Phase 3: Template Population (~3s mechanical + ~1-2m creative) 📝
 
@@ -576,26 +597,27 @@ The most important phase when upgrading. Your stuff is **sacred**:
 Reads discovery output → replaces ~70 `{{PLACEHOLDER}}` values across all files in one pass. Also generates per-service `CLAUDE.md` stubs for each monorepo service directory.
 
 **Step 2 — Creative** (AI reasoning, **adaptive depth**):
-Fills what machines can't: architecture docs, domain analysis, critical patterns specific to *your* codebase.
+Fills what machines can't: architecture docs, domain analysis, critical patterns specific to _your_ codebase.
 
 The AI runs **8 domain-detection greps** to identify domains present in the codebase:
 
-| Domain grep detects | → Creates |
-|:--------------------|:---------|
-| Kafka / RabbitMQ / SQS / NATS | `claude/messaging.md` + `.claude/rules/kafka-safety.md` |
-| Knex / DataSource / multi-DB | `claude/database.md` + `.claude/rules/database.md` |
-| StatusEnum / state machine | `claude/lifecycle.md` + `.claude/rules/lifecycle.md` |
-| Keycloak / Auth0 / JWT | `claude/auth.md` + `.claude/rules/auth.md` |
-| Webhook delivery / idempotent | `claude/webhooks.md` + `.claude/rules/webhooks.md` |
-| Adapter factory / integrations | `claude/adapters.md` + `.claude/rules/adapters.md` |
-| Report / analytics / XSLT | `claude/reporting.md` + `.claude/rules/reporting.md` |
-| Signup / registration / onboarding | `claude/enrollment.md` + `.claude/rules/enrollment.md` |
+| Domain grep detects                | → Creates                                               |
+| :--------------------------------- | :------------------------------------------------------ |
+| Kafka / RabbitMQ / SQS / NATS      | `claude/messaging.md` + `.claude/rules/kafka-safety.md` |
+| Knex / DataSource / multi-DB       | `claude/database.md` + `.claude/rules/database.md`      |
+| StatusEnum / state machine         | `claude/lifecycle.md` + `.claude/rules/lifecycle.md`    |
+| Keycloak / Auth0 / JWT             | `claude/auth.md` + `.claude/rules/auth.md`              |
+| Webhook delivery / idempotent      | `claude/webhooks.md` + `.claude/rules/webhooks.md`      |
+| Adapter factory / integrations     | `claude/adapters.md` + `.claude/rules/adapters.md`      |
+| Report / analytics / XSLT          | `claude/reporting.md` + `.claude/rules/reporting.md`    |
+| Signup / registration / onboarding | `claude/enrollment.md` + `.claude/rules/enrollment.md`  |
 
 **Adaptive escalation**: If ≥3 domain docs are created, domain rules (`.claude/rules/<domain>.md`) and domain skills (`.claude/skills/<domain>/SKILL.md`) automatically become **mandatory** — not optional. The more complex your codebase, the deeper the bootstrap goes.
 
 #### Phase 3.5: MCP Server Configuration (auto-suggest only) 🔌
 
 The AI scans the discovery output and adds **MCP server suggestions** to the final report — no user input required:
+
 - `DATABASE` detected → suggest `postgres` or `mysql` MCP server
 - CI/GitHub detected → suggest `github` MCP server
 - Web frontend detected → suggest `web-search` MCP server
@@ -610,7 +632,8 @@ Installs **claude-mem** (disabled by default for quota protection). If installat
 #### Phase 5: Validate + Report + Cleanup (~10s) ✅
 
 Runs `post-bootstrap-validate.sh`:
-- ✅ 120 validation checks
+
+- ✅ 127+ validation checks
 - 🏥 Live health check (canary)
 - 🔧 Auto-fixes common issues (hook permissions, JSON trailing commas)
 - 🔍 Checks for remaining `{{PLACEHOLDER}}` values
@@ -642,11 +665,13 @@ git commit -m "chore: upgrade Claude Code configuration"
 ```
 
 **What the upgrade preserves (sacred):**
+
 - `claude/tasks/lessons.md` + `todo.md` — never touched
 - Your domain docs — kept as-is, enriched only if shallow
 - Your custom commands, hooks, rules — kept, new ones added alongside
 
 **What the upgrade adds:**
+
 - Missing commands, hooks, agents, rules from template
 - Enhanced `CLAUDE.md` sections (new ones appended with upgrade markers)
 - Deep-merged `settings.json` (your hooks kept, new hook IDs added)
@@ -664,43 +689,43 @@ The bootstrap replaces every `{{PLACEHOLDER}}`. Here's the full inventory:
 <details>
 <summary><strong>📋 All 35+ placeholders (click to expand)</strong></summary>
 
-| Placeholder | Category | Example |
-|:------------|:---------|:--------|
-| `{{PROJECT_NAME}}` | Identity | "Acme API", "my-saas-app" |
-| `{{PROJECT_DESCRIPTION}}` | Identity | "Event-driven platform for..." |
-| `{{PACKAGE_MANAGER}}` | Build | pnpm, npm, yarn, pip, cargo, go |
-| `{{RUNTIME}}` | Build | "Node ≥22", "Python ≥3.11", "Go 1.22" |
-| `{{FORMATTER}}` | Style | Biome, Prettier, Ruff, rustfmt, gofmt |
-| `{{LINTER}}` | Style | Biome, ESLint, Ruff, clippy, golangci-lint |
-| `{{LINTER_CONFIG_FILE}}` | Style | biome.json, .eslintrc, pyproject.toml |
-| `{{STYLE_RULES}}` | Style | "Single quotes, 2-space indent, 120 chars" |
-| `{{TEST_FRAMEWORK}}` | Testing | Vitest, Jest, Mocha, pytest, JUnit, cargo test |
-| `{{BUILD_CMD_ALL}}` | Build | "pnpm build", "cargo build --release" |
-| `{{BUILD_CMD_SINGLE}}` | Build | "pnpm nx run @scope/service:build" |
-| `{{TEST_CMD_ALL}}` | Testing | "pnpm test", "pytest", "cargo test" |
-| `{{TEST_CMD_SINGLE}}` | Testing | "pnpm nx run @scope/service:test" |
-| `{{TEST_CMD_CI}}` | Testing | "pnpm ci:test", "pytest --ci" |
-| `{{TEST_CMD_COVERAGE}}` | Testing | "pnpm test --coverage" |
-| `{{LINT_CHECK_CMD}}` | Quality | "pnpm lint", "ruff check" |
-| `{{LINT_FIX_CMD}}` | Quality | "pnpm lint:write", "ruff check --fix" |
-| `{{FORMAT_CMD}}` | Quality | "pnpm format", "ruff format" |
-| `{{FORMATTER_COMMAND}}` | Hooks | "biome check --write", "ruff format" |
-| `{{FORMATTABLE_EXTENSIONS}}` | Hooks | ".js\|.ts\|.tsx", ".py" |
-| `{{SOURCE_EXTENSIONS}}` | Hooks | ".js\|.ts\|.tsx\|.jsx" |
-| `{{SCANNER_TOOL}}` | Security | Trivy, Snyk, Dependabot, npm audit |
-| `{{SCAN_COMMAND}}` | Security | "pnpm audit", "trivy fs ." |
-| `{{SERVE_CMD_ALL}}` | Dev | "pnpm serve", "docker compose up" |
-| `{{SERVE_CMD_FRONTEND}}` | Dev | "pnpm dev", "npm run dev" |
-| `{{SERVE_CMD_BACKEND}}` | Dev | "pnpm nx run server:serve" |
-| `{{MIGRATE_UP_CMD}}` | Database | "npx knex migrate:latest" |
-| `{{MIGRATE_DOWN_CMD}}` | Database | "npx knex migrate:rollback" |
-| `{{DB_QUERY_CMD}}` | Database | "psql -c", "mysql -e" |
-| `{{DOMAIN_N}}` | Knowledge | "api", "auth", "database", "messaging" |
-| `{{DIR_N}}` | Architecture | "src/", "core/", "packages/", "lib/" |
-| `{{SERVICE_NAME}}` | Architecture | "api-gateway", "auth-service" |
-| `{{CRITICAL_PATTERN_N}}` | Rules | "Never emit side effects in transactions" |
-| `{{PROTECTED_FILE_N}}` | Hooks | "biome.json", "pyproject.toml" |
-| `{{LAYER_N}}` | Testing | "frontend", "backend", "shared" |
+| Placeholder                  | Category     | Example                                        |
+| :--------------------------- | :----------- | :--------------------------------------------- |
+| `{{PROJECT_NAME}}`           | Identity     | "Acme API", "my-saas-app"                      |
+| `{{PROJECT_DESCRIPTION}}`    | Identity     | "Event-driven platform for..."                 |
+| `{{PACKAGE_MANAGER}}`        | Build        | pnpm, npm, yarn, pip, cargo, go                |
+| `{{RUNTIME}}`                | Build        | "Node ≥22", "Python ≥3.11", "Go 1.22"          |
+| `{{FORMATTER}}`              | Style        | Biome, Prettier, Ruff, rustfmt, gofmt          |
+| `{{LINTER}}`                 | Style        | Biome, ESLint, Ruff, clippy, golangci-lint     |
+| `{{LINTER_CONFIG_FILE}}`     | Style        | biome.json, .eslintrc, pyproject.toml          |
+| `{{STYLE_RULES}}`            | Style        | "Single quotes, 2-space indent, 120 chars"     |
+| `{{TEST_FRAMEWORK}}`         | Testing      | Vitest, Jest, Mocha, pytest, JUnit, cargo test |
+| `{{BUILD_CMD_ALL}}`          | Build        | "pnpm build", "cargo build --release"          |
+| `{{BUILD_CMD_SINGLE}}`       | Build        | "pnpm nx run @scope/service:build"             |
+| `{{TEST_CMD_ALL}}`           | Testing      | "pnpm test", "pytest", "cargo test"            |
+| `{{TEST_CMD_SINGLE}}`        | Testing      | "pnpm nx run @scope/service:test"              |
+| `{{TEST_CMD_CI}}`            | Testing      | "pnpm ci:test", "pytest --ci"                  |
+| `{{TEST_CMD_COVERAGE}}`      | Testing      | "pnpm test --coverage"                         |
+| `{{LINT_CHECK_CMD}}`         | Quality      | "pnpm lint", "ruff check"                      |
+| `{{LINT_FIX_CMD}}`           | Quality      | "pnpm lint:write", "ruff check --fix"          |
+| `{{FORMAT_CMD}}`             | Quality      | "pnpm format", "ruff format"                   |
+| `{{FORMATTER_COMMAND}}`      | Hooks        | "biome check --write", "ruff format"           |
+| `{{FORMATTABLE_EXTENSIONS}}` | Hooks        | ".js\|.ts\|.tsx", ".py"                        |
+| `{{SOURCE_EXTENSIONS}}`      | Hooks        | ".js\|.ts\|.tsx\|.jsx"                         |
+| `{{SCANNER_TOOL}}`           | Security     | Trivy, Snyk, Dependabot, npm audit             |
+| `{{SCAN_COMMAND}}`           | Security     | "pnpm audit", "trivy fs ."                     |
+| `{{SERVE_CMD_ALL}}`          | Dev          | "pnpm serve", "docker compose up"              |
+| `{{SERVE_CMD_FRONTEND}}`     | Dev          | "pnpm dev", "npm run dev"                      |
+| `{{SERVE_CMD_BACKEND}}`      | Dev          | "pnpm nx run server:serve"                     |
+| `{{MIGRATE_UP_CMD}}`         | Database     | "npx knex migrate:latest"                      |
+| `{{MIGRATE_DOWN_CMD}}`       | Database     | "npx knex migrate:rollback"                    |
+| `{{DB_QUERY_CMD}}`           | Database     | "psql -c", "mysql -e"                          |
+| `{{DOMAIN_N}}`               | Knowledge    | "api", "auth", "database", "messaging"         |
+| `{{DIR_N}}`                  | Architecture | "src/", "core/", "packages/", "lib/"           |
+| `{{SERVICE_NAME}}`           | Architecture | "api-gateway", "auth-service"                  |
+| `{{CRITICAL_PATTERN_N}}`     | Rules        | "Never emit side effects in transactions"      |
+| `{{PROTECTED_FILE_N}}`       | Hooks        | "biome.json", "pyproject.toml"                 |
+| `{{LAYER_N}}`                | Testing      | "frontend", "backend", "shared"                |
 
 </details>
 
@@ -721,6 +746,7 @@ Test:            Vitest (frontend), Mocha (backend)
 Build:           pnpm nx run-many --target=build
 Monorepo:        Nx + pnpm workspaces
 ```
+
 </details>
 
 <details>
@@ -733,6 +759,7 @@ Formatter:       Ruff
 Test:            pytest
 Build:           uv build / python -m build
 ```
+
 </details>
 
 <details>
@@ -746,6 +773,7 @@ Linter:          clippy
 Test:            cargo test
 Build:           cargo build --release
 ```
+
 </details>
 
 <details>
@@ -758,6 +786,7 @@ Formatter:       google-java-format / spotless
 Test:            JUnit 5
 Build:           mvn clean package / gradle build
 ```
+
 </details>
 
 <details>
@@ -771,6 +800,7 @@ Linter:          golangci-lint
 Test:            go test ./...
 Build:           go build ./...
 ```
+
 </details>
 
 ---
@@ -779,17 +809,17 @@ Build:           go build ./...
 
 Extending the Brain is simple — one file, one registration:
 
-| To add… | Create… | Registration |
-|:--------|:--------|:------------|
-| 📚 Domain knowledge | `claude/<domain>.md` | Add row to `CLAUDE.md` lookup table |
-| 📏 Path-scoped rule | `.claude/rules/<domain>.md` | Automatic (matched by file path) |
-| ⚡ Slash command | `.claude/commands/<name>.md` | Automatic (discovered by Claude Code) |
-| 🪝 Lifecycle hook | `.claude/hooks/<name>.sh` | Register in `.claude/settings.json` |
-| 🤖 Subagent | `.claude/agents/<name>.md` | Automatic |
-| 🎓 Skill | `.claude/skills/<name>.md` | Automatic (matched by `paths:` globs) |
-| 🔌 Plugin | `claude plugin install <name>` | Document in `claude/plugins.md` |
-| 🤝 Copilot instruction | `.github/instructions/<name>.instructions.md` | Automatic (matched by glob) |
-| 💬 Copilot prompt | `.github/prompts/<name>.prompt.md` | Automatic |
+| To add…                | Create…                                       | Registration                          |
+| :--------------------- | :-------------------------------------------- | :------------------------------------ |
+| 📚 Domain knowledge    | `claude/<domain>.md`                          | Add row to `CLAUDE.md` lookup table   |
+| 📏 Path-scoped rule    | `.claude/rules/<domain>.md`                   | Automatic (matched by file path)      |
+| ⚡ Slash command       | `.claude/commands/<name>.md`                  | Automatic (discovered by Claude Code) |
+| 🪝 Lifecycle hook      | `.claude/hooks/<name>.sh`                     | Register in `.claude/settings.json`   |
+| 🤖 Subagent            | `.claude/agents/<name>.md`                    | Automatic                             |
+| 🎓 Skill               | `.claude/skills/<name>.md`                    | Automatic (matched by `paths:` globs) |
+| 🔌 Plugin              | `claude plugin install <name>`                | Document in `claude/plugins.md`       |
+| 🤝 Copilot instruction | `.github/instructions/<name>.instructions.md` | Automatic (matched by glob)           |
+| 💬 Copilot prompt      | `.github/prompts/<name>.prompt.md`            | Automatic                             |
 
 Three worked examples in `claude/_examples/` — study them, then delete them.
 
@@ -809,10 +839,10 @@ Three worked examples in `claude/_examples/` — study them, then delete them.
    ```yaml
    ---
    description: What this command does (≤127 chars)
-   disable-model-invocation: true  # for side-effect commands
-   effort: low                      # low = quick, high = deep reasoning
-   allowed-tools: Bash(command *)   # pre-approve specific tools
-   argument-hint: "[expected args]"
+   disable-model-invocation: true # for side-effect commands
+   effort: low # low = quick, high = deep reasoning
+   allowed-tools: Bash(command *) # pre-approve specific tools
+   argument-hint: '[expected args]'
    ---
    ```
 2. Add `## Instructions` section with step-by-step actions
@@ -859,10 +889,10 @@ Three worked examples in `claude/_examples/` — study them, then delete them.
    ```yaml
    ---
    description: What this skill teaches
-   user-invocable: false  # true = slash-invokable, false = background auto-load
+   user-invocable: false # true = slash-invokable, false = background auto-load
    paths:
-     - "src/auth/**"
-     - "**/security*"
+     - 'src/auth/**'
+     - '**/security*'
    ---
    ```
 2. **Background skills** (`user-invocable: false`) — auto-load when the AI touches files matching `paths:`. Keep focused on one domain.
@@ -889,20 +919,20 @@ Three worked examples in `claude/_examples/` — study them, then delete them.
 
 The wisdom from hundreds of sessions, distilled:
 
-| Practice | Guideline | Why |
-|:---------|:----------|:----|
-| 📋 **CLAUDE.md size** | ≤200 lines | Loaded every conversation — bigger = more expensive |
-| 🎯 **Always-on budget** | <10K tokens | CLAUDE.md + @imports should stay lean |
-| 📏 **Rule count** | ≤150 total | AI starts deprioritizing above ~150 |
-| 📄 **Path-scoped rules** | ≤40 lines each | Summary format — point to full docs for details |
-| ⏱️ **Hook timeouts** | 5s quick / 30s git / 120s format | Prevent hangs |
-| 📁 **Hook paths** | `${CLAUDE_PROJECT_DIR:-.}` | Handles empty env vars at startup |
-| 📓 **Lessons file** | Archive when >500 lines | Too long = AI skims it |
-| 📁 **Temp files** | `./claude/tasks/` only | Survives across tools and sessions |
-| ✍️ **Command descriptions** | ≤127 chars, front-loaded | Gets truncated above 127 |
-| 🔧 **Knowledge maintenance** | `/maintain` + exit checklist | Prevents docs from rotting |
-| 🤖 **Subagent threshold** | 5+ files to explore → use `research` | Saves main context tokens |
-| 📋 **Exit checklist** | 6 items, every turn | The #1 mechanism for continuous improvement |
+| Practice                     | Guideline                            | Why                                                 |
+| :--------------------------- | :----------------------------------- | :-------------------------------------------------- |
+| 📋 **CLAUDE.md size**        | ≤200 lines                           | Loaded every conversation — bigger = more expensive |
+| 🎯 **Always-on budget**      | <10K tokens                          | CLAUDE.md + @imports should stay lean               |
+| 📏 **Rule count**            | ≤150 total                           | AI starts deprioritizing above ~150                 |
+| 📄 **Path-scoped rules**     | ≤40 lines each                       | Summary format — point to full docs for details     |
+| ⏱️ **Hook timeouts**         | 5s quick / 30s git / 120s format     | Prevent hangs                                       |
+| 📁 **Hook paths**            | `${CLAUDE_PROJECT_DIR:-.}`           | Handles empty env vars at startup                   |
+| 📓 **Lessons file**          | Archive when >500 lines              | Too long = AI skims it                              |
+| 📁 **Temp files**            | `./claude/tasks/` only               | Survives across tools and sessions                  |
+| ✍️ **Command descriptions**  | ≤127 chars, front-loaded             | Gets truncated above 127                            |
+| 🔧 **Knowledge maintenance** | `/maintain` + exit checklist         | Prevents docs from rotting                          |
+| 🤖 **Subagent threshold**    | 5+ files to explore → use `research` | Saves main context tokens                           |
+| 📋 **Exit checklist**        | 6 items, every turn                  | The #1 mechanism for continuous improvement         |
 
 ---
 
@@ -912,6 +942,7 @@ The wisdom from hundreds of sessions, distilled:
 <summary><strong>🤝 Does this work with GitHub Copilot?</strong></summary>
 
 Yes! The `.github/` directory contains Copilot-native config: `copilot-instructions.md` (root), `instructions/` (scoped by glob), and `prompts/` (reusable). The `.claude/` directory is Claude Code specific. `claude/bootstrap/PROMPT.md` works with any AI.
+
 </details>
 
 <details>
@@ -920,12 +951,14 @@ Yes! The `.github/` directory contains Copilot-native config: `copilot-instructi
 Both! **TEAM mode** (default): commit everything — every developer gets the same AI experience. Knowledge improvements from one session benefit everyone on the next `git pull`.
 
 **SOLO mode**: personal config, not committed. Add `CLAUDE.md`, `claude/`, `.claude/`, `.claudeignore`, `.mcp.json` to `.gitignore`. The `.github/` Copilot config stays committed — it benefits the whole team. Switch modes at any time.
+
 </details>
 
 <details>
 <summary><strong>🏢 Does this support monorepos?</strong></summary>
 
 Designed for them. Battle-tested on monorepos with 50+ services. Bootstrap detects workspace structure (Nx, Turborepo, pnpm workspaces, Cargo workspaces) and:
+
 - Generates per-service `CLAUDE.md` stubs for each service directory (auto-loaded when working in that service)
 - Derives service-scoped build/test commands
 - Escalates domain depth: with ≥3 domains detected, rules and skills become mandatory
@@ -935,36 +968,42 @@ Designed for them. Battle-tested on monorepos with 50+ services. Bootstrap detec
 <summary><strong>💰 What's the token cost?</strong></summary>
 
 ~3-4K tokens always-loaded. Domain docs load on-demand (~1-2K each). Subagents run in isolated context — research doesn't eat your main window. The three-tier architecture means you're not paying for context you don't need.
+
 </details>
 
 <details>
 <summary><strong>🗑️ Can I delete the examples?</strong></summary>
 
 Absolutely. `claude/_examples/` is training material — delete them once you've created your own domain docs. They're not used at runtime.
+
 </details>
 
 <details>
 <summary><strong>♻️ How do I update from the template?</strong></summary>
 
 Update hooks, settings, and commands (generic layer). Don't overwrite your `claude/*.md` domain docs (project-specific). Or use `/bootstrap` — it detects upgrade mode and merges intelligently.
+
 </details>
 
 <details>
 <summary><strong>⚡ What if I don't use all 29 commands?</strong></summary>
 
 No cost for unused commands — they only load when invoked. Delete what you don't need, or keep them around for the day you do.
+
 </details>
 
 <details>
 <summary><strong>💻 Does this work with VS Code?</strong></summary>
 
 Yes. Claude Code runs in any terminal. VS Code users get the full `.claude/` experience. The `.github/` integration works with GitHub Copilot in VS Code too.
+
 </details>
 
 <details>
 <summary><strong>🔐 Can the AI push to main?</strong></summary>
 
 No. `git push` is blocked by default (deny rule + terminal-safety hook). The AI presents a summary and waits for your confirmation. Config-protection blocks editing linter configs. Commit-quality catches secrets and debugger statements.
+
 </details>
 
 <details>
@@ -973,15 +1012,18 @@ No. `git push` is blocked by default (deny rule + terminal-safety hook). The AI 
 Yes — Phase 4 installs **claude-mem** (disabled by default, quota protection). If installation fails, the report provides the manual install command.
 
 > **obsidian-mind** is a companion Obsidian vault — not a Claude Code plugin. It's cloned separately: `git clone https://github.com/breferrari/obsidian-mind.git`
+
 </details>
 
 <details>
 <summary><strong>⏭️ Can I skip plugin installation?</strong></summary>
 
 If the plugin fails to install (network, auth), it's documented in the report with the manual command. The rest of the config works perfectly without it. Install later anytime:
+
 ```bash
 claude plugin install claude-mem@thedotmack
 ```
+
 </details>
 
 ---
@@ -990,15 +1032,15 @@ claude plugin install claude-mem@thedotmack
 
 The bootstrap auto-installs **five complementary tools** — each axis of intelligence is independent, zero overlap, full coverage:
 
-| | Type | Axis | Token Impact | Default |
-|:|:-----|:-----|:-------------|:-------:|
-| 🧠 **[claude-mem](https://github.com/thedotmack/claude-mem)** | Claude Code plugin | *"What did I do across sessions?"* | ~48% API quota when enabled | ⚠️ Disabled |
-| 🗺️ **[graphify](https://github.com/safishamsi/graphify)** | Python tool + PreToolUse hook | *"Show me the architecture"* | **71.5× fewer tokens** per query | ✅ On demand |
-| ⚡ **[rtk](https://github.com/codemod-com/rtk)** | Rust binary + PreToolUse(Bash) hook | *Every bash command* — transparent rewrite | **60-90% output token savings** | ✅ Auto (cargo) |
-| 🔍 **[codebase-memory-mcp](https://github.com/DeusData/codebase-memory-mcp)** | C binary + MCP server | *"Who calls this? What breaks?"* | **120× fewer tokens** vs file exploration | ✅ Auto (curl) |
-| 🔎 **[cocoindex-code](https://github.com/cocoindex/cocoindex-code)** | Python + MCP server | *"Find code related to X"* | Finds what grep/AST miss | ✅ Auto (Python 3.11+) |
-| 🔴 **[code-review-graph](https://github.com/codebase-review/code-review-graph)** | Python + MCP server | *"Is this PR safe to ship?"* — risk score + blast radius | Pre-PR safety gate | ✅ Auto (Python 3.10+) |
-| 📖 **[obsidian-mind](https://github.com/breferrari/obsidian-mind)** | Obsidian vault (clone separately) | *"Why was it built this way?"* | ~2K tokens/session | Optional |
+|                                                                                  | Type                                | Axis                                                     | Token Impact                              |        Default         |
+| :------------------------------------------------------------------------------- | :---------------------------------- | :------------------------------------------------------- | :---------------------------------------- | :--------------------: |
+| 🧠 **[claude-mem](https://github.com/thedotmack/claude-mem)**                    | Claude Code plugin                  | _"What did I do across sessions?"_                       | ~48% API quota when enabled               |      ⚠️ Disabled       |
+| 🗺️ **[graphify](https://github.com/safishamsi/graphify)**                        | Python tool + PreToolUse hook       | _"Show me the architecture"_                             | **71.5× fewer tokens** per query          |      ✅ On demand      |
+| ⚡ **[rtk](https://github.com/codemod-com/rtk)**                                 | Rust binary + PreToolUse(Bash) hook | _Every bash command_ — transparent rewrite               | **60-90% output token savings**           |    ✅ Auto (cargo)     |
+| 🔍 **[codebase-memory-mcp](https://github.com/DeusData/codebase-memory-mcp)**    | C binary + MCP server               | _"Who calls this? What breaks?"_                         | **120× fewer tokens** vs file exploration |     ✅ Auto (curl)     |
+| 🔎 **[cocoindex-code](https://github.com/cocoindex/cocoindex-code)**             | Python + MCP server                 | _"Find code related to X"_                               | Finds what grep/AST miss                  | ✅ Auto (Python 3.11+) |
+| 🔴 **[code-review-graph](https://github.com/codebase-review/code-review-graph)** | Python + MCP server                 | _"Is this PR safe to ship?"_ — risk score + blast radius | Pre-PR safety gate                        | ✅ Auto (Python 3.10+) |
+| 📖 **[obsidian-mind](https://github.com/breferrari/obsidian-mind)**              | Obsidian vault (clone separately)   | _"Why was it built this way?"_                           | ~2K tokens/session                        |        Optional        |
 
 ### 🔌 What Is MCP? (Start Here If You're New)
 
@@ -1018,7 +1060,7 @@ Cost: ~5000 tokens, 30 seconds        Cost: ~50 tokens, 0.01 seconds
 
 1. You have a program installed on your machine (e.g., `codebase-memory-mcp`)
 2. It exposes tools — functions Claude can call (e.g., `trace_path`, `detect_changes`)
-3. `.mcp.json` tells Claude Code *how to start that program* when it needs a tool
+3. `.mcp.json` tells Claude Code _how to start that program_ when it needs a tool
 4. Claude Code starts the program as a subprocess (stdin/stdout), sends it a JSON request, gets a JSON response
 5. Claude sees the result as if it had just read a file — no difference from its perspective
 
@@ -1074,13 +1116,14 @@ Nothing breaks. Claude Code tries to start the server, fails silently, and the `
 
 **The three MCP servers in this bootstrap:**
 
-| Server key | Binary | What it gives you | Starts when |
-|------------|--------|-------------------|-------------|
-| `codebase-memory-mcp` | `codebase-memory-mcp` | 14 structural graph tools — call paths, dead code, blast radius | First `mcp__codebase-memory-mcp__*` call |
-| `cocoindex-code` | `ccc mcp` | 1 semantic search tool — find code by meaning | First `mcp__cocoindex-code__search` call |
-| `code-review-graph` | `uvx code-review-graph serve` | 29 change risk tools — risk score, blast radius, breaking changes | First `mcp__code-review-graph__*` call |
+| Server key            | Binary                        | What it gives you                                                 | Starts when                              |
+| --------------------- | ----------------------------- | ----------------------------------------------------------------- | ---------------------------------------- |
+| `codebase-memory-mcp` | `codebase-memory-mcp`         | 14 structural graph tools — call paths, dead code, blast radius   | First `mcp__codebase-memory-mcp__*` call |
+| `cocoindex-code`      | `ccc mcp`                     | 1 semantic search tool — find code by meaning                     | First `mcp__cocoindex-code__search` call |
+| `code-review-graph`   | `uvx code-review-graph serve` | 29 change risk tools — risk score, blast radius, breaking changes | First `mcp__code-review-graph__*` call   |
 
 **Check what's running:**
+
 ```bash
 # See all configured servers and their tools
 /mcp list
@@ -1090,6 +1133,7 @@ cat .mcp.json
 ```
 
 **Add a new MCP server in 30 seconds:**
+
 ```bash
 /mcp add github          # Browse Smithery registry and add
 # OR edit .mcp.json directly — add an entry under "mcpServers"
@@ -1124,26 +1168,26 @@ Every bash command Claude runs              rtk                          transpa
 
 These two both analyze code structure but serve completely different purposes:
 
-| Dimension | graphify | codebase-memory-mcp |
-|-----------|----------|---------------------|
-| **Mode** | Static report (read at session start) | Live MCP tools (queried on demand) |
-| **Output** | GRAPH_REPORT.md — LLM-synthesized narrative | Structured JSON via 14 MCP tools |
-| **Query** | Read file / `graphify query` CLI | `mcp__codebase-memory-mcp__*` tools |
-| **Update** | Git hooks (post-commit, post-checkout) | Background git polling (5–60s adaptive) |
-| **Strength** | *"Understand the forest"* — architecture narrative | *"Navigate individual trees"* — precise call tracing |
-| **Best for** | Session start, new to codebase, architecture review | Pre-PR blast radius, call graph, dead code |
+| Dimension    | graphify                                            | codebase-memory-mcp                                  |
+| ------------ | --------------------------------------------------- | ---------------------------------------------------- |
+| **Mode**     | Static report (read at session start)               | Live MCP tools (queried on demand)                   |
+| **Output**   | GRAPH_REPORT.md — LLM-synthesized narrative         | Structured JSON via 14 MCP tools                     |
+| **Query**    | Read file / `graphify query` CLI                    | `mcp__codebase-memory-mcp__*` tools                  |
+| **Update**   | Git hooks (post-commit, post-checkout)              | Background git polling (5–60s adaptive)              |
+| **Strength** | _"Understand the forest"_ — architecture narrative  | _"Navigate individual trees"_ — precise call tracing |
+| **Best for** | Session start, new to codebase, architecture review | Pre-PR blast radius, call graph, dead code           |
 
 **Use graphify at session start.** Use codebase-memory-mcp throughout the session for structural questions.
 
 ### codebase-memory-mcp vs cocoindex-code — Structural vs Semantic
 
-| Dimension | codebase-memory-mcp | cocoindex-code |
-|-----------|---------------------|----------------|
-| **Query type** | "Who calls `foo()`?" — exact traversal | "Find code related to auth" — fuzzy meaning |
-| **Index type** | AST nodes + Cypher graph | Text chunks + float32 vectors |
-| **Retrieval** | Graph traversal | KNN similarity |
-| **Requires knowing** | Function/class names | Nothing — just a concept |
-| **Best for** | Known entry points, call chains | Exploration, unfamiliar codebases |
+| Dimension            | codebase-memory-mcp                    | cocoindex-code                              |
+| -------------------- | -------------------------------------- | ------------------------------------------- |
+| **Query type**       | "Who calls `foo()`?" — exact traversal | "Find code related to auth" — fuzzy meaning |
+| **Index type**       | AST nodes + Cypher graph               | Text chunks + float32 vectors               |
+| **Retrieval**        | Graph traversal                        | KNN similarity                              |
+| **Requires knowing** | Function/class names                   | Nothing — just a concept                    |
+| **Best for**         | Known entry points, call chains        | Exploration, unfamiliar codebases           |
 
 **Use them together:** cocoindex-code finds the entry point → codebase-memory-mcp traces from it.
 
@@ -1161,6 +1205,7 @@ rtk is fundamentally different from the other tools: it doesn't answer questions
 code-review-graph occupies the fourth structural axis: **change risk**. It answers the question none of the other tools answer: given what I just changed, what is the blast radius, and is it safe to merge?
 
 **How it works:**
+
 1. Builds a SHA-256 AST dependency graph of the entire codebase (~6s for 500 files)
 2. On any `detect_changes_tool` call, reads the current git diff against the base branch
 3. BFS traversal from every changed node to compute all transitively affected nodes (100% recall)
@@ -1168,6 +1213,7 @@ code-review-graph occupies the fourth structural axis: **change risk**. It answe
 5. Returns: risk score, blast radius list, breaking changes, and impacted execution flows
 
 **Crown jewel — `detect_changes_tool`:**
+
 ```
 mcp__code-review-graph__detect_changes_tool(base_branch="main")
 → risk_score: 72
@@ -1177,6 +1223,7 @@ mcp__code-review-graph__detect_changes_tool(base_branch="main")
 ```
 
 **Mandatory pre-PR workflow:**
+
 1. `build_graph_tool(repo_path=".")` — first time only
 2. `detect_changes_tool(base_branch="main")` — always before merging
 3. Score ≥ 60 → `get_dependency_chain_tool` on highest-risk node
@@ -1262,41 +1309,41 @@ Claude Code plugins are installed globally (`~/.claude/plugins/`). They coexist 
 
 Every AI coding tool reads instructions. None of them can enforce those instructions on themselves.
 
-You write *"never edit tsconfig.json"* in your config. The AI reads it. Then context pressure builds, and it edits `tsconfig.json` anyway. You write *"always use --no-pager."* It triggers a pager and hangs your terminal. You correct it — it apologizes. Next session? Same mistake, same apology.
+You write _"never edit tsconfig.json"_ in your config. The AI reads it. Then context pressure builds, and it edits `tsconfig.json` anyway. You write _"always use --no-pager."_ It triggers a pager and hangs your terminal. You correct it — it apologizes. Next session? Same mistake, same apology.
 
 **This isn't a bug. It's an architectural gap.** Instructions are text. Text is advisory. Advisory gets overridden.
 
 Brain replaces advisory text with real mechanisms:
 
-| What you get | How it actually works |
-|:---|:---|
-| 🔒 **Dangerous actions are blocked, not just discouraged** | Safety hooks intercept *before* execution — blocking dangerous commands before they run. 16 lifecycle hooks total across all events: bash scripts, deterministic, zero-token, unforgeable |
-| 🧠 **The AI never makes the same mistake twice** | `lessons.md` persists across sessions, compactions, restarts — read at every session start, impossible to skip |
-| 🔄 **Knowledge never goes stale** | Exit checklist catches drift every turn · `/maintain` audits all docs · self-maintenance rule fires on every knowledge edit |
-| ⚡ **One command replaces 15 min of prompt engineering** | `/review` runs a 10-point protocol · `/mr` generates descriptions · `/debug` traces root causes — 31 commands, pre-built, consistent |
-| 🔍 **Your entire stack understood in 2 seconds, zero tokens** | `discover.sh` — 25+ languages, 1100+ frameworks, 21 package managers — pure bash, runs before the AI even wakes up |
-| 🤖 **Research doesn't eat your context window** | 5 subagents run in isolated contexts — explore 20+ files, review code, challenge plans — your main conversation stays clean |
-| 🤝 **One brain, three AI tools** | Write knowledge once → Claude Code, GitHub Copilot, and any LLM all read it — switch tools without starting over |
+| What you get                                                  | How it actually works                                                                                                                                                                     |
+| :------------------------------------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 🔒 **Dangerous actions are blocked, not just discouraged**    | Safety hooks intercept _before_ execution — blocking dangerous commands before they run. 16 lifecycle hooks total across all events: bash scripts, deterministic, zero-token, unforgeable |
+| 🧠 **The AI never makes the same mistake twice**              | `lessons.md` persists across sessions, compactions, restarts — read at every session start, impossible to skip                                                                            |
+| 🔄 **Knowledge never goes stale**                             | Exit checklist catches drift every turn · `/maintain` audits all docs · self-maintenance rule fires on every knowledge edit                                                               |
+| ⚡ **One command replaces 15 min of prompt engineering**      | `/review` runs a 10-point protocol · `/mr` generates descriptions · `/debug` traces root causes — 31 commands, pre-built, consistent                                                      |
+| 🔍 **Your entire stack understood in 2 seconds, zero tokens** | `discover.sh` — 25+ languages, 1100+ frameworks, 21 package managers — pure bash, runs before the AI even wakes up                                                                        |
+| 🤖 **Research doesn't eat your context window**               | 5 subagents run in isolated contexts — explore 20+ files, review code, challenge plans — your main conversation stays clean                                                               |
+| 🤝 **One brain, three AI tools**                              | Write knowledge once → Claude Code, GitHub Copilot, and any LLM all read it — switch tools without starting over                                                                          |
 
 > 🎯 **100+ files isn't complexity. It's the minimum architecture where instructions become guarantees.**
 
 ### 📊 The Numbers
 
-| Metric | Count |
-|:-------|------:|
-| 📂 Files | 100+ |
-| ⚡ Slash commands | 31 |
-| 🪝 Lifecycle hooks | 15 |
-| 📏 Golden rules | 24 |
-| 🎓 Skills | 11 |
-| ✅ Validation checks | 120 |
-| 🏷️ Configurable placeholders | 35+ |
-| 🔄 Bootstrap phases | 5 |
-| 🤖 AI subagents | 5 |
-| 🔌 Plugins/tools | 5 |
-| 📋 Exit checklist items | 6 |
-| 🔍 Domain-detection greps | 8 |
-| 🐚 Shell scripts (ShellCheck CI) | 31 |
+| Metric                           | Count |
+| :------------------------------- | ----: |
+| 📂 Files                         |  100+ |
+| ⚡ Slash commands                |    31 |
+| 🪝 Lifecycle hooks               |    16 |
+| 📏 Golden rules                  |    24 |
+| 🎓 Skills                        |    18 |
+| ✅ Validation checks             |  127+ |
+| 🏷️ Configurable placeholders     |   35+ |
+| 🔄 Bootstrap phases              |     5 |
+| 🤖 AI subagents                  |     5 |
+| 🔌 Plugins/tools                 |    10 |
+| 📋 Exit checklist items          |     6 |
+| 🔍 Domain-detection greps        |     8 |
+| 🐚 Shell scripts (ShellCheck CI) |    31 |
 
 ---
 
@@ -1306,10 +1353,10 @@ Brain Bootstrap works on **Linux, macOS, and Windows** (WSL2 / Git Bash).
 
 ### Bash Version Requirements
 
-| Scripts | Minimum Bash | Reason |
-|:--------|:-------------|:-------|
-| `discover.sh`, `populate-templates.sh` | **4.0+** | Associative arrays (`declare -A`) |
-| All other scripts (25+) | **3.2+** | Standard bash features only |
+| Scripts                                | Minimum Bash | Reason                            |
+| :------------------------------------- | :----------- | :-------------------------------- |
+| `discover.sh`, `populate-templates.sh` | **4.0+**     | Associative arrays (`declare -A`) |
+| All other scripts (25+)                | **3.2+**     | Standard bash features only       |
 
 > macOS ships with Bash 3.2. Install Bash 5 via `brew install bash` for full `/bootstrap` support. All hook scripts work with system bash.
 
@@ -1327,6 +1374,7 @@ The `claude/scripts/_platform.sh` library is sourced by scripts that need platfo
 ### CI Coverage
 
 The GitHub Actions CI runs on all 3 platforms:
+
 - **ubuntu-latest** — primary validation + ShellCheck + portability lint
 - **macos-latest** — catches BSD tool differences
 - **windows-latest** — catches Git Bash / MSYS2 differences
@@ -1346,12 +1394,14 @@ bash /tmp/brain/install.sh --check
 ```
 
 **What it checks:**
+
 - `BRAIN_PLATFORM` — detected platform (linux / macos / windows)
 - `git` availability — required for repo detection
 - `jq` availability — optional; merges `settings.json` permissions immediately
 - `bash` version — warns if <4 (Bash 4+ needed for `discover.sh` / `populate-templates.sh`)
 
 Example output:
+
 ```
 🔍 Brain Bootstrap — Pre-flight Check
 
@@ -1372,17 +1422,17 @@ bash claude/scripts/portability-lint.sh [directory]   # defaults to claude/scrip
 
 **Patterns detected** (all 9 checks from `portability-lint.sh`):
 
-| Pattern | Severity | Problem | Portable alternative |
-|:--------|:--------:|:--------|:--------------------|
-| `head -n -N` (negative count) | ❌ | GNU-only; BSD `head` rejects negative N | Use `tail -N` to get last N lines |
-| `grep -P` (PCRE flag) | ❌ | GNU-only; macOS `grep` is BSD (no PCRE) | Use `grep -E` with POSIX ERE |
-| `readlink -f` | ❌ | GNU-only; macOS has no `readlink -f` | Use `realpath` or `python3 -c "import os,sys; print(os.path.realpath(sys.argv[1]))"` |
-| `stat --format` / `stat -c` | ❌ | GNU stat; macOS uses `stat -f` | Use `wc -c` for file size, avoid stat |
-| `date --date=` / `date -d` | ❌ | GNU date parsing; BSD `date` uses `-j -f` | Use `python3` for date arithmetic |
-| `sed -i` (bare, not via wrapper) | ❌ | GNU-only; BSD requires `sed -i ''` | Use `sed_inplace()` from `_platform.sh` |
-| `\s` in awk expressions | ❌ | gawk-only; POSIX awk doesn't support `\s` | Use `[[:space:]]` |
-| `\w` in awk expressions | ❌ | gawk-only; POSIX awk doesn't support `\w` | Use `[[:alnum:]_]` |
-| `< <()` process substitution | ⚠️ | Works in bash 3.2+ but not in all Git Bash builds | Use tmpfile: `cmd > tmp; while IFS= read...` |
+| Pattern                          | Severity | Problem                                           | Portable alternative                                                                 |
+| :------------------------------- | :------: | :------------------------------------------------ | :----------------------------------------------------------------------------------- |
+| `head -n -N` (negative count)    |    ❌    | GNU-only; BSD `head` rejects negative N           | Use `tail -N` to get last N lines                                                    |
+| `grep -P` (PCRE flag)            |    ❌    | GNU-only; macOS `grep` is BSD (no PCRE)           | Use `grep -E` with POSIX ERE                                                         |
+| `readlink -f`                    |    ❌    | GNU-only; macOS has no `readlink -f`              | Use `realpath` or `python3 -c "import os,sys; print(os.path.realpath(sys.argv[1]))"` |
+| `stat --format` / `stat -c`      |    ❌    | GNU stat; macOS uses `stat -f`                    | Use `wc -c` for file size, avoid stat                                                |
+| `date --date=` / `date -d`       |    ❌    | GNU date parsing; BSD `date` uses `-j -f`         | Use `python3` for date arithmetic                                                    |
+| `sed -i` (bare, not via wrapper) |    ❌    | GNU-only; BSD requires `sed -i ''`                | Use `sed_inplace()` from `_platform.sh`                                              |
+| `\s` in awk expressions          |    ❌    | gawk-only; POSIX awk doesn't support `\s`         | Use `[[:space:]]`                                                                    |
+| `\w` in awk expressions          |    ❌    | gawk-only; POSIX awk doesn't support `\w`         | Use `[[:alnum:]_]`                                                                   |
+| `< <()` process substitution     |    ⚠️    | Works in bash 3.2+ but not in all Git Bash builds | Use tmpfile: `cmd > tmp; while IFS= read...`                                         |
 
 The linter is **extensible** — add new patterns to the table at the top of the script.
 
@@ -1396,18 +1446,19 @@ bash claude/scripts/integration-test.sh
 
 **Test scenarios** (17 total assertions):
 
-| Category | Assertions | What they verify |
-|:---------|:----------:|:----------------|
-| `--check` pre-flight | 1 | Pre-flight mode exits 0, reports platform |
-| FRESH install | 9 | Exits 0; CLAUDE.md + .claudeignore + settings.json + discover.sh present; scripts executable; hooks executable; `_platform.sh` sourceable; ≥50 files installed |
-| UPGRADE mode | 4 | Exits 0; `lessons.md` preserved (not overwritten); `architecture.md` preserved; backup `.pre-upgrade-backup.tar.gz` created |
-| Guard: self-bootstrap | 1 | Rejects installing into the template repo itself |
-| Guard: subdirectory | 1 | Rejects install into a subdirectory (must be repo root) |
-| Guard: non-existent dir | 1 | Rejects missing target directories |
+| Category                | Assertions | What they verify                                                                                                                                               |
+| :---------------------- | :--------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--check` pre-flight    |     1      | Pre-flight mode exits 0, reports platform                                                                                                                      |
+| FRESH install           |     9      | Exits 0; CLAUDE.md + .claudeignore + settings.json + discover.sh present; scripts executable; hooks executable; `_platform.sh` sourceable; ≥50 files installed |
+| UPGRADE mode            |     4      | Exits 0; `lessons.md` preserved (not overwritten); `architecture.md` preserved; backup `.pre-upgrade-backup.tar.gz` created                                    |
+| Guard: self-bootstrap   |     1      | Rejects installing into the template repo itself                                                                                                               |
+| Guard: subdirectory     |     1      | Rejects install into a subdirectory (must be repo root)                                                                                                        |
+| Guard: non-existent dir |     1      | Rejects missing target directories                                                                                                                             |
 
 > **Note:** install.sh Check 2 (non-git directory) is enforced in code but not yet covered by integration tests.
 
 **Cross-platform correctness notes:**
+
 - **macOS symlinks** — `/var` → `/private/var`: fixed by using `--show-cdup` (empty at root) instead of `--show-toplevel` path comparison
 - **Windows MSYS paths** — `mktemp -d` gives `/tmp/...` but `--show-toplevel` returns `C:/Users/...`: same `--show-cdup` fix
 - **Bash 3.2 empty array** — `"${arr[@]}"` with `set -u` crashes on bash 3.2 (macOS system shell): fixed with `${arr[@]+"${arr[@]}"}` guard
@@ -1418,14 +1469,14 @@ bash claude/scripts/integration-test.sh
 
 We love contributions! The most impactful areas:
 
-| Area | Difficulty | Example |
-|:-----|:----------:|:--------|
-| 🔍 **Stack detection** | 🟢 Easy | New language/framework in `discover.sh` |
-| 📚 **Documentation** | 🟢 Easy | Typo fix, better examples, clearer explanations |
-| ⚡ **Slash commands** | 🟡 Medium | New workflow command for any project |
-| 📏 **Path-scoped rules** | 🟡 Medium | New domain rule in `.claude/rules/` |
-| 🪝 **Lifecycle hooks** | 🟠 Advanced | Safety patterns, quality gates |
-| 🤖 **Agents / Skills** | 🟠 Advanced | New subagent or skill |
+| Area                     | Difficulty  | Example                                         |
+| :----------------------- | :---------: | :---------------------------------------------- |
+| 🔍 **Stack detection**   |   🟢 Easy   | New language/framework in `discover.sh`         |
+| 📚 **Documentation**     |   🟢 Easy   | Typo fix, better examples, clearer explanations |
+| ⚡ **Slash commands**    |  🟡 Medium  | New workflow command for any project            |
+| 📏 **Path-scoped rules** |  🟡 Medium  | New domain rule in `.claude/rules/`             |
+| 🪝 **Lifecycle hooks**   | 🟠 Advanced | Safety patterns, quality gates                  |
+| 🤖 **Agents / Skills**   | 🟠 Advanced | New subagent or skill                           |
 
 All contributions must be **domain-agnostic** — no project-specific content.
 
@@ -1439,13 +1490,13 @@ All contributions must be **domain-agnostic** — no project-specific content.
 
 Every push to `main` and every pull request runs **5 automated checks** via GitHub Actions:
 
-| Job | Platforms | What it verifies | Why it matters |
-|:----|:---------:|:----------------|:---------------|
-| 🐚 **ShellCheck** | Linux | Lints all 31 `.sh` scripts at `warning` severity | These scripts run on **end-user machines**. A bug in `terminal-safety-gate.sh` silently skips protection. ShellCheck catches it before users do. |
-| 🔍 **Portability Lint** | Linux | Runs `portability-lint.sh` — 9 checks for GNU-only patterns (`head -n -N`, `grep -P`, `readlink -f`, `stat -c`, `date -d`, bare `sed -i`, awk `\s`/`\w`, `< <()`) | Catches BSD vs GNU differences at static analysis time, before they hit macOS/Windows users |
-| 🔗 **Documentation Links** | Linux | Checks all internal/relative links in every `.md` file (offline, including `#fragment` anchors) | README → CONTRIBUTING → DETAILED_GUIDE have 20+ cross-references. A broken link in the public README means a confused first-time user. |
-| ✅ **Cross-Platform Validation** | Linux, macOS, Windows | Syntax-checks all 31 scripts + `validate.sh` (120 checks) + `_platform.sh` sourcing + `install.sh --check` | Proves the template is structurally sound and install works on all 3 platforms — not just the developer's Linux box. |
-| 🧪 **Integration Tests** | Linux, macOS, Windows | Runs `integration-test.sh` — 17 assertions: FRESH install, UPGRADE, `--check` mode, and 3 guard scenarios | Proves `install.sh` works end-to-end on user platforms. Catches macOS symlink paths, Windows MSYS paths, bash 3.2 edge cases. |
+| Job                              |       Platforms       | What it verifies                                                                                                                                                  | Why it matters                                                                                                                                   |
+| :------------------------------- | :-------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------- |
+| 🐚 **ShellCheck**                |         Linux         | Lints all 31 `.sh` scripts at `warning` severity                                                                                                                  | These scripts run on **end-user machines**. A bug in `terminal-safety-gate.sh` silently skips protection. ShellCheck catches it before users do. |
+| 🔍 **Portability Lint**          |         Linux         | Runs `portability-lint.sh` — 9 checks for GNU-only patterns (`head -n -N`, `grep -P`, `readlink -f`, `stat -c`, `date -d`, bare `sed -i`, awk `\s`/`\w`, `< <()`) | Catches BSD vs GNU differences at static analysis time, before they hit macOS/Windows users                                                      |
+| 🔗 **Documentation Links**       |         Linux         | Checks all internal/relative links in every `.md` file (offline, including `#fragment` anchors)                                                                   | README → CONTRIBUTING → DETAILED_GUIDE have 20+ cross-references. A broken link in the public README means a confused first-time user.           |
+| ✅ **Cross-Platform Validation** | Linux, macOS, Windows | Syntax-checks all 31 scripts + `validate.sh` (127+ checks) + `_platform.sh` sourcing + `install.sh --check`                                                       | Proves the template is structurally sound and install works on all 3 platforms — not just the developer's Linux box.                             |
+| 🧪 **Integration Tests**         | Linux, macOS, Windows | Runs `integration-test.sh` — 17 assertions: FRESH install, UPGRADE, `--check` mode, and 3 guard scenarios                                                         | Proves `install.sh` works end-to-end on user platforms. Catches macOS symlink paths, Windows MSYS paths, bash 3.2 edge cases.                    |
 
 All five must pass before a PR can be merged. The CI badge on the README shows the current status.
 
@@ -1463,4 +1514,3 @@ MIT — see [LICENSE](../../LICENSE).
   <strong>You made it to the end. You're ready. 🚀</strong><br>
   <em>Drop this into your repo. Run <code>/bootstrap</code>. Ship code 10× faster.</em>
 </p>
-

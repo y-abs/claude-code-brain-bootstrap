@@ -4,20 +4,22 @@
 
 ## Overview
 
-The bootstrap installs and configures a **six-tool stack** — each tool occupies a distinct, non-overlapping niche. Together they cover every axis of codebase intelligence:
+The bootstrap installs and configures a **ten-tool stack** — each tool occupies a distinct, non-overlapping niche. Together they cover every axis of codebase intelligence:
 
-| Tool | Axis | Default State | Token Impact |
-|------|------|:------------:|:------------:|
-| **claude-mem** | 🧠 **Temporal memory** — cross-session event log (SQLite + ChromaDB) | ⚠️ **Disabled** (quota protection) | ~48% of API quota when enabled |
-| **graphify** | 🗺️ **Architecture snapshot** — static knowledge graph, god nodes, community clusters | ✅ **On demand** (graph built via `/graphify .`) | **71.5× fewer tokens** per query |
-| **rtk** | ⚡ **Command efficiency** — transparently rewrites Claude's bash commands for compressed output | ✅ **No-op** when absent; auto-active when installed | **60-90% output token savings** |
-| **codebase-memory-mcp** | 🔍 **Live structural graph** — 14 MCP tools: call paths, blast radius, dead code (C binary, zero deps) | ✅ **Auto-installed** via curl | **120× fewer tokens** vs file exploration |
-| **cocoindex-code** | 🔎 **Semantic search** — find code by meaning via local vector embeddings (no API key) | ✅ **Auto-installed** if Python 3.11+ | Finds what grep/AST tools miss |
-| **code-review-graph** | 🔴 **Change risk analysis** — blast radius + risk score 0–100 + breaking changes from git diffs (29 MCP tools) | ✅ **Auto-installed** if Python 3.10+ | Pre-PR safety gate — catches cascading breakage |
-| **playwright** | 🌐 **Browser automation** — navigate, click, fill, snapshot web pages via accessibility tree (no vision model) | ✅ **Auto-installed** if Node.js 18+ | LOW-MEDIUM — structured snapshots, not pixel images |
-| **codeburn** | 📊 **Token observability** — cost breakdown by task type, model, one-shot rate, USD; reads `~/.claude/projects/` directly | ✅ **Optional CLI** (run on demand) | Zero — reads session files, no API calls |
-| **caveman** | 🗣️ **Response-text compression** — terse Claude replies (65-87% savings) + `/caveman:compress` for input context files (46% avg) | ✅ **Optional** (hooks into `~/.claude/settings.json`) | **Negative** — reduces response tokens generated |
-| **serena** | 🔧 **Symbol-level refactoring** — LSP-backed rename/move/inline across the entire codebase atomically | ✅ **Auto-registered** if uvx + Python 3.11+ | Low — on-demand per MCP call |
+| Tool                    |   Type   | Axis                                                                                                                             |                     Default State                      |                    Token Impact                     |
+| ----------------------- | :------: | -------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------: | :-------------------------------------------------: |
+| **claude-mem**          |  Plugin  | 🧠 **Temporal memory** — cross-session event log (SQLite + ChromaDB)                                                             |           ⚠️ **Disabled** (quota protection)           |           ~48% of API quota when enabled            |
+| **graphify**            | CLI+Hook | 🗺️ **Architecture snapshot** — static knowledge graph, god nodes, community clusters                                             |    ✅ **On demand** (graph built via `/graphify .`)    |          **71.5× fewer tokens** per query           |
+| **rtk**                 |   Hook   | ⚡ **Command efficiency** — transparently rewrites Claude's bash commands for compressed output                                  |  ✅ **No-op** when absent; auto-active when installed  |           **60-90% output token savings**           |
+| **codebase-memory-mcp** |   MCP    | 🔍 **Live structural graph** — 14 MCP tools: call paths, blast radius, dead code (C binary, zero deps)                           |             ✅ **Auto-installed** via curl             |      **120× fewer tokens** vs file exploration      |
+| **cocoindex-code**      |   MCP    | 🔎 **Semantic search** — find code by meaning via local vector embeddings (no API key)                                           |         ✅ **Auto-installed** if Python 3.11+          |           Finds what grep/AST tools miss            |
+| **code-review-graph**   |   MCP    | 🔴 **Change risk analysis** — blast radius + risk score 0–100 + breaking changes from git diffs (29 MCP tools)                   |         ✅ **Auto-installed** if Python 3.10+          |   Pre-PR safety gate — catches cascading breakage   |
+| **playwright**          |   MCP    | 🌐 **Browser automation** — navigate, click, fill, snapshot web pages via accessibility tree (no vision model)                   |          ✅ **Auto-installed** if Node.js 18+          | LOW-MEDIUM — structured snapshots, not pixel images |
+| **codeburn**            |   CLI    | 📊 **Token observability** — cost breakdown by task type, model, one-shot rate, USD; reads `~/.claude/projects/` directly        |          ✅ **Optional CLI** (run on demand)           |      Zero — reads session files, no API calls       |
+| **caveman**             |   Hook   | 🗣️ **Response-text compression** — terse Claude replies (65-87% savings) + `/caveman:compress` for input context files (46% avg) | ✅ **Optional** (hooks into `~/.claude/settings.json`) |  **Negative** — reduces response tokens generated   |
+| **serena**              |   MCP    | 🔧 **Symbol-level refactoring** — LSP-backed rename/move/inline across the entire codebase atomically                            |      ✅ **Auto-registered** if uvx + Python 3.11+      |            Low — on-demand per MCP call             |
+
+> **Type legend:** MCP = declared in `.mcp.json`, started on demand. Hook = registered in `.claude/settings.json`. CLI = standalone command. Plugin = Claude Code plugin (`~/.claude/plugins/`).
 
 **The complete picture — zero overlap, full coverage:**
 
@@ -52,6 +54,7 @@ Claude Code plugins are **global extensions** installed at `~/.claude/plugins/`.
 **Default state:** ⚠️ **Disabled** — the bootstrap disables claude-mem after install to protect your API quota. Enable it when you want cross-session recall.
 
 **Toggle on/off:**
+
 ```bash
 bash claude/scripts/toggle-claude-mem.sh on       # Enable (activates next session)
 bash claude/scripts/toggle-claude-mem.sh off      # Disable + kill worker — saves quota
@@ -59,6 +62,7 @@ bash claude/scripts/toggle-claude-mem.sh status   # Check current state
 ```
 
 **What it provides:**
+
 - **Persistent memory** — observations captured from every tool use, stored in SQLite (`~/.claude-mem/claude-mem.db`) + ChromaDB vectors (`~/.claude-mem/chroma/`)
 - **Worker service** — Express API on `localhost:37777` with web viewer UI
 - **MCP search tools** — `search`, `timeline`, `get_observations` for querying past sessions (3-layer progressive disclosure)
@@ -74,6 +78,7 @@ bash claude/scripts/toggle-claude-mem.sh status   # Check current state
 **Best practice:** Toggle OFF during batch work (large refactors, dependency upgrades, heavy file editing). Toggle ON during exploratory sessions where cross-session recall adds value.
 
 **Manual install (if bootstrap couldn't auto-install):**
+
 ```bash
 # Requires Bun (JS runtime) — install if missing:
 curl -fsSL https://bun.sh/install | bash
@@ -96,6 +101,7 @@ git clone https://github.com/breferrari/obsidian-mind.git ~/my-knowledge-vault
 **Purpose:** Curated human knowledge — structured Markdown notes (decisions, patterns, people, projects) organized as an Obsidian vault with wikilinks and backlinks. Think of it as a **curated wiki** that captures what matters, in context, with narrative.
 
 **What it provides:**
+
 - **Knowledge vault** — structured notes with wikilinks across `brain/`, `work/`, `org/`, `perf/`, `reference/`
 - **18+ slash commands** — all prefixed `/om-*` (standup, dump, wrap-up, weekly review, etc.)
 - **9 specialized subagents** — vault-librarian, cross-linker, brag-spotter, review-prep, etc.
@@ -113,6 +119,7 @@ git clone https://github.com/breferrari/obsidian-mind.git ~/my-knowledge-vault
 **Requires:** Python 3.10+ (installed automatically by `setup-plugins.sh` if Python is available). Without Python, graphify is skipped gracefully — everything else works normally.
 
 **What it provides:**
+
 - **`graphify-out/GRAPH_REPORT.md`** — plain-language architecture map: god nodes (highest-degree concepts), surprising connections, community clusters, suggested questions. Claude reads this before searching files.
 - **`graphify-out/graph.json`** — persistent queryable graph. Survives sessions, context resets, everything.
 - **`graphify-out/graph.html`** — interactive visualization (click nodes, search, filter by community)
@@ -122,6 +129,7 @@ git clone https://github.com/breferrari/obsidian-mind.git ~/my-knowledge-vault
 - **Every edge tagged** — `EXTRACTED` (found in source), `INFERRED` (reasonable guess with confidence score), `AMBIGUOUS` (flagged for review). You always know what's real.
 
 **Setup (automatic during bootstrap):**
+
 ```bash
 # setup-plugins.sh handles all of this:
 pip install graphifyy            # Python package
@@ -130,6 +138,7 @@ graphify hook install            # Git hooks → .git/hooks/post-commit + post-c
 ```
 
 **Usage:**
+
 ```bash
 /graphify .                      # Build full knowledge graph (first run ~5 min)
 /graphify . --update             # Incremental — re-extract only changed files
@@ -144,17 +153,20 @@ graphify explain "UserService"   # Plain-language node explanation
 **Token savings:** **71.5× fewer tokens per query** vs reading raw files (on a 52-file corpus). Token reduction scales with corpus size — 6 files fit in a context window anyway, but at 50+ files the graph becomes the critical efficiency layer. The graph IS the compressed context. First run extracts and builds (~5 min); every subsequent query reads the compact graph instead of raw files — that's where the savings compound.
 
 **When to use:**
+
 - **New to a codebase** — run `/graphify .` before your first session. GRAPH_REPORT.md becomes your architecture briefing.
 - **After major refactors** — run `/graphify . --update` to refresh the graph.
 - **Daily work** — git hooks keep it current automatically. The PreToolUse hook means Claude always navigates by structure, not by grepping through every file.
 
 **MCP server mode** (advanced — persistent graph access for repeated queries):
+
 ```bash
 # Add to .mcp.json for structured graph access:
 python3 -m graphify.serve graphify-out/graph.json
 ```
 
 **Manual install (if bootstrap couldn't auto-install):**
+
 ```bash
 pip install graphifyy                # or: pip install graphifyy --break-system-packages
 graphify install                     # global skill
@@ -163,6 +175,7 @@ graphify hook install                # git hooks
 ```
 
 **Uninstall:**
+
 ```bash
 graphify claude uninstall            # remove CLAUDE.md section + hook
 graphify hook uninstall              # remove git hooks
@@ -180,6 +193,7 @@ pip uninstall graphifyy              # remove package
 **MCP tools (14):** `index_repository`, `list_projects`, `delete_project`, `index_status`, `search_graph`, `trace_path`, `detect_changes`, `query_graph`, `get_graph_schema`, `get_code_snippet`, `get_architecture`, `search_code`, `manage_adr`, `ingest_traces`.
 
 **Usage:** See `/codebase-memory` skill for decision matrix. Key workflows:
+
 - `detect_changes(base_branch="main")` — risk score before any PR
 - `trace_path(function_name="X", direction="both")` — full call chain
 - `search_graph(max_degree=0)` — dead code
@@ -198,6 +212,7 @@ pip uninstall graphifyy              # remove package
 **Default state:** ✅ **Hook always registered** — no-op when rtk not installed; auto-active once installed.
 
 **Install:**
+
 ```bash
 # Automatic: setup-plugins.sh installs rtk via cargo if cargo is in PATH
 # Manual fallback:
@@ -206,6 +221,7 @@ cargo install rtk           # Install the binary (~1-2 min compile)
 ```
 
 **What it provides:**
+
 - **`rtk rewrite`** — rewrites commands transparently at the `PreToolUse(Bash)` lifecycle event
 - **`rtk gain`** — shows ROI for the current session (tokens saved, % reduction)
 - **`rtk discover`** — shows commands not yet covered by the registry (coverage gaps)
@@ -215,6 +231,7 @@ cargo install rtk           # Install the binary (~1-2 min compile)
 **Hook ordering (critical):** RTK hook runs FIRST among Bash PreToolUse hooks — rewrites the command, then the safety gate and quality gate check the already-rewritten command. Order: `rtk-rewrite → pre-commit-quality → terminal-safety-gate`.
 
 **Usage:**
+
 ```bash
 rtk gain                    # Session ROI: how many tokens were saved
 rtk discover                # Which commands have no RTK equivalent yet
@@ -224,6 +241,7 @@ rtk --version               # Current version
 **When NOT installed:** The `rtk-rewrite.sh` hook exits 0 immediately — no error, no slowdown, no change to behavior. The hook slot is reserved so that installing RTK activates it instantly without config changes.
 
 **Manual install of hook (if not using setup-plugins.sh):**
+
 ```bash
 # Already done — .claude/hooks/rtk-rewrite.sh + settings.json entry exist
 # Just install the binary:
@@ -249,6 +267,7 @@ cargo install rtk
 **ccc mcp startup requirement:** `ccc mcp` exits with code 1 if no `.cocoindex_code/settings.yml` exists. `setup-plugins.sh` creates it before starting. If missing: `ccc index` first, or recreate settings.yml from the template.
 
 **Switching embedding models:**
+
 - Better code model: `nomic-ai/CodeRankEmbed` (137M params, GPU recommended)
 - Cloud: `voyage-code-3`, `text-embedding-3-small`, Ollama, any LiteLLM endpoint
 - After switching: `ccc reset && ccc index` (vector dimensions are model-specific — incompatible across models)
@@ -284,6 +303,7 @@ The `install` command writes a PostToolUse(Write|Edit|Bash) hook to `~/.claude/s
 Solution: `postprocess --no-instructions --no-hooks` — git post-commit hook only (safe, fast, no quota drain).
 
 **Relationship to other tools:**
+
 - **graphify**: both build AST graphs, different outputs — graphify → LLM-synthesized architecture narrative; CRG → structural diff risk scores
 - **codebase-memory-mcp**: both answer "what's connected to X?" — CBM is live (polling), CRG is commit-gated (post-commit hook)
 - **cocoindex-code**: orthogonal — semantic search has no overlap with structural change risk
@@ -316,6 +336,7 @@ Solution: `postprocess --no-instructions --no-hooks` — git post-commit hook on
 **Install:** `npx playwright install chromium` (one-time, ~300 MB). MCP server entry already in `.mcp.json` — runs on demand via `npx @playwright/mcp@latest`, no persistent process.
 
 **Key tools:**
+
 - `mcp__playwright__browser_navigate(url)` — go to URL
 - `mcp__playwright__browser_snapshot()` — full accessibility tree (prefer over screenshot)
 - `mcp__playwright__browser_click(element, ref)` — click by label or ref
@@ -325,44 +346,46 @@ Solution: `postprocess --no-instructions --no-hooks` — git post-commit hook on
 - `mcp__playwright__browser_close()` — always call when done
 
 **Standard pattern:**
+
 ```
 browser_navigate → browser_snapshot → browser_click/fill → browser_snapshot → browser_close
 ```
 
 **Manual install:**
+
 ```bash
 npx playwright install chromium               # macOS / Linux
 npx playwright install chromium --with-deps  # Linux CI (installs system deps too)
 ```
 
-**Relationship to other tools:** playwright is orthogonal to all code-intelligence tools. It answers questions about *live web pages*, not the local codebase. No overlap possible.
+**Relationship to other tools:** playwright is orthogonal to all code-intelligence tools. It answers questions about _live web pages_, not the local codebase. No overlap possible.
 
 ## The Complete Tool Stack
 
 Six tools, six axes of intelligence. Each answers a fundamentally different question:
 
-| Question | Answered by | Layer | Mechanism |
-|----------|------------|-------|-----------|
-| *"How did we fix the auth bug last Tuesday?"* | **claude-mem** | 📝 Event log | SQLite + ChromaDB event capture — forensic session reconstruction |
-| *"Show me the architecture"* | **graphify** | 🗺️ Architecture snapshot | AST + Claude extraction → GRAPH_REPORT.md — read once, survives sessions |
-| *"Who calls `AuthService.login()`?"* | **codebase-memory-mcp** | 🔍 Live structural graph | Cypher query → <10ms, no file reads, 120× fewer tokens |
-| *"Find code that handles rate limiting"* | **cocoindex-code** | 🔎 Semantic search | KNN over float32 vectors — finds by meaning, not names |
-| *"Is this PR safe to ship?"* | **code-review-graph** | 🔴 Change risk | BFS traversal → risk score 0–100, blast radius, breaking changes |
-| *"What's our authentication philosophy and why?"* | **obsidian-mind** | 🧠 Human knowledge | Curated vault notes — rationale, decisions, context |
-| *"Test this login form" / "Scrape this page"* | **playwright** | 🌐 Browser automation | Accessibility tree snapshot — no vision model, structured interaction |
+| Question                                          | Answered by             | Layer                    | Mechanism                                                                |
+| ------------------------------------------------- | ----------------------- | ------------------------ | ------------------------------------------------------------------------ |
+| _"How did we fix the auth bug last Tuesday?"_     | **claude-mem**          | 📝 Event log             | SQLite + ChromaDB event capture — forensic session reconstruction        |
+| _"Show me the architecture"_                      | **graphify**            | 🗺️ Architecture snapshot | AST + Claude extraction → GRAPH_REPORT.md — read once, survives sessions |
+| _"Who calls `AuthService.login()`?"_              | **codebase-memory-mcp** | 🔍 Live structural graph | Cypher query → <10ms, no file reads, 120× fewer tokens                   |
+| _"Find code that handles rate limiting"_          | **cocoindex-code**      | 🔎 Semantic search       | KNN over float32 vectors — finds by meaning, not names                   |
+| _"Is this PR safe to ship?"_                      | **code-review-graph**   | 🔴 Change risk           | BFS traversal → risk score 0–100, blast radius, breaking changes         |
+| _"What's our authentication philosophy and why?"_ | **obsidian-mind**       | 🧠 Human knowledge       | Curated vault notes — rationale, decisions, context                      |
+| _"Test this login form" / "Scrape this page"_     | **playwright**          | 🌐 Browser automation    | Accessibility tree snapshot — no vision model, structured interaction    |
 
 **Each bash command Claude runs →** `rtk` rewrites it transparently for 60-90% fewer output tokens. Independent of all other tools — pure execution layer.
 
-| Aspect | claude-mem | graphify | obsidian-mind |
-|--------|-----------|----------|---------------|
-| **What gets stored** | Every tool invocation (file reads, edits, commands) | Code structure (AST), cross-module relationships, design rationale | Curated knowledge (decisions, patterns, meetings, people) |
-| **Who decides** | Automatic — no human in the loop | Automatic — tree-sitter AST + Claude extraction | Intentional — user or Claude explicitly writes |
-| **Retrieval** | *"What did I do?"* (factual) | *"How is it connected?"* (structural) | *"What do I know?"* (conceptual) |
-| **Token impact** | ~48% API quota when enabled | **71.5× fewer tokens** vs reading raw files | ~2K tokens session start |
-| **Analogy** | Git reflog — forensic trail | Architecture diagram — structural map | Wiki — curated narrative |
-| **Storage** | SQLite + ChromaDB (`~/.claude-mem/`) | `graphify-out/` (JSON graph + HTML + report) | Plain Markdown vault |
-| **Persistence** | Global, across all projects | Per-project, survives sessions/compactions | Per-vault directory |
-| **Install method** | `claude plugin install claude-mem@thedotmack` | `pip install graphifyy && graphify install` | `git clone https://github.com/breferrari/obsidian-mind.git` |
+| Aspect               | claude-mem                                          | graphify                                                           | obsidian-mind                                               |
+| -------------------- | --------------------------------------------------- | ------------------------------------------------------------------ | ----------------------------------------------------------- |
+| **What gets stored** | Every tool invocation (file reads, edits, commands) | Code structure (AST), cross-module relationships, design rationale | Curated knowledge (decisions, patterns, meetings, people)   |
+| **Who decides**      | Automatic — no human in the loop                    | Automatic — tree-sitter AST + Claude extraction                    | Intentional — user or Claude explicitly writes              |
+| **Retrieval**        | _"What did I do?"_ (factual)                        | _"How is it connected?"_ (structural)                              | _"What do I know?"_ (conceptual)                            |
+| **Token impact**     | ~48% API quota when enabled                         | **71.5× fewer tokens** vs reading raw files                        | ~2K tokens session start                                    |
+| **Analogy**          | Git reflog — forensic trail                         | Architecture diagram — structural map                              | Wiki — curated narrative                                    |
+| **Storage**          | SQLite + ChromaDB (`~/.claude-mem/`)                | `graphify-out/` (JSON graph + HTML + report)                       | Plain Markdown vault                                        |
+| **Persistence**      | Global, across all projects                         | Per-project, survives sessions/compactions                         | Per-vault directory                                         |
+| **Install method**   | `claude plugin install claude-mem@thedotmack`       | `pip install graphifyy && graphify install`                        | `git clone https://github.com/breferrari/obsidian-mind.git` |
 
 ### The Synergy Pipeline
 
@@ -377,15 +400,17 @@ Six tools, six axes of intelligence. Each answers a fundamentally different ques
 ```
 
 **Each tool is most powerful when the others exist:**
-- **graphify + obsidian-mind** — graphify discovers *what* your code does structurally; obsidian-mind captures *why* those decisions were made. Together: complete architectural understanding.
+
+- **graphify + obsidian-mind** — graphify discovers _what_ your code does structurally; obsidian-mind captures _why_ those decisions were made. Together: complete architectural understanding.
 - **claude-mem + graphify** — claude-mem records what you changed; graphify shows how those changes ripple through the architecture. Together: impact analysis.
 - **claude-mem + obsidian-mind** — claude-mem captures raw events; obsidian-mind curates them into lasting knowledge. Together: automated institutional memory.
 
 ### Ordering: Bootstrap First, Then Graph
 
-**Why this order matters:** Bootstrap creates the knowledge docs (`claude/architecture.md`, domain docs, `CLAUDE.md`) — these are the files graphify will index. Running graphify on an empty repo produces a useless graph. After bootstrap populates real domain knowledge, graphify indexes *meaningful content*.
+**Why this order matters:** Bootstrap creates the knowledge docs (`claude/architecture.md`, domain docs, `CLAUDE.md`) — these are the files graphify will index. Running graphify on an empty repo produces a useless graph. After bootstrap populates real domain knowledge, graphify indexes _meaningful content_.
 
 The bootstrap flow:
+
 1. **Phase 4** — `setup-plugins.sh` **installs** graphify (pip package + global skill + git hooks). Fast, automatic, ~5s.
 2. **Phase 5** — Report is generated and shown to the user.
 3. **After report** — The AI **asks the user**: "🗺️ Want me to build the knowledge graph now?" This is the one permission-ask in the entire bootstrap — the graph build takes ~5 min and costs tokens, so the user chooses when.
@@ -418,22 +443,22 @@ Plugin hooks fire **in parallel** with project hooks on the same lifecycle event
 
 **rtk** integrates as a single `PreToolUse(Bash)` hook — first in the chain, rewrites commands before safety/quality gates check them. Self-guarding: exits 0 silently if rtk or jq absent.
 
-| Lifecycle Event | Project Hook | claude-mem | graphify | rtk | codebase-memory-mcp | cocoindex-code | code-review-graph | playwright | Conflict? |
-|----------------|-------------|-----------|----------|-----|---------------------|----------------|:-----------------:|:----------:|:---------:|
-| `SessionStart(startup)` | session-start.sh | ✅ memory | — | — | — | — | — | — | ✅ Additive |
-| `SessionStart(resume)` | session-start.sh | — | — | — | — | — | — | — | ✅ None |
-| `SessionStart(clear)` | session-start.sh | ✅ | — | — | — | — | — | — | ✅ Additive |
-| `SessionStart(compact)` | on-compact.sh | ✅ | — | — | — | — | — | — | ✅ Additive |
-| `PreCompact` | pre-compact.sh | — | — | — | — | — | — | — | ✅ None |
-| `UserPromptSubmit` | identity-reinjection.sh | ✅ context | — | — | — | — | — | — | ✅ None |
-| `PreToolUse(Bash)` | rtk-rewrite → safety-gate | — | — | ✅ first | — | — | — | — | ✅ Ordered |
-| `PreToolUse(Write\|Edit)` | config-protection.sh | — | — | — | — | — | — | — | ✅ None |
-| `PreToolUse(Glob\|Grep)` | — | — | ✅ graph hint | — | — | — | — | — | ✅ None |
-| `PostToolUse(*)` | edit-accumulator.sh | ✅ every tool | — | — | — | — | — | — | ✅ Different |
-| `Stop` | stop-batch-format.sh, exit-nudge.sh | ✅ summary | — | — | — | — | — | — | ✅ Additive |
-| `SubagentStop` | subagent-stop.sh | — | — | — | — | — | — | — | ✅ None |
-| `SessionEnd` | — | ✅ drain | — | — | — | — | — | — | ✅ None |
-| _(background)_ | — | — | git post-commit | — | git polling 5–60s | refresh_index param | git post-commit | on demand | ✅ Independent |
+| Lifecycle Event           | Project Hook                        | claude-mem    | graphify        | rtk      | codebase-memory-mcp | cocoindex-code      | code-review-graph | playwright |   Conflict?    |
+| ------------------------- | ----------------------------------- | ------------- | --------------- | -------- | ------------------- | ------------------- | :---------------: | :--------: | :------------: |
+| `SessionStart(startup)`   | session-start.sh                    | ✅ memory     | —               | —        | —                   | —                   |         —         |     —      |  ✅ Additive   |
+| `SessionStart(resume)`    | session-start.sh                    | —             | —               | —        | —                   | —                   |         —         |     —      |    ✅ None     |
+| `SessionStart(clear)`     | session-start.sh                    | ✅            | —               | —        | —                   | —                   |         —         |     —      |  ✅ Additive   |
+| `SessionStart(compact)`   | on-compact.sh                       | ✅            | —               | —        | —                   | —                   |         —         |     —      |  ✅ Additive   |
+| `PreCompact`              | pre-compact.sh                      | —             | —               | —        | —                   | —                   |         —         |     —      |    ✅ None     |
+| `UserPromptSubmit`        | identity-reinjection.sh             | ✅ context    | —               | —        | —                   | —                   |         —         |     —      |    ✅ None     |
+| `PreToolUse(Bash)`        | rtk-rewrite → safety-gate           | —             | —               | ✅ first | —                   | —                   |         —         |     —      |   ✅ Ordered   |
+| `PreToolUse(Write\|Edit)` | config-protection.sh                | —             | —               | —        | —                   | —                   |         —         |     —      |    ✅ None     |
+| `PreToolUse(Glob\|Grep)`  | —                                   | —             | ✅ graph hint   | —        | —                   | —                   |         —         |     —      |    ✅ None     |
+| `PostToolUse(*)`          | edit-accumulator.sh                 | ✅ every tool | —               | —        | —                   | —                   |         —         |     —      |  ✅ Different  |
+| `Stop`                    | stop-batch-format.sh, exit-nudge.sh | ✅ summary    | —               | —        | —                   | —                   |         —         |     —      |  ✅ Additive   |
+| `SubagentStop`            | subagent-stop.sh                    | —             | —               | —        | —                   | —                   |         —         |     —      |    ✅ None     |
+| `SessionEnd`              | —                                   | ✅ drain      | —               | —        | —                   | —                   |         —         |     —      |    ✅ None     |
+| _(background)_            | —                                   | —             | git post-commit | —        | git polling 5–60s   | refresh_index param |  git post-commit  | on demand  | ✅ Independent |
 
 **Zero conflicts across all 13 lifecycle events.** playwright registers zero lifecycle hooks — it's a pure stdio MCP server that launches only when Claude invokes a `mcp__playwright__*` tool. graphify's PreToolUse(Glob\|Grep) hook is a no-op when `graphify-out/graph.json` doesn't exist. codebase-memory-mcp, cocoindex-code, code-review-graph, and playwright never register Claude Code hooks (MCP only + git hooks where applicable). rtk is first in the Bash chain by design.
 
@@ -444,9 +469,11 @@ MCP servers extend Claude Code with external tools (database access, web search,
 ### Tool Invocation Format
 
 Once servers are configured in `.mcp.json`, invoke their tools using:
+
 ```
 mcp__SERVER_KEY__TOOL_FUNCTION_NAME
 ```
+
 - **`SERVER_KEY`**: the key in `.mcp.json` under `mcpServers` (e.g., `github`, `postgres`)
 - **`TOOL_FUNCTION_NAME`**: the specific function (e.g., `query`, `create_pull_request`)
 
@@ -458,12 +485,12 @@ mcp__SERVER_KEY__TOOL_FUNCTION_NAME
 
 ### Common MCP Servers
 
-| Server | Use Case | Example Tool |
-|--------|----------|-------------|
-| `github` | PR management, issues, commits | `mcp__github__create_pull_request` |
-| `postgres` | Read-only DB queries | `mcp__postgres__query` |
-| `web-search` | Documentation lookup, research | `mcp__web-search__search` |
-| `filesystem` | File access beyond project root | `mcp__filesystem__read_file` |
+| Server       | Use Case                        | Example Tool                       |
+| ------------ | ------------------------------- | ---------------------------------- |
+| `github`     | PR management, issues, commits  | `mcp__github__create_pull_request` |
+| `postgres`   | Read-only DB queries            | `mcp__postgres__query`             |
+| `web-search` | Documentation lookup, research  | `mcp__web-search__search`          |
+| `filesystem` | File access beyond project root | `mcp__filesystem__read_file`       |
 
 ### Security Best Practices
 
@@ -489,6 +516,7 @@ Claude Code plugins are installed globally at `~/.claude/plugins/`. They coexist
 **Project config:** `.serena/project.yml` (committed — edit to add/remove languages)
 
 **Key tools:**
+
 ```
 mcp__serena__find_symbol(name)               — find by name/type (LSP, not grep)
 mcp__serena__find_references(symbol)         — all usages across the project
@@ -512,21 +540,24 @@ mcp__serena__get_call_graph(symbol)          — call graph from a symbol
 
 **The complete token efficiency triangle:**
 
-| Surface | Tool | Savings |
-|---------|------|---------|
-| #1 Tool outputs (bash command results) | **rtk** | 60-90% |
-| #2 Response text (what Claude says) | **caveman** | 65-87% |
+| Surface                                               | Tool                 | Savings |
+| ----------------------------------------------------- | -------------------- | ------- |
+| #1 Tool outputs (bash command results)                | **rtk**              | 60-90%  |
+| #2 Response text (what Claude says)                   | **caveman**          | 65-87%  |
 | #3 Input context (CLAUDE.md etc. loaded each session) | **caveman:compress** | 46% avg |
 
 **Science:** March 2026 paper (arXiv:2604.00025) found brevity constraints improved accuracy by 26pp on benchmarks. Fewer words ≠ less smart.
 
 **Install (non-interactive):**
+
 ```bash
 bash <(curl -fsSL https://raw.githubusercontent.com/JuliusBrussee/caveman/main/hooks/install.sh)
 ```
+
 Installs into `~/.claude/settings.json` (user-level, no project `.claude/settings.json` conflict). Requires Node.js.
 
 **Commands after install:**
+
 ```bash
 /caveman           # Toggle — lite / full / ultra / 文言文 (classical Chinese)
 /caveman-commit    # Terse commit messages
@@ -536,6 +567,7 @@ Installs into `~/.claude/settings.json` (user-level, no project `.claude/setting
 ```
 
 **caveman:compress — one-time context compression:**
+
 - Rewrites prose-heavy files into terse form
 - Creates `.original.md` backup — edit the original, re-run compress after edits
 - Code blocks, URLs, file paths, headings pass through untouched
@@ -561,6 +593,7 @@ codeburn report → find low one-shot rate task type
 ```
 
 **Key commands:**
+
 ```bash
 codeburn                          # Interactive TUI dashboard
 codeburn today                    # Today's sessions
@@ -569,12 +602,13 @@ codeburn export --format csv      # Export for analysis
 ```
 
 **Install:**
+
 ```bash
 npm install -g codeburn      # Global install (Node.js 18+)
 npx codeburn                 # One-shot without global install
 ```
 
-**Signal:** One-shot rate < 50% for a task type = that category needs more upfront context in CLAUDE.md or claude/*.md.
+**Signal:** One-shot rate < 50% for a task type = that category needs more upfront context in CLAUDE.md or claude/\*.md.
 
 **Token cost:** Zero — reads session files from disk, no background process, no API calls.
 
@@ -584,13 +618,13 @@ npx codeburn                 # One-shot without global install
 
 These skills add workflow discipline that the bootstrap lacked. They are pure instruction files — no hooks, no MCP servers, zero blast radius.
 
-| Skill | What it adds | Trigger |
-|-------|-------------|---------|
-| `brainstorming` | Spec-before-code gate — HARD-GATE blocks code until design approved | Auto when new feature/component mentioned |
-| `writing-skills` | CSO (Claude Search Optimization) for skill authoring — description must be triggering conditions only | Manual when creating/editing SKILL.md |
-| `subagent-driven-development` | Actual subagent dispatch loop after `/squad-plan` — spec reviewer + quality reviewer per task | Manual after `/squad-plan` |
-| `receiving-code-review` | Prevents performative agreement ("You're absolutely right!") — enforces verify-before-implement | Auto when receiving review feedback |
-| `debug` (upgraded) | Iron Law: NO FIXES WITHOUT ROOT CAUSE — 4-phase structure (Root Cause → Hypothesis → Fix Design → Verify) | Via `/debug` command |
+| Skill                         | What it adds                                                                                              | Trigger                                   |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
+| `brainstorming`               | Spec-before-code gate — HARD-GATE blocks code until design approved                                       | Auto when new feature/component mentioned |
+| `writing-skills`              | CSO (Claude Search Optimization) for skill authoring — description must be triggering conditions only     | Manual when creating/editing SKILL.md     |
+| `subagent-driven-development` | Actual subagent dispatch loop after `/squad-plan` — spec reviewer + quality reviewer per task             | Manual after `/squad-plan`                |
+| `receiving-code-review`       | Prevents performative agreement ("You're absolutely right!") — enforces verify-before-implement           | Auto when receiving review feedback       |
+| `debug` (upgraded)            | Iron Law: NO FIXES WITHOUT ROOT CAUSE — 4-phase structure (Root Cause → Hypothesis → Fix Design → Verify) | Via `/debug` command                      |
 
 ### brainstorming
 
@@ -626,28 +660,28 @@ Prevents performative agreement and blind implementation.
 
 ## Troubleshooting
 
-| Symptom | Cause | Fix |
-|---------|-------|-----|
-| API quota draining fast | claude-mem `PostToolUse(*)` is enabled | `bash claude/scripts/toggle-claude-mem.sh off` |
-| Worker not responding | claude-mem worker crashed | Restart Claude Code session (worker auto-starts) |
-| Hooks firing twice on same event | Plugin + project both hook same event | Expected behavior — they serve different purposes |
-| Plugin not activating | Installed but disabled | `claude plugin enable <name>` |
-| claude-mem not capturing after restart | Worker didn't start | `bash claude/scripts/toggle-claude-mem.sh status` to check; re-enable if needed |
-| obsidian-mind `/om-*` commands missing | Vault not cloned / not running from vault dir | `git clone https://github.com/breferrari/obsidian-mind.git` then `cd` into it |
-| graphify `GRAPH_REPORT.md` empty/missing | Graph not built yet | Run `/graphify .` — first build takes ~5 min |
-| graphify PreToolUse hook not firing | `graphify-out/graph.json` doesn't exist | Run `/graphify .` — hook is a no-op until graph exists |
-| Python not available for graphify | No Python 3.10+ | Install Python; graphify is skipped gracefully without it |
-| rtk not active | Binary not installed | `cargo install rtk` — hook is pre-wired, activates on install |
-| rtk rewriting wrong command | Old version (<0.23.0) | `cargo install rtk` to upgrade; version check cached in `~/.cache/rtk-hook-version-ok` |
-| codebase-memory-mcp tools missing | Binary not in PATH | `export PATH="$HOME/.local/bin:$PATH"` then restart Claude Code |
-| codebase-memory-mcp index stale | Large refactor since last poll | `index_repository(repo_path=".", mode="fast")` via MCP tool |
-| `ccc mcp` exits immediately | No `.cocoindex_code/settings.yml` | Run `ccc index` first, or recreate settings.yml from `.cocoindex_code/settings.yml` template |
-| cocoindex-code SQLite error on macOS | macOS Python lacks SQLite extension loading | `brew install python3` — Homebrew Python has extension loading enabled |
-| cocoindex-code slow first search | Model downloading from HuggingFace | Normal — ~200 MB download, cached after first run |
-| `uvx: command not found` (code-review-graph) | uv not installed | `pip install uv` or `brew install uv` |
-| code-review-graph MCP exits immediately | `.code-review-graph/graph.db` missing | Run `mcp__code-review-graph__build_graph_tool` or `code-review-graph build .` |
-| code-review-graph communities unavailable | Missing `[communities]` extra | `pip install 'code-review-graph[communities]'` |
-| code-review-graph post-commit hook missing | `postprocess` not run | `code-review-graph postprocess --no-instructions --no-hooks` |
-| playwright MCP not found / tools missing | Node.js < 18 or npx not in PATH | Upgrade: `brew install node` or `nvm install 18`, then: `npx playwright install chromium` |
-| playwright `browser_*` tools error on first call | Chromium browsers not installed | `npx playwright install chromium` (~300 MB, one-time) |
-| playwright skipped in setup-plugins.sh | Node.js 16 or lower detected | Upgrade Node.js to 18+; MCP entry in .mcp.json is already wired |
+| Symptom                                          | Cause                                         | Fix                                                                                          |
+| ------------------------------------------------ | --------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| API quota draining fast                          | claude-mem `PostToolUse(*)` is enabled        | `bash claude/scripts/toggle-claude-mem.sh off`                                               |
+| Worker not responding                            | claude-mem worker crashed                     | Restart Claude Code session (worker auto-starts)                                             |
+| Hooks firing twice on same event                 | Plugin + project both hook same event         | Expected behavior — they serve different purposes                                            |
+| Plugin not activating                            | Installed but disabled                        | `claude plugin enable <name>`                                                                |
+| claude-mem not capturing after restart           | Worker didn't start                           | `bash claude/scripts/toggle-claude-mem.sh status` to check; re-enable if needed              |
+| obsidian-mind `/om-*` commands missing           | Vault not cloned / not running from vault dir | `git clone https://github.com/breferrari/obsidian-mind.git` then `cd` into it                |
+| graphify `GRAPH_REPORT.md` empty/missing         | Graph not built yet                           | Run `/graphify .` — first build takes ~5 min                                                 |
+| graphify PreToolUse hook not firing              | `graphify-out/graph.json` doesn't exist       | Run `/graphify .` — hook is a no-op until graph exists                                       |
+| Python not available for graphify                | No Python 3.10+                               | Install Python; graphify is skipped gracefully without it                                    |
+| rtk not active                                   | Binary not installed                          | `cargo install rtk` — hook is pre-wired, activates on install                                |
+| rtk rewriting wrong command                      | Old version (<0.23.0)                         | `cargo install rtk` to upgrade; version check cached in `~/.cache/rtk-hook-version-ok`       |
+| codebase-memory-mcp tools missing                | Binary not in PATH                            | `export PATH="$HOME/.local/bin:$PATH"` then restart Claude Code                              |
+| codebase-memory-mcp index stale                  | Large refactor since last poll                | `index_repository(repo_path=".", mode="fast")` via MCP tool                                  |
+| `ccc mcp` exits immediately                      | No `.cocoindex_code/settings.yml`             | Run `ccc index` first, or recreate settings.yml from `.cocoindex_code/settings.yml` template |
+| cocoindex-code SQLite error on macOS             | macOS Python lacks SQLite extension loading   | `brew install python3` — Homebrew Python has extension loading enabled                       |
+| cocoindex-code slow first search                 | Model downloading from HuggingFace            | Normal — ~200 MB download, cached after first run                                            |
+| `uvx: command not found` (code-review-graph)     | uv not installed                              | `pip install uv` or `brew install uv`                                                        |
+| code-review-graph MCP exits immediately          | `.code-review-graph/graph.db` missing         | Run `mcp__code-review-graph__build_graph_tool` or `code-review-graph build .`                |
+| code-review-graph communities unavailable        | Missing `[communities]` extra                 | `pip install 'code-review-graph[communities]'`                                               |
+| code-review-graph post-commit hook missing       | `postprocess` not run                         | `code-review-graph postprocess --no-instructions --no-hooks`                                 |
+| playwright MCP not found / tools missing         | Node.js < 18 or npx not in PATH               | Upgrade: `brew install node` or `nvm install 18`, then: `npx playwright install chromium`    |
+| playwright `browser_*` tools error on first call | Chromium browsers not installed               | `npx playwright install chromium` (~300 MB, one-time)                                        |
+| playwright skipped in setup-plugins.sh           | Node.js 16 or lower detected                  | Upgrade Node.js to 18+; MCP entry in .mcp.json is already wired                              |
