@@ -3,6 +3,7 @@
 > **Non-negotiable.** Auto-injected every message. Budget: <4KB. Detail in `claude/*.md` — read via `read_file`.
 
 <!-- Always-loaded imports: architecture overview + golden rules -->
+
 @claude/architecture.md
 @claude/rules.md
 
@@ -10,21 +11,17 @@
 
 **Session start →** read **`claude/tasks/todo.md`** (current task state) + **`claude/tasks/lessons.md`** (accumulated wisdom from past sessions).
 
-| If task involves… | YOU MUST read FIRST |
-|---|---|
-| _anything_ (first action) | `claude/tasks/todo.md` + `claude/tasks/lessons.md` + `claude/tasks/CLAUDE_ERRORS.md` + `claude/architecture.md` + `claude/rules.md` |
-| build, test, CI, lint, format, migration, local dev | `claude/build.md` |
-| MR, PR, ticket, context management | `claude/templates.md` |
-| terminal, command, shell, subprocess, pager, interactive | `claude/terminal-safety.md` |
-| CVE, dependency upgrade, security scan | `claude/cve-policy.md` |
-| plugin, claude-mem, hook coexistence, API quota, obsidian-mind vault, rtk | `claude/plugins.md` |
-| structural query, call trace, blast radius, dead code, architecture live, codebase-memory | `claude/plugins.md` |
-| semantic search, find code by meaning, cocoindex, vector search | `claude/plugins.md` |
-| change risk, blast radius, breaking changes, pre-PR safety, risk score | `claude/plugins.md` |
-| browser automation, web testing, UI test, scraping, playwright, web research | `claude/plugins.md` |
-<!-- {{DOMAIN_LOOKUP_TABLE}} — Add rows for each domain in your project:
-| domain-keyword-1, domain-keyword-2 | `claude/your-domain.md` |
--->
+| If task involves…                                                                                                             | YOU MUST read FIRST                                                                                                                 |
+| ----------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| _anything_ (first action)                                                                                                     | `claude/tasks/todo.md` + `claude/tasks/lessons.md` + `claude/tasks/CLAUDE_ERRORS.md` + `claude/architecture.md` + `claude/rules.md` |
+| build, test, CI, lint, format, migration, local dev                                                                           | `claude/build.md`                                                                                                                   |
+| MR, PR, ticket, context management                                                                                            | `claude/templates.md`                                                                                                               |
+| terminal, command, shell, subprocess, pager, interactive                                                                      | `claude/terminal-safety.md`                                                                                                         |
+| CVE, dependency upgrade, security scan                                                                                        | `claude/cve-policy.md`                                                                                                              |
+| plugin, claude-mem, hook coexistence, API quota, rtk, graphify                                                                | `claude/plugins.md`                                                                                                                 |
+| structural query, call trace, codebase-memory, semantic search, cocoindex, code-review-graph, change risk, playwright, serena | `claude/plugins.md`                                                                                                                 |
+
+<!-- {{DOMAIN_LOOKUP_TABLE}} -->
 
 ## Operating Protocol (always active)
 
@@ -53,23 +50,23 @@
 
 Agents declare their **optimal model** for maximum quality — and fall back to the session model when unavailable. This guarantees the best choice when multiple models are accessible (Anthropic API, Bedrock, Vertex), and full compatibility when only one model exists (Ollama, LM Studio, any local LLM).
 
-| Agent | Declared model | Why |
-|:------|:--------------:|:----|
-| `research` | _(session)_ | Mechanical (grep, read, summarize) — lighter model = faster + cheaper |
-| `reviewer` | opus | Deep reasoning, 10-point protocol — a missed bug costs 100× the token savings |
-| `plan-challenger` | opus | Adversarial reasoning — subtle flaws require highest capability |
-| `session-reviewer` | _(session)_ | Pattern matching in text — any model handles this |
-| `security-auditor` | opus | Security demands highest capability — no compromise |
+| Agent              | Declared model | Why                                                                           |
+| :----------------- | :------------: | :---------------------------------------------------------------------------- |
+| `research`         |  _(session)_   | Mechanical (grep, read, summarize) — lighter model = faster + cheaper         |
+| `reviewer`         |      opus      | Deep reasoning, 10-point protocol — a missed bug costs 100× the token savings |
+| `plan-challenger`  |      opus      | Adversarial reasoning — subtle flaws require highest capability               |
+| `session-reviewer` |  _(session)_   | Pattern matching in text — any model handles this                             |
+| `security-auditor` |      opus      | Security demands highest capability — no compromise                           |
 
 **Protocol auto-scales to model capability:**
 
-| Capability | Full model (Opus/Sonnet) | Smaller/local model (Haiku, Ollama…) |
-|:-----------|:------------------------|:-------------------------------------|
-| Review protocol | Full 10-point checklist | Focus on items 1-4 (ticket, diff, cross-layer, enums) |
-| Subagents | Use freely — isolated context | Prefer inline research to save overhead |
-| Meta-cognition | Full sub-question decomposition | Direct approach, skip confidence scoring |
-| Exit checklist | All 6 gates | Gates 1-3 only (corrections, knowledge, progress) |
-| Domain docs | On-demand from lookup table | Read only the single most relevant doc |
+| Capability      | Full model (Opus/Sonnet)        | Smaller/local model (Haiku, Ollama…)                  |
+| :-------------- | :------------------------------ | :---------------------------------------------------- |
+| Review protocol | Full 10-point checklist         | Focus on items 1-4 (ticket, diff, cross-layer, enums) |
+| Subagents       | Use freely — isolated context   | Prefer inline research to save overhead               |
+| Meta-cognition  | Full sub-question decomposition | Direct approach, skip confidence scoring              |
+| Exit checklist  | All 6 gates                     | Gates 1-3 only (corrections, knowledge, progress)     |
+| Domain docs     | On-demand from lookup table     | Read only the single most relevant doc                |
 
 **For smaller/local models:** Prioritize correctness over protocol completeness. Skip ceremony, keep substance.
 
@@ -119,7 +116,7 @@ Do NOT yield until all six pass.
 <!-- {{CRITICAL_PATTERNS}} — Add your project-specific non-negotiable patterns here:
 - Example: Never emit side effects inside a DB transaction — use deferred callbacks
 - Example: Two DBs: `write` (mutations) + `read` (queries) — never mix
--->
+  -->
 
 ## Key Decisions
 
@@ -148,20 +145,13 @@ Before MR, perform a full review covering:
 
 ## Hard Constraints (enforced unconditionally)
 
-<!-- {{HARD_CONSTRAINTS}} — Add file types / patterns that should NEVER be loaded into context:
-- **NEVER add `{{LARGE_FILE_PATTERN}}` files to context** — they consume the entire context budget
--->
+<!-- {{HARD_CONSTRAINTS}} -->
+
 - **NEVER modify IDE configuration files** (`.idea/`, `.vscode/settings.json`) unless the user explicitly asks
 
 ## Don't
 
-> Explicit prohibitions — adding these prevents well-meaning but wrong "improvements".
-
-<!-- {{DONT_LIST}} — Add project-specific prohibitions discovered during bootstrap/exploration:
-- Example: NEVER add packages without first running `/update-code-index` to check for existing solutions
-- Example: NEVER bypass the review checklist for "trivial" fixes — all MRs go through the full protocol
-- Example: NEVER generate `git push` without explicit user confirmation
--->
+<!-- {{DONT_LIST}} -->
 
 ## Compact Instructions
 
@@ -170,6 +160,7 @@ When compacting, focus on preserving: current task from `claude/tasks/todo.md` (
 ## Session Continuity Protocol
 
 Before ending a session or when context is running low:
+
 1. Write current state to `claude/tasks/todo.md` — title, checked/unchecked steps, next action, branch, loaded docs.
 2. If the user corrected you, update `claude/tasks/lessons.md` NOW (Exit Checklist gate).
 3. Tell the user: "Session state saved to `claude/tasks/todo.md`. Next session: run `/resume` to continue."
@@ -178,67 +169,34 @@ Before ending a session or when context is running low:
 
 > Full reference: `claude/plugins.md`. Toggle script: `claude/scripts/toggle-claude-mem.sh`.
 
-**Plugin hooks fire ALONGSIDE project hooks** — independent systems, zero conflicts. Registered via separate mechanisms (`plugin/hooks/hooks.json` vs `.claude/settings.json`), merged at runtime.
+**Plugin hooks fire ALONGSIDE project hooks** — independent systems, zero conflicts.
 
-**Installed plugins:**
-<!-- {{INSTALLED_PLUGINS}} — Auto-populated by bootstrap if plugins detected -->
+**Ten-tool stack** (full reference: `claude/plugins.md`):
 
-**claude-mem** — persistent cross-session memory (SQLite + ChromaDB). Worker on `localhost:37777`. ⚠️ **Disabled by default** (quota protection — `PostToolUse(*)` fires after EVERY tool call, ~48% API quota in heavy sessions). Toggle:
-```bash
-bash claude/scripts/toggle-claude-mem.sh on       # Enable (next session)
-bash claude/scripts/toggle-claude-mem.sh off      # Disable + kill worker
-bash claude/scripts/toggle-claude-mem.sh status   # Check state
-```
-
-> **obsidian-mind** is a companion Obsidian vault (not a Claude Code plugin) — clone separately if you want AI-powered knowledge management: `git clone https://github.com/breferrari/obsidian-mind.git`. See `claude/plugins.md`.
-
-**rtk** — execution efficiency layer. Transparently rewrites Claude's bash commands for 60-90% output token savings. Auto-installed by `setup-plugins.sh` if `cargo` is available. No-op when absent. ROI: `rtk gain` · Gaps: `rtk discover`.
-
-**codebase-memory-mcp** — live structural graph (14 MCP tools). Auto-installed. `mcp__codebase-memory-mcp__trace_path` / `detect_changes` / `get_architecture`. **Use before reading files for structural questions.** See `claude/plugins.md`.
-
-**cocoindex-code** — semantic vector search (1 MCP tool: `search`). Auto-installed if Python 3.11+. `mcp__cocoindex-code__search`. Find code by meaning when you don't know exact names. See `claude/plugins.md`.
-
-**code-review-graph** — change risk analysis (29 MCP tools). Auto-installed if Python 3.10+. `mcp__code-review-graph__detect_changes_tool(base_branch="main")`. Pre-PR safety gate: risk score 0–100, blast radius, breaking changes. See `claude/plugins.md`.
-
-**playwright** — browser automation (MCP). Auto-installed if Node.js 18+. `mcp__playwright__browser_snapshot()` / `browser_navigate()` / `browser_click()`. UI testing, documentation scraping, OAuth flows. Token cost: LOW-MEDIUM. See `claude/plugins.md`.
-
-**codeburn** — token cost observability (CLI). Optional, Node.js 18+. `codeburn today` / `codeburn report -p 30days`. See WHERE tokens go by task type, model, one-shot rate, USD. Complements rtk: rtk saves tokens; codeburn shows where to optimize. See `claude/plugins.md`.
-
-**caveman** — response-text compression (hooks). Optional, Node.js required. Installs into `~/.claude/settings.json`. `/caveman` toggle (lite/full/ultra) · `/caveman:compress <file>` compresses always-loaded files once (46% avg savings per session). Covers token surface #2 (response) + #3 (input context). rtk=surface #1. See `claude/plugins.md`.
-
-**serena** — LSP symbol refactoring (MCP). Auto-registered if uvx + Python 3.11+. `mcp__serena__rename_symbol` / `find_references` / `move_symbol`. Atomic multi-file transforms — rename across 50 files in one call. vs cocoindex: semantic search; vs serena: symbol precision. See `claude/plugins.md`.
+| Tool                    | Key command                                   | Notes                                                                        |
+| ----------------------- | --------------------------------------------- | ---------------------------------------------------------------------------- |
+| **claude-mem**          | `toggle-claude-mem.sh on\|off`                | ⚠️ Disabled by default (~48% quota). Toggle for exploratory sessions         |
+| **graphify**            | `/graphify .`                                 | Architecture graph. Read `graphify-out/GRAPH_REPORT.md` before file searches |
+| **rtk**                 | transparent (PreToolUse hook)                 | 60-90% output token savings. No-op when absent                               |
+| **codebase-memory-mcp** | `mcp__codebase-memory-mcp__trace_path`        | Structural questions → use BEFORE reading files                              |
+| **cocoindex-code**      | `mcp__cocoindex-code__search`                 | Semantic search — find code by meaning                                       |
+| **code-review-graph**   | `mcp__code-review-graph__detect_changes_tool` | Pre-PR safety gate: risk 0–100                                               |
+| **playwright**          | `mcp__playwright__browser_snapshot`           | Browser automation — accessibility tree, not pixels                          |
+| **codeburn**            | `codeburn today`                              | Token cost observability (CLI, optional)                                     |
+| **caveman**             | `/caveman` toggle                             | Response compression (65-87% savings, optional)                              |
+| **serena**              | `mcp__serena__rename_symbol`                  | LSP refactoring — atomic multi-file transforms                               |
 
 ## graphify — Knowledge Graph
 
-> If `graphify-out/GRAPH_REPORT.md` exists, **read it before answering architecture questions** — it contains god nodes, community structure, and surprising cross-module connections the graph discovered.
+> If `graphify-out/GRAPH_REPORT.md` exists, **read it before architecture questions** — god nodes, communities, cross-module connections.
 
-**Rules (when graph exists):**
-- Before searching files (Glob/Grep), consult `graphify-out/GRAPH_REPORT.md` for structure
-- If `graphify-out/wiki/index.md` exists, navigate it instead of reading raw files
-- Use `/graphify .` to build or rebuild the full graph (runs tree-sitter AST + Claude extraction)
-- Use `graphify query "<question>"` for targeted graph traversal from terminal
-
-**Git hooks auto-rebuild** the code graph on every commit and branch switch (AST only, no LLM, instant). Docs/images require `/graphify --update`.
-
-> No graph yet? Run `/graphify .` — first run takes ~5 min, subsequent runs are incremental (SHA256 cache). See `claude/plugins.md` for details.
+- Before Glob/Grep, consult `graphify-out/GRAPH_REPORT.md`
+- `/graphify .` to build/rebuild · `graphify query "<question>"` for terminal traversal
+- Git hooks auto-rebuild on commit/checkout (AST only, instant). See `claude/plugins.md`.
 
 ## Core Principles
 
 Simplicity · No laziness (root cause, senior standards) · Surgical changes · Evidence-based
-
-## IDE Integration
-
-<!-- Uncomment the section matching your IDE:
-
-### IntelliJ / JetBrains
-- Claude Code runs from IntelliJ's integrated terminal via JetBrains plugin
-- IDE diff viewer shows file diffs; selected code is auto-shared with Claude
-- Diagnostic sharing: lint errors, TypeScript errors, SonarLint warnings visible to Claude
-
-### VS Code
-- Claude Code runs from VS Code's integrated terminal
-- Copilot chat shares selected code context automatically
--->
 
 > **Personal overrides:** Create `CLAUDE.local.md` at the repo root for personal instructions (auto-gitignored by Claude Code).
 

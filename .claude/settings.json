@@ -319,6 +319,20 @@
       "Bash(tee *)",
       "Bash(stat *)",
       "Bash(claude *)",
+      "Bash(python3 *)",
+      "Bash(python *)",
+      "Bash(pip *)",
+      "Bash(pip3 *)",
+      "Bash(uvx *)",
+      "Bash(uv *)",
+      "Bash(cargo *)",
+      "Bash(npx *)",
+      "Bash(rtk *)",
+      "Bash(ccc *)",
+      "Bash(graphify *)",
+      "Bash(codeburn *)",
+      "Bash(code-review-graph *)",
+      "Bash(codebase-memory-mcp *)",
       "Edit",
       "Write",
       "MultiEdit"
@@ -344,4 +358,3 @@
     ]
   }
 }
-
