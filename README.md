@@ -97,7 +97,7 @@ You stop re-explaining your stack every morning. You stop fixing the same mistak
 
 ---
 
-## 🚀 Get Started in 5 Minutes (+ ~15 min for full plugin setup)
+## 🚀 Get Started in 5 Minutes
 
 ### Step 1 — Install the template
 
