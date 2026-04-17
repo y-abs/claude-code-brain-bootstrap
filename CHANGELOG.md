@@ -7,7 +7,34 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
-## [Unreleased] — feat/code-review-graph-plugin
+## [0.5.1] — 2026-04-17 (PR #15)
+
+### 🐛 Canary Check False Positives & UPGRADE Mode
+
+Live end-to-end testing on a mature monorepose with an existing Claude Code configuration revealed 15 distinct issues (documented in `tasks/bootstrap-bugs-found.md`) spanning false positives in canary checks, missing guards in scripts, and UPGRADE mode edge cases. All have been fixed with a combination of script hardening, guard clauses, and improved logic.
+
+### Added
+- **UPGRADE mode infrastructure** — `merge-claude-md.sh`, `merge-claudeignore.sh`, `merge-settings.sh`, `migrate-tasks.sh`, `pre-creative-check.sh`, `dry-run.sh` for bootstrapping repos with existing Claude Code configuration.
+- **`_CLAUDE.md.template`**, **`_claudeignore.template`**, **`_settings.json.template`** — standalone templates for UPGRADE merge operations.
+- **Domain alias detection** in `pre-creative-check.sh` — greps existing `claude/*.md` for domain keywords before recommending CREATE (prevents duplicate docs with different names).
+- **`--yes` flag** for `setup-plugins.sh` — non-interactive mode for CI/automation.
+
+### Fixed
+- **`canary-check.sh`** — 4 false positive fixes:
+  - Skill-not-in-README downgraded from per-skill FAIL to aggregated WARN (UPGRADE adds skills the user hasn't documented)
+  - grep -E double-quote detector now skips comment lines (`^#`)
+  - Placeholder scan excludes guard comparisons (`= '{{...}}'`) and `.instructions.md` documentation
+  - Bare-git detector excludes `case` patterns that *detect* bare git (not run it)
+- **`populate-templates.sh`** — `tdd-loop-check.sh` path in `PLACEHOLDER_FILES` pointed to wrong location (`claude/scripts/` → `.claude/hooks/`)
+- **`generate-service-claudes.sh`** — strip trailing slash to avoid double-slash paths in output
+- **`setup-plugins.sh`** — `--yes` flag recognized in case statement; `timeout` guards on `claude plugin` CLI calls
+- **`merge-claude-md.sh`** — removed unused `user_words` variable (ShellCheck SC2034)
+
+---
+
+## [0.5.0] — 2026-04-16 (PRs #12, #13, #14)
+
+### 🧠 Six-Tool Codebase Intelligence Stack
 
 ### Added
 - **code-review-graph plugin** — 29 MCP tools for change risk analysis (risk score 0–100, blast radius, breaking changes). Pre-PR safety gate via `mcp__code-review-graph__detect_changes_tool`. Requires Python 3.10+.
@@ -72,14 +99,17 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
-## [0.2.0] — 2026-04-13
 
-### 🖥️ Cross-Platform Hardening — Linux, macOS, Windows
+## [0.2.0] — 2026-04-13 (PRs #5, #6, #7, #8)
 
-Full portability pass ensuring the installer and all scripts work identically on Linux, macOS (bash 3.2 system shell), and Windows (Git Bash / MSYS2).
+### 🖥️ Cross-Platform Hardening + Model-Aware Routing
+
+Full portability pass ensuring the installer and all scripts work identically on Linux, macOS (bash 3.2 system shell), and Windows (Git Bash / MSYS2). Plus model-aware agent routing for local LLM compatibility.
 
 ### Added
 
+- **Model-aware agent routing** — agents declare optimal model (`opus` for review/security, session model for research) with graceful fallback. Local LLMs (Ollama, LM Studio) work out of the box. Protocol auto-scales to model capability. (PR #5)
+- **Source guards** on all 13 scripts — prevents environment corruption when accidentally sourced instead of executed. (PR #5)
 - **`_platform.sh`** — Portable shell helper library sourced by all scripts: `sed_inplace()` (macOS `-i ''` vs Linux `-i`), `safe_pgrep()` (fallback for Git Bash), `require_tool()` (actionable install instructions per OS), `supports_unicode()`, emoji symbol fallback (`PASS_SYM`, `FAIL_SYM`, `WARN_SYM`), Windows path normalization
 - **`install.sh --check`** — Pre-flight mode: verifies platform, git, jq, bash version before any install operation
 - **`portability-lint.sh`** — Extensible GNU-only pattern detector (catches `head -n -N`, `grep -P`, process substitutions, etc.)
@@ -95,6 +125,8 @@ Full portability pass ensuring the installer and all scripts work identically on
 - **`cross-layer-check.sh`** — Replaced `grep -P` (PCRE, not available on macOS) with `grep -wE` (POSIX)
 - **`setup-plugins.sh`, `toggle-claude-mem.sh`** — Replaced `pgrep`/`pkill` with `safe_pgrep()` fallback for Git Bash/Windows
 - **`install.sh` (UPGRADE)** — Replaced 7 process substitutions `< <(find)` with tmpfile pattern for macOS bash 3.2 compatibility
+- **Inaccurate feature/behavior claims** — full audit of README and DETAILED_GUIDE corrected overstated or incorrect descriptions (PR #7)
+- **Model selection documentation** — added enforcement instructions for both Claude Code (agent frontmatter) and GitHub Copilot (instruction-level stop-and-warn) (PR #8)
 
 ### Changed
 
@@ -351,3 +383,13 @@ Root instructions · General scoped instructions · Terminal safety instructions
 
 > 💡 **For upgrade instructions from a previous alpha/beta installation**, see [`claude/bootstrap/UPGRADE_GUIDE.md`](claude/bootstrap/UPGRADE_GUIDE.md).
 
+---
+
+<!-- Version comparison links -->
+[0.5.1]: https://github.com/y-abs/claude-code-brain-bootstrap/compare/v0.5.0...v0.5.1
+[0.5.0]: https://github.com/y-abs/claude-code-brain-bootstrap/compare/v0.4.0...v0.5.0
+[0.4.0]: https://github.com/y-abs/claude-code-brain-bootstrap/compare/v0.3.0...v0.4.0
+[0.3.0]: https://github.com/y-abs/claude-code-brain-bootstrap/compare/v0.2.0...v0.3.0
+[0.2.0]: https://github.com/y-abs/claude-code-brain-bootstrap/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/y-abs/claude-code-brain-bootstrap/compare/v0.0.1...v0.1.0
+[0.0.1]: https://github.com/y-abs/claude-code-brain-bootstrap/releases/tag/v0.0.1
