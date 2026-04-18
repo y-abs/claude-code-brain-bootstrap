@@ -377,7 +377,7 @@ The script handles installation in sequence:
 
 > **graphify builds the graph on demand, not during bootstrap.** After bootstrap completes, the user runs `/graphify .` to build the knowledge graph (~5 min first run, then incremental via SHA256 cache). The PreToolUse hook in settings.json is already wired — it activates automatically once `graphify-out/graph.json` exists.
 
-> **obsidian-mind**: companion Obsidian vault template (not a plugin). Clone separately: `git clone https://github.com/breferrari/obsidian-mind.git`. See `claude/plugins.md`.
+> **INFORMATIONAL ONLY — obsidian-mind** is a separate companion tool (Obsidian vault template, NOT a Claude Code plugin). Do NOT attempt to install it via `claude plugin install`. Users who want it clone manually: `git clone https://github.com/breferrari/obsidian-mind.git`. See `claude/plugins.md` for documentation only.
 
 ---
 
