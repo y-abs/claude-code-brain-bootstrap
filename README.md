@@ -118,6 +118,9 @@ bash /tmp/brain/install.sh your-repo/
 rm -rf /tmp/brain
 ```
 
+> 🤝 **Copilot users:** add `--copilot` to also generate VS Code Copilot agents, hooks, and prompts:
+> `bash /tmp/brain/install.sh --copilot your-repo/`
+
 > 🔍 **Pre-flight check:** `bash /tmp/brain/install.sh --check` — verifies all prerequisites (git, bash, jq) before touching your repo. Runs in 1 second, no side effects.
 
 The install script **auto-detects** whether your repo is a fresh install or an upgrade:
@@ -149,6 +152,8 @@ The `/bootstrap` command runs the discovery engine (`discover.sh` — pure bash,
 <summary><strong>With GitHub Copilot</strong> (no Claude Code needed)</summary>
 
 The `.github/` config works **immediately** after Step 1 — Copilot reads `copilot-instructions.md`, scoped instructions, and reusable prompts automatically. No extra setup needed for basic usage.
+
+> 💡 **Full Copilot parity:** If you installed with `--copilot`, you also get 5 custom agents (`@reviewer`, `@researcher`, etc.), 31+ slash commands, and 4 lifecycle hooks — all auto-generated from the Claude equivalents.
 
 For **full setup** (filling in the knowledge docs), run the discovery engine first, then ask Copilot to use the output:
 
@@ -323,7 +328,9 @@ Your repo
 ├── 🤖 .github/
 │   ├── copilot-instructions.md     ← GitHub Copilot root instructions
 │   ├── instructions/               ← Scoped instructions (auto-loaded per file type)
-│   └── prompts/                    ← Reusable prompts
+│   ├── prompts/                    ← Reusable prompts (31+ auto-generated from Claude commands)
+│   ├── agents/                     ← Custom Copilot agents (with --copilot)
+│   └── hooks/                      ← Lifecycle hooks (with --copilot)
 └── 🚫 .claudeignore                ← Context exclusions (lock files, binaries, etc.)
 └── 🗺️ .graphifyignore              ← Graph exclusions (node_modules, dist, lockfiles...)
 ```
@@ -345,18 +352,18 @@ The system is designed to **minimize token cost** while maximizing context — y
 
 ## 📦 What's Inside
 
-| Category                     | Count | Highlights                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| :--------------------------- | :---: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 📚 **Knowledge docs**        |  13   | 8 domain docs (architecture, rules, build, CVE policy, terminal safety, MR templates, plugin config, decisions) · knowledge base guide · full reference guide · 3 worked domain examples                                                                                                                                                                                                                                                                                                                                |
-| ⚡ **Slash commands**        |  31   | `/plan` `/build` `/test` `/lint` `/serve` `/review` `/mr` `/debug` `/diff` `/git` `/deps` `/docker` `/migrate` `/db` `/cleanup` `/maintain` `/checkpoint` `/resume` `/context` `/ticket` `/bootstrap` `/health` `/status` `/ask` `/mcp` `/squad-plan` `/research` `/update-code-index` `/worktree` `/worktree-status` `/clean-worktrees`                                                                                                                                                                                |
-| 🪝 **Lifecycle hooks**       |  16   | Session recovery, config protection, terminal safety gate (3 profiles), commit quality, RTK token optimizer, batch formatting, exit checklist, compaction recovery, identity refresh, permission audit, test reminders                                                                                                                                                                                                                                                                                                  |
-| 🤖 **AI subagents**          |   5   | **research** (read-only exploration), **reviewer** (10-point MR review), **plan-challenger** (adversarial plan critique), **session-reviewer** (conversation pattern analysis), **security-auditor** (vulnerability scanning) — each declares its optimal model, falls back to session model for local/alternative providers                                                                                                                                                                                            |
-| 🎓 **Skills**                |  18   | TDD, root-cause trace, changelog, careful (safety guards), cross-layer check, **codebase-memory** (structural graph), **cocoindex-code** (semantic search), **code-review-graph** (risk analysis), **playwright** (browser automation), **codeburn** (token observability), **serena** (LSP refactoring), **brainstorming**, **receiving-code-review**, **subagent-driven-development**, **writing-skills**, **repo-recap**, **pr-triage**, **issue-triage**                                                            |
-| 🔧 **Brain scripts**         |  14   | `discover.sh` (3800-line stack detector), `populate-templates.sh`, `post-bootstrap-validate.sh`, `validate.sh`, `canary-check.sh`, `_platform.sh` (portable shell helpers — Linux/macOS/Windows), `portability-lint.sh` (GNU-only pattern detector), `integration-test.sh` (17 assertions: FRESH/UPGRADE/--check/3 guards, 3 platforms), `phase2-verify.sh`, `toggle-claude-mem.sh`, `generate-service-claudes.sh`, `generate-copilot-docs.sh`, `setup-plugins.sh`, `check-creative-work.sh` — all in `claude/scripts/` |
-| 🤝 **GitHub Copilot config** |   8   | Root instructions, 3 scoped instruction files (+1 template), 2 reusable prompts (+1 template)                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| 📏 **Path-scoped rules**     |  13   | Terminal safety, self-maintenance, quality gates, memory policy, domain learning, practice capture, agent orchestration, language-specific rules, template for adding your own                                                                                                                                                                                                                                                                                                                                          |
-| 🔌 **Plugins**               |  10   | **claude-mem** (cross-session memory) · **graphify** (architecture graph) · **rtk** (command optimizer) · **codebase-memory-mcp** (structural graph) · **cocoindex-code** (semantic search) · **code-review-graph** (risk analysis) · **playwright** (browser automation) · **codeburn** (token observability) · **caveman** (response compression) · **serena** (LSP refactoring)                                                                                                                                      |
-| ✅ **Validation checks**     | 127+  | File existence, hook executability, placeholder detection, settings consistency, cross-reference integrity, self-bootstrap protection                                                                                                                                                                                                                                                                                                                                                                                   |
+| Category                     | Count | Highlights                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| :--------------------------- | :---: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 📚 **Knowledge docs**        |  13   | 8 domain docs (architecture, rules, build, CVE policy, terminal safety, MR templates, plugin config, decisions) · knowledge base guide · full reference guide · 3 worked domain examples                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ⚡ **Slash commands**        |  31   | `/plan` `/build` `/test` `/lint` `/serve` `/review` `/mr` `/debug` `/diff` `/git` `/deps` `/docker` `/migrate` `/db` `/cleanup` `/maintain` `/checkpoint` `/resume` `/context` `/ticket` `/bootstrap` `/health` `/status` `/ask` `/mcp` `/squad-plan` `/research` `/update-code-index` `/worktree` `/worktree-status` `/clean-worktrees`                                                                                                                                                                                                                                                                                                                                                                            |
+| 🪝 **Lifecycle hooks**       |  16   | Session recovery, config protection, terminal safety gate (3 profiles), commit quality, RTK token optimizer, batch formatting, exit checklist, compaction recovery, identity refresh, permission audit, test reminders                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| 🤖 **AI subagents**          |   5   | **research** (read-only exploration), **reviewer** (10-point MR review), **plan-challenger** (adversarial plan critique), **session-reviewer** (conversation pattern analysis), **security-auditor** (vulnerability scanning) — each declares its optimal model, falls back to session model for local/alternative providers                                                                                                                                                                                                                                                                                                                                                                                        |
+| 🎓 **Skills**                |  18   | TDD, root-cause trace, changelog, careful (safety guards), cross-layer check, **codebase-memory** (structural graph), **cocoindex-code** (semantic search), **code-review-graph** (risk analysis), **playwright** (browser automation), **codeburn** (token observability), **serena** (LSP refactoring), **brainstorming**, **receiving-code-review**, **subagent-driven-development**, **writing-skills**, **repo-recap**, **pr-triage**, **issue-triage**                                                                                                                                                                                                                                                        |
+| 🔧 **Brain scripts**         |  22   | `discover.sh` (3800-line stack detector), `populate-templates.sh`, `post-bootstrap-validate.sh`, `validate.sh`, `canary-check.sh`, `_platform.sh` (portable shell helpers — Linux/macOS/Windows), `portability-lint.sh` (GNU-only pattern detector), `integration-test.sh` (17 assertions: FRESH/UPGRADE/--check/3 guards, 3 platforms), `phase2-verify.sh`, `toggle-claude-mem.sh`, `generate-service-claudes.sh`, `generate-copilot-docs.sh`, `generate-copilot-prompts.sh`, `generate-copilot-agents.sh`, `setup-plugins.sh`, `check-creative-work.sh`, `dry-run.sh`, `merge-claude-md.sh`, `merge-claudeignore.sh`, `merge-settings.sh`, `migrate-tasks.sh`, `pre-creative-check.sh` — all in `claude/scripts/` |
+| 🤝 **GitHub Copilot config** |  45+  | Root instructions, 3 scoped instruction files (+1 template), 31+ reusable prompts, 5 custom agents, 4 lifecycle hooks — opt-in via `--copilot` flag                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| 📏 **Path-scoped rules**     |  13   | Terminal safety, self-maintenance, quality gates, memory policy, domain learning, practice capture, agent orchestration, language-specific rules, template for adding your own                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| 🔌 **Plugins**               |  10   | **claude-mem** (cross-session memory) · **graphify** (architecture graph) · **rtk** (command optimizer) · **codebase-memory-mcp** (structural graph) · **cocoindex-code** (semantic search) · **code-review-graph** (risk analysis) · **playwright** (browser automation) · **codeburn** (token observability) · **caveman** (response compression) · **serena** (LSP refactoring)                                                                                                                                                                                                                                                                                                                                  |
+| ✅ **Validation checks**     | 127+  | File existence, hook executability, placeholder detection, settings consistency, cross-reference integrity, self-bootstrap protection                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 
 ---
 
@@ -374,10 +381,11 @@ The knowledge layer (`claude/*.md`) is the **single source of truth**. Each tool
   Full stack:   Instructions +   Bootstrap
   commands,     scoped rules,    prompt →
   hooks,        prompts,         generates
-  agents,       knowledge        config from
-  skills,       docs             knowledge
-  rules,                         docs
-  settings
+  agents,       agents*,         config from
+  skills,       hooks*,          knowledge
+  rules,        knowledge        docs
+  settings      docs
+                (* with --copilot)
 ```
 
 **Model selection is enforced across both tools:**
@@ -385,11 +393,11 @@ The knowledge layer (`claude/*.md`) is the **single source of truth**. Each tool
 - **Claude Code** — agents declare their optimal model (`model: opus` in frontmatter). Research agents use the session model (faster/cheaper); review and security agents request Opus (correctness matters more than cost). Falls back to session model when unavailable.
 - **GitHub Copilot** — `copilot-instructions.md` enforces model selection via instructions: planning/review/architecture tasks **stop and warn** if the active model is a "mini"/"flash"/"lite" variant, requesting the user switch to the most capable model in the IDE model picker. Quick tasks (build, lint, test) run on any model.
 
-| Tool                 | What it reads                                                                                    |            Depth            |
-| :------------------- | :----------------------------------------------------------------------------------------------- | :-------------------------: |
-| **Claude Code**      | `CLAUDE.md` + `.claude/` (full automation) + `claude/*.md` (knowledge)                           |        🟢 Everything        |
-| **GitHub Copilot**   | `.github/copilot-instructions.md` + `.github/instructions/` + `.github/prompts/` + `claude/*.md` | 🟡 Instructions + knowledge |
-| **Any AI assistant** | `claude/bootstrap/PROMPT.md` → reads `claude/*.md`                                               |  🔵 Bootstrap → knowledge   |
+| Tool                 | What it reads                                                                                                                           |                              Depth                              |
+| :------------------- | :-------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------: |
+| **Claude Code**      | `CLAUDE.md` + `.claude/` (full automation) + `claude/*.md` (knowledge)                                                                  |                          🟢 Everything                          |
+| **GitHub Copilot**   | `.github/copilot-instructions.md` + `.github/instructions/` + `.github/prompts/` + `.github/agents/` + `.github/hooks/` + `claude/*.md` | 🟡 Instructions + knowledge + agents + hooks (with `--copilot`) |
+| **Any AI assistant** | `claude/bootstrap/PROMPT.md` → reads `claude/*.md`                                                                                      |                    🔵 Bootstrap → knowledge                     |
 
 ---
 
@@ -594,6 +602,14 @@ The three-layer token strategy (always-on ~3-4K, auto-loaded ~200-400, on-demand
 <summary><strong>🤝 Can I use this without Claude Code? Just Copilot?</strong></summary>
 
 Yes! The `.github/` directory contains Copilot-native configuration (root instructions, scoped instructions, reusable prompts) that works independently. The `claude/*.md` knowledge docs are plain Markdown — any AI can read them.
+
+For **full Copilot parity** (custom agents, lifecycle hooks, auto-generated prompts from Claude commands), install with the `--copilot` flag:
+
+```bash
+bash /tmp/brain/install.sh --copilot your-repo/
+```
+
+This generates 31+ slash commands, 5 custom agents (`@reviewer`, `@researcher`, `@plan-challenger`, `@security-auditor`, `@session-reviewer`), and 4 lifecycle hooks — all derived from the Claude Code equivalents.
 
 </details>
 

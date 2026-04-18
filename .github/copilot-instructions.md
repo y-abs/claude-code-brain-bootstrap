@@ -1,41 +1,51 @@
 # GitHub Copilot — {{PROJECT_NAME}} Instructions
 
-> Auto-injected with every Copilot interaction. Keep concise (<4KB).
-> Detailed knowledge in `claude/*.md` — read them for deep context.
+> Auto-injected with every Copilot interaction. Budget: <4KB.
+> Deep knowledge in `claude/*.md` — read them via `read_file` tool.
 
 ## ⚠️ Mandatory Reads
 
-| If task involves… | YOU MUST read FIRST |
-|---|---|
-| _anything_ (first action) | `claude/tasks/lessons.md` + `claude/architecture.md` + `claude/rules.md` |
-| build, test, CI, lint, format | `claude/build.md` |
-| MR/PR, ticket | `claude/templates.md` |
-| terminal, command, shell | `claude/terminal-safety.md` |
-| CVE, dependency, security | `claude/cve-policy.md` |
-<!-- ⚠️ EXPAND THIS TABLE: Add one row per domain doc in claude/*.md.
-     Match the lookup table in CLAUDE.md. Example rows:
-     | auth, token, JWT, guard | `claude/auth.md` |
-     | DB, migration, schema, query | `claude/database.md` |
-     | webhook, callback, adapter | `claude/webhooks.md` |
-     | Kafka, messaging, consumer, producer | `claude/messaging.md` |
--->
+**Session start →** read `claude/tasks/todo.md` + `claude/tasks/lessons.md`.
+
+| If task involves…             | YOU MUST read FIRST                                                                               |
+| ----------------------------- | ------------------------------------------------------------------------------------------------- |
+| _anything_ (first action)     | `claude/tasks/todo.md` + `claude/tasks/lessons.md` + `claude/architecture.md` + `claude/rules.md` |
+| build, test, CI, lint, format | `claude/build.md`                                                                                 |
+| MR/PR, ticket                 | `claude/templates.md`                                                                             |
+| terminal, command, shell      | `claude/terminal-safety.md`                                                                       |
+| CVE, dependency, security     | `claude/cve-policy.md`                                                                            |
+
+<!-- EXPAND: one row per domain doc in claude/*.md -->
+
+## Golden Rules
+
+1. **Never skip planning** — `claude/tasks/todo.md` before non-trivial tasks (3+ steps).
+2. **Never allow cross-layer inconsistency** — grep new fields across all layers.
+3. **Never invent a pattern** — read existing files first, match conventions.
+4. **Never mark complete without proof** — run tests, check logs.
+5. **Never make non-surgical changes** — only modify what the task requires.
 
 ## Operating Protocol
 
-1. **Plan first** — write plan to `claude/tasks/todo.md` before non-trivial tasks
-2. **Prove completion** — run tests, check logs
-3. **No hacky solutions** — find the elegant way
-4. **Fix bugs autonomously** — don't ask, just fix
-5. **Mark progress** — check items in `claude/tasks/todo.md`
-6. **Maintain knowledge** — update `claude/*.md` when you discover stale info
+1. **Plan first** — `claude/tasks/todo.md` with checkable items.
+2. **Prove completion** — run tests, check logs.
+3. **No hacky solutions** — ask "more elegant way?" first.
+4. **Fix bugs autonomously** — don't ask, just fix.
+5. **Mark progress** — check items as you go.
+6. **Maintain knowledge** — update stale `claude/*.md`.
+
+## Copilot Agents & Prompts
+
+**Agents** (`@agent-name`): `@reviewer` (10-point review), `@researcher` (exploration), `@plan-challenger` (adversarial), `@security-auditor` (6-category scan), `@session-reviewer` (lessons).
+
+**Prompts** (`/name`): `/review`, `/plan`, `/build`, `/test`, `/debug`, `/mr`, `/lint`, `/resume` + more.
+
+**Hooks** (`.github/hooks/`): config-protection, terminal-safety, session-context, quality-gate.
 
 ## Model Selection (enforced)
-- **Planning, review, architecture, debugging** → require the **most capable model** available (Claude Opus / GPT-4o / Gemini 2.5 Pro). If the current model is a "mini", "flash", or "lite" variant, **stop and tell the user**: _"⚠️ Current model is [model]. Planning tasks require the most capable model. Please switch to [Opus/GPT-4o/Gemini 2.5 Pro] in the model picker (top of chat panel) and re-ask."_ Do NOT proceed with a weaker model for planning — the output quality is unacceptable.
-- **Quick tasks** (build, lint, test, grep, simple edits) → any model is fine.
-- **Subagent delegation** → the subagent inherits your current model. Verify the model is appropriate BEFORE calling `run_subagent` for plan/review tasks.
 
-## Meta-Cognition
-Complex problems: sub-questions → confidence-weight → combine → if <0.8 retry.
+- **Planning, review, architecture** → most capable model. If current is mini/flash/lite: _"⚠️ Switch to capable model in picker."_
+- **Quick tasks** (build, lint, test, grep) → any model.
 
 ## 🚨 Exit Checklist (MANDATORY before ending turn)
 
@@ -43,37 +53,32 @@ Complex problems: sub-questions → confidence-weight → combine → if <0.8 re
 2. Learned something new? → Same
 3. Open task? → Mark progress in `claude/tasks/todo.md`
 4. Touched a domain? → Verify `claude/*.md` still accurate
-5. New pattern discovered? → Add to relevant doc + `claude/tasks/lessons.md`
+5. New pattern? → Add to relevant doc + `claude/tasks/lessons.md`
 
-## Terminal Safety
+## Terminal Safety (CRITICAL — #1 cause of hangs)
 
-- **🚨 PIPE `|` — 5 ABSOLUTE RULES** (apply immediately):
-  1. **Terminal regex**: `grep -E 'a|b'` ✅ — `grep -E "a|b"` ❌ — ALWAYS single quotes
-  2. **Writing files**: use file tool — NEVER heredoc (strips `|`)
-  3. **Verifying files**: `grep -c '|' file` ✅ — `cat file` ❌ — display STRIPS `|`
-  4. **Markdown tables**: `\|` inside cells — bare `|` outside
-  5. **Shell scripts**: `case "$F" in *.js|*.ts)` ✅ — `grep -E` ❌ — `case` is pipe-immune
-- **NEVER** trigger a pager: always `git --no-pager` or `| cat`
+- **🚨 PIPE `|`**: `grep -E 'a|b'` ✅ — `grep -E "a|b"` ❌ — ALWAYS single quotes for regex
+- **NEVER** trigger a pager: `git --no-pager` or `| cat`
 - **NEVER** open interactive programs (vi, nano, psql without `-c`)
-- **NEVER** dump unbounded output — always `| head -N`
-- **ALWAYS** `--color=never` for ANSI-free output
-- **ALWAYS** `2>&1` to capture stderr
+- **NEVER** dump unbounded output: `| head -N`
+- **ALWAYS** `--color=never` + `2>&1`
 
 ## Critical Patterns
 
 - **NEVER `git push` autonomously** — present summary, wait for confirmation
 - **Temp files in `./claude/tasks/`**, never `/tmp/`
 - **All proofs must pass** before generating MR description
-<!-- {{CRITICAL_PATTERNS}} — Add project-specific patterns -->
+- **NEVER modify IDE config files** unless explicitly asked
+<!-- {{CRITICAL_PATTERNS}} -->
 
 ## Review Protocol
 
-1. Ticket re-read 2. Cross-layer consistency 3. Enum completeness
-4. Transaction safety 5. Race conditions 6. Test completeness
-7. Pre-existing vs introduced 8. Cross-branch safety
-9. Security & side effects 10. Confidence gate
+1. Ticket re-read 2. Cross-layer 3. Enums 4. Transaction safety
+2. Races 6. Tests 7. Pre-existing vs introduced 8. Cross-branch
+3. Security 10. Confidence gate
 
 ## Core Principles
 
 Simplicity · No laziness · Surgical changes · Evidence-based
 
+<!-- Generated by ᗺB Brain Bootstrap · https://github.com/y-abs/claude-code-brain-bootstrap -->

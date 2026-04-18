@@ -87,7 +87,17 @@ fi
 
 # ── Resolve paths ──────────────────────────────────────────────────
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-TARGET="${1:?Usage: bash install.sh /path/to/your-repo}"
+
+# ── Parse flags ────────────────────────────────────────────────────
+COPILOT_MODE=false
+POSITIONAL_ARGS=()
+for arg in "$@"; do
+  case "$arg" in
+    --copilot) COPILOT_MODE=true ;;
+    *)         POSITIONAL_ARGS+=("$arg") ;;
+  esac
+done
+TARGET="${POSITIONAL_ARGS[0]:?Usage: bash install.sh [--copilot] /path/to/your-repo}"
 
 # ── Git repo root guard ───────────────────────────────────────────
 # Brain files belong at the ROOT of a git repository.
@@ -167,6 +177,9 @@ echo ""
 echo "  Source:    $SCRIPT_DIR"
 echo "  Target:    $TARGET"
 echo "  Platform:  $BRAIN_PLATFORM"
+if [ "$COPILOT_MODE" = true ]; then
+  echo "  Copilot:   ✅ Enabled (agents, hooks, prompts)"
+fi
 echo ""
 
 # ── Self-bootstrap guard ──────────────────────────────────────────
@@ -347,6 +360,31 @@ if [ "$MODE" = "FRESH" ]; then
     [ -f "$f" ] && cp "$f" "$TARGET/.github/prompts/"
   done
   echo "  ✅ .github/prompts/"
+
+  # Copilot-extra: agents, hooks (opt-in via --copilot)
+  if [ "$COPILOT_MODE" = true ]; then
+    # Agents
+    mkdir -p "$TARGET/.github/agents"
+    for f in "$SCRIPT_DIR/.github/agents/"*.agent.md; do
+      [ -f "$f" ] && cp "$f" "$TARGET/.github/agents/"
+    done
+    echo "  ✅ .github/agents/ (Copilot)"
+    # Hooks
+    mkdir -p "$TARGET/.github/hooks/scripts"
+    for f in "$SCRIPT_DIR/.github/hooks/"*.json; do
+      [ -f "$f" ] && cp "$f" "$TARGET/.github/hooks/"
+    done
+    for f in "$SCRIPT_DIR/.github/hooks/scripts/"*.sh; do
+      [ -f "$f" ] && cp "$f" "$TARGET/.github/hooks/scripts/"
+    done
+    chmod +x "$TARGET/.github/hooks/scripts/"*.sh 2>/dev/null || true
+    echo "  ✅ .github/hooks/ (Copilot)"
+    # Run generators to produce prompts/agents from Claude sources
+    echo "  🔄 Running Copilot generators..."
+    (cd "$TARGET" && bash "$SCRIPT_DIR/claude/scripts/generate-copilot-prompts.sh" 2>/dev/null) || true
+    (cd "$TARGET" && bash "$SCRIPT_DIR/claude/scripts/generate-copilot-agents.sh" 2>/dev/null) || true
+    echo "  ✅ Copilot prompts + agents generated from Claude sources"
+  fi
 
   # Make scripts executable
   chmod +x "$TARGET/.claude/hooks/"*.sh 2>/dev/null || true
@@ -659,6 +697,44 @@ for f in "$SCRIPT_DIR/.github/prompts/"*.prompt.md; do
     phase_d_added=$((phase_d_added + 1))
   fi
 done
+
+# Copilot-extra: agents, hooks (opt-in via --copilot)
+if [ "$COPILOT_MODE" = true ]; then
+  # Agents (add only missing)
+  mkdir -p "$TARGET/.github/agents"
+  for f in "$SCRIPT_DIR/.github/agents/"*.agent.md; do
+    [ -f "$f" ] || continue
+    fname="$(basename "$f")"
+    if copy_if_missing "$f" "$TARGET/.github/agents/$fname"; then
+      echo "  ➕ .github/agents/$fname (new — Copilot)"
+      phase_d_added=$((phase_d_added + 1))
+    fi
+  done
+  # Hooks (add only missing)
+  mkdir -p "$TARGET/.github/hooks/scripts"
+  for f in "$SCRIPT_DIR/.github/hooks/"*.json; do
+    [ -f "$f" ] || continue
+    fname="$(basename "$f")"
+    if copy_if_missing "$f" "$TARGET/.github/hooks/$fname"; then
+      echo "  ➕ .github/hooks/$fname (new — Copilot)"
+      phase_d_added=$((phase_d_added + 1))
+    fi
+  done
+  for f in "$SCRIPT_DIR/.github/hooks/scripts/"*.sh; do
+    [ -f "$f" ] || continue
+    fname="$(basename "$f")"
+    if copy_if_missing "$f" "$TARGET/.github/hooks/scripts/$fname"; then
+      echo "  ➕ .github/hooks/scripts/$fname (new — Copilot)"
+      phase_d_added=$((phase_d_added + 1))
+    fi
+  done
+  chmod +x "$TARGET/.github/hooks/scripts/"*.sh 2>/dev/null || true
+  # Run generators (idempotent — skip hand-crafted files)
+  echo "  🔄 Running Copilot generators..."
+  (cd "$TARGET" && bash "$SCRIPT_DIR/claude/scripts/generate-copilot-prompts.sh" 2>/dev/null) || true
+  (cd "$TARGET" && bash "$SCRIPT_DIR/claude/scripts/generate-copilot-agents.sh" 2>/dev/null) || true
+  echo "  ✅ Copilot prompts + agents generated from Claude sources"
+fi
 
 ADDED_COUNT=$((ADDED_COUNT + phase_d_added))
 
