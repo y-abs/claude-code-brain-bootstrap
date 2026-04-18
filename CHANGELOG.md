@@ -7,6 +7,52 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [0.6.2] — 2026-04-18 (PRs #30, #32)
+
+### 🧹 Bootstrap Phantom File Cleanup
+
+### Fixed
+- **`install.sh`** — prevent phantom files being generated during bootstrap runs (#30)
+- **`install.sh`** — add cleanup for old bootstrap package manager phantom entries that persisted across sessions (#32)
+
+---
+
+## [0.6.1] — 2026-04-18 (PRs #27, #28, #29)
+
+### 🐛 Hook, Schema & Prompt Fixes
+
+### Fixed
+- **`tdd-loop-check.sh`** — fix trigger condition and nx monorepo detection (#27)
+- **`settings.json`** — enforce current `claude-code-settings.json` schema `$schema` URL (#28)
+- **`bootstrap/PROMPT.md`** — clarify obsidian-mind companion vault intent (not a plugin, clone separately) (#29)
+
+---
+
+## [0.6.0] — 2026-04-18 (PRs #18–#26)
+
+### 🖥️ Cross-Platform Parity
+
+Extended cross-platform support beyond the hardening pass in v0.2.0 — ensuring behavioral parity across Linux, macOS, and Windows for the full plugin and hook stack.
+
+### Added
+- **Cross platform parity** — additional portability fixes and parity guarantees for plugin installation and hook execution across all three platforms (#18)
+
+### Changed
+- **README** — feature hierarchy clarification and accurate count sync (#19, #20–#25)
+- **`DETAILED_GUIDE.md`** — corrections and accuracy improvements (#26)
+
+---
+
+## [0.5.2] — 2026-04-17 (PRs #16, #17)
+
+### 🐛 Bootstrap Quality Gates & Plugin Detection
+
+### Fixed
+- **`setup-plugins.sh`** / **`validate.sh`** — bootstrap quality gate checks and plugin detection logic (#17)
+- **`CHANGELOG.md`** — completed all version entries, added comparison links (#16)
+
+---
+
 ## [0.5.1] — 2026-04-17 (PR #15)
 
 ### 🐛 Canary Check False Positives & UPGRADE Mode
@@ -386,6 +432,10 @@ Root instructions · General scoped instructions · Terminal safety instructions
 ---
 
 <!-- Version comparison links -->
+[0.6.2]: https://github.com/y-abs/claude-code-brain-bootstrap/compare/v0.6.1...v0.6.2
+[0.6.1]: https://github.com/y-abs/claude-code-brain-bootstrap/compare/v0.6.0...v0.6.1
+[0.6.0]: https://github.com/y-abs/claude-code-brain-bootstrap/compare/v0.5.2...v0.6.0
+[0.5.2]: https://github.com/y-abs/claude-code-brain-bootstrap/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/y-abs/claude-code-brain-bootstrap/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/y-abs/claude-code-brain-bootstrap/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/y-abs/claude-code-brain-bootstrap/compare/v0.3.0...v0.4.0
