@@ -44,10 +44,10 @@ Review the output. If anything looks wrong, stop and investigate. The dry run ch
 > Moves ONLY known Claude files (lessons.md, todo.md, CLAUDE_ERRORS.md, session-logs/) from old layout to `claude/tasks/`. NEVER moves non-Claude files. NEVER deletes the source directory.
 
 ```bash
-bash claude/scripts/migrate-tasks.sh --discovery-env claude/tasks/.discovery.env --target . 2>&1
+bash claude/scripts/migrate-tasks.sh --discovery-env claude/tasks/.discovery.env --target . 2>&1; EC=$?; [ $EC -eq 0 ] || [ $EC -eq 2 ] || exit $EC
 ```
 
-If exit code is 2 → nothing to migrate (already correct layout). Move on.
+Exit 0 = migrated · Exit 2 = nothing to migrate (already correct layout) — both are success. Move on.
 
 ---
 
@@ -56,10 +56,10 @@ If exit code is 2 → nothing to migrate (already correct layout). Move on.
 > Appends ONLY genuinely missing sections from the template. Never modifies existing content. Uses heading similarity matching (emoji-tolerant, keyword-aware) to detect equivalent sections.
 
 ```bash
-bash claude/scripts/merge-claude-md.sh --template claude/bootstrap/_CLAUDE.md.template --target CLAUDE.md 2>&1
+bash claude/scripts/merge-claude-md.sh --template claude/bootstrap/_CLAUDE.md.template --target CLAUDE.md 2>&1; EC=$?; [ $EC -eq 0 ] || [ $EC -eq 2 ] || exit $EC
 ```
 
-If exit code is 2 → all sections already covered. Move on.
+Exit 0 = sections added · Exit 2 = all sections already covered — both are success. Move on.
 
 ---
 

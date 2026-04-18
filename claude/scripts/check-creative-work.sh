@@ -64,7 +64,9 @@ fi
 
 # ─── 3b. Domain doc quality — each domain doc must have REAL content, not stubs ──────────────────
 # Quality lines: "- **bold**" bullets, "- `code`" bullets, "## " section headings
-# Empty stub (0 quality lines) = ERROR; shallow (1-4 quality lines) = WARNING
+# Empty stub (0 quality lines) = ERROR; shallow (1-14 quality lines) = WARNING; ≥15 = PASS
+# Rationale: a 5-line doc is not first-session productive; 15 real patterns is the minimum
+# for an AI to actually use the doc without re-reading source files every session.
 EMPTY_DOCS=0
 LOW_QUALITY_DOCS=0
 for doc in claude/*.md; do
@@ -91,8 +93,8 @@ for doc in claude/*.md; do
   if [ "$QUALITY_LINES" -eq 0 ]; then
     echo "  ❌ $BASENAME — empty stub (0 quality lines) — fill with real patterns from source code"
     EMPTY_DOCS=$((EMPTY_DOCS + 1))
-  elif [ "$QUALITY_LINES" -lt 5 ]; then
-    echo "  ⚠️  $BASENAME — only $QUALITY_LINES quality line(s) (target ≥5 real patterns)"
+  elif [ "$QUALITY_LINES" -lt 15 ]; then
+    echo "  ⚠️  $BASENAME — only $QUALITY_LINES quality line(s) (target ≥15 real patterns)"
     LOW_QUALITY_DOCS=$((LOW_QUALITY_DOCS + 1))
   fi
 done
@@ -103,7 +105,7 @@ elif [ "$LOW_QUALITY_DOCS" -gt 0 ]; then
   echo "  ⚠️  $LOW_QUALITY_DOCS domain doc(s) below quality threshold — enrich before session end"
   WARNINGS=$((WARNINGS + LOW_QUALITY_DOCS))
 else
-  echo "  ✅ Domain doc quality: all docs have real content (≥5 quality lines)"
+  echo "  ✅ Domain doc quality: all docs have real content (≥15 quality lines)"
 fi
 
 # ─── 3c. Lookup table completeness — CLAUDE.md rows must cover ALL domain docs ───────────────────
@@ -163,10 +165,24 @@ fi
 STUB_DIRS=()
 for d in core services apps packages; do [ -d "$d" ] && STUB_DIRS+=("$d"); done
 STUB_COUNT=0
+STUB_STUBS=0
 if [ "${#STUB_DIRS[@]}" -gt 0 ]; then
   STUB_COUNT=$(find "${STUB_DIRS[@]}" -maxdepth 2 -name CLAUDE.md 2>/dev/null | wc -l | tr -d ' ')
+  # Count per-service stubs not enriched beyond the auto-generated stub (≤20 lines)
+  while IFS= read -r sfile; do
+    SLINES=$(wc -l < "$sfile" 2>/dev/null || echo 0)
+    [ "$SLINES" -le 20 ] && STUB_STUBS=$((STUB_STUBS + 1))
+  done < <(find "${STUB_DIRS[@]}" -maxdepth 2 -name CLAUDE.md 2>/dev/null || true)
 fi
-[ "$STUB_COUNT" -gt 0 ] && echo "  📁 $STUB_COUNT per-service stubs"
+if [ "$STUB_COUNT" -gt 0 ]; then
+  ENRICHED=$((STUB_COUNT - STUB_STUBS))
+  if [ "$STUB_STUBS" -gt 0 ] && [ "$STUB_COUNT" -gt 5 ]; then
+    echo "  ⚠️  $STUB_STUBS/$STUB_COUNT per-service stubs not enriched (≤20 lines) — enrich top 5-10 complex services (item 10)"
+    WARNINGS=$((WARNINGS + 1))
+  else
+    echo "  ✅ Per-service stubs: $STUB_COUNT total ($ENRICHED enriched)"
+  fi
+fi
 
 # ─── 5. Copilot docs mirrored ──────────────────────────────────────────────────────────────────────
 COPILOT_COUNT=0
