@@ -446,8 +446,7 @@ After the report is written and validated, delete the bootstrap scaffolding (it'
 
 ```bash
 rm -rf claude/bootstrap/ claude/tasks/.discovery.env claude/tasks/*-discovery.env claude/tasks/bootstrap-report.md claude/tasks/.bootstrap-*.txt
-# Old bootstrap versions copied empty .env* placeholder files — delete them if they exist and are empty
-find . -maxdepth 1 -name '.env*' -type f -empty -delete 2>/dev/null || true
+
 echo "✅ Bootstrap scaffolding removed"
 ```
 
