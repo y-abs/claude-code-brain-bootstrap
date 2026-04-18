@@ -91,6 +91,7 @@ You stop re-explaining your stack every morning. You stop fixing the same mistak
 | Research eats your main context window and you lose track                                         | `research` subagent explores in an **isolated** context — your main window stays clean                                                                                                                        |
 | Knowledge docs slowly rot as the code evolves                                                     | Self-maintenance rule + `/maintain` command detect drift and fix stale references automatically                                                                                                               |
 | You're locked into one model — switching to Haiku or a local LLM means reconfiguring everything   | Agents auto-select the **most efficient model** per task (opus for security, session model for research) — and **fall back gracefully** to whatever you're running: Haiku, Bedrock, Vertex, Ollama, LM Studio |
+| You push a PR and discover too late that your change broke 14 other files                         | **code-review-graph** scores every diff 0–100 before you push — blast radius, breaking changes, risk verdict in seconds                                                                                       |
 
 **After a few sessions, your AI will know things about your codebase that even some team members don't.**
 
@@ -275,6 +276,38 @@ Brain replaces advisory text with real mechanisms:
 
 ---
 
+## 🏆 Why Brain Wins: Feature Hierarchy
+
+**The five things that make the biggest difference** — versus prompt files, `.cursorrules`, or any flat config:
+
+|   Rank    | Feature                                                  | What makes it different                                                                                                                                                                                                 |
+| :-------: | :------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 🥇 **#1** | **Enforcement** — hooks block _before_ execution         | Not a suggestion. `config-protection.sh` returns `exit 2` before the write happens. Terminal safety stops dangerous commands mid-stream. No amount of context pressure or reasoning can override them.                  |
+| 🥈 **#2** | **Permanent memory** — `lessons.md` + `CLAUDE_ERRORS.md` | The AI literally cannot make the same mistake twice. Corrections persist across sessions, compaction, restarts. Error patterns promote to guardrails after 3 recurrences.                                               |
+| 🥉 **#3** | **Zero-token stack discovery**                           | 3,800 lines of bash detect your entire stack in 2 seconds — before the AI even wakes up. 25+ languages, 1,100+ frameworks, 21 package managers. Zero tokens spent on detection.                                         |
+| 4️⃣ **#4** | **One brain, three tools**                               | `claude/*.md` is the single source of truth. Claude Code, GitHub Copilot, Cursor, Aider, any LLM — they all read the same knowledge. No re-setup, no drift, when switching tools.                                       |
+| 5️⃣ **#5** | **AI team with isolated contexts**                       | 5 subagents, each in their own context window. Research explores 20+ files without touching your conversation. Reviewer runs the full 10-point protocol in isolation. Security auditor scans with Opus for correctness. |
+
+**Top 10 — the complete value stack:**
+
+|  #  | Feature                          | Impact                                                             |
+| :-: | :------------------------------- | :----------------------------------------------------------------- |
+|  1  | 🔒 Pre-execution blocking        | 16 hooks, deterministic bash, zero tokens, unforgeable             |
+|  2  | 🧠 Permanent learning            | `lessons.md` + errors → rules pipeline across every session        |
+|  3  | 🔍 Zero-token discovery          | 3,800-line bash, 2 seconds, 25+ languages, 1,100+ frameworks       |
+|  4  | 🤝 Multi-tool portability        | Write once → Claude Code + Copilot + any LLM                       |
+|  5  | 🤖 AI team                       | 5 subagents in isolated contexts — no context pollution            |
+|  6  | 🗺️ 71.5× token efficiency        | graphify architecture graph instead of file-by-file grep           |
+|  7  | 🛡️ Pre-PR risk gate              | code-review-graph: risk score 0–100, blast radius, before any push |
+|  8  | ⚡ 31 battle-tested commands     | 10-point review, root-cause debug, MR description, worktrees       |
+|  9  | 📊 60–90% command output savings | rtk transparently rewrites every bash command — no config          |
+| 10  | 🎓 18 skills on demand           | TDD, semantic search, LSP refactoring, browser automation, triage  |
+
+**The rest — exhaustive, because completeness matters:**
+18 skills · 10 plugins · 13 path-scoped rules · 8 domain-detection greps with adaptive escalation · 22 maintenance scripts · 127+ validation checks · 5 self-improvement feedback loops · multi-platform (Linux / macOS / Windows WSL2+Git Bash) · cross-IDE enforcement · TEAM and SOLO modes · auto-backup before every upgrade
+
+---
+
 ## 🧪 The Discovery Engine: Pure Bash
 
 The discovery engine detects **25+ languages**, **21 package managers**, **1100+ frameworks**, **13 CI systems**, **12+ database/ORM tools**, and **15+ formatter/linter combinations**.
@@ -316,7 +349,7 @@ Your repo
 │   ├── terminal-safety.md          ← Shell anti-patterns that cause session hangs
 │   ├── cve-policy.md               ← Security decision tree
 │   ├── plugins.md                  ← Plugin config (claude-mem + graphify + MCP)
-│   ├── scripts/                    ← 15 bootstrap & maintenance scripts
+│   ├── scripts/                    ← 22 bootstrap & maintenance scripts
 │   ├── bootstrap/                  ← 🧠 Setup scaffolding (auto-deleted after bootstrap)
 │   ├── tasks/lessons.md            ← 🧠 Accumulated wisdom (persists across sessions)
 │   ├── tasks/todo.md               ← 📝 Current task plan (survives session boundaries)
@@ -360,7 +393,7 @@ The system is designed to **minimize token cost** while maximizing context — y
 | 🤖 **AI subagents**          |   5   | **research** (read-only exploration), **reviewer** (10-point MR review), **plan-challenger** (adversarial plan critique), **session-reviewer** (conversation pattern analysis), **security-auditor** (vulnerability scanning) — each declares its optimal model, falls back to session model for local/alternative providers                                                                                                                                                                                                                                                                                                                                                                                        |
 | 🎓 **Skills**                |  18   | TDD, root-cause trace, changelog, careful (safety guards), cross-layer check, **codebase-memory** (structural graph), **cocoindex-code** (semantic search), **code-review-graph** (risk analysis), **playwright** (browser automation), **codeburn** (token observability), **serena** (LSP refactoring), **brainstorming**, **receiving-code-review**, **subagent-driven-development**, **writing-skills**, **repo-recap**, **pr-triage**, **issue-triage**                                                                                                                                                                                                                                                        |
 | 🔧 **Brain scripts**         |  22   | `discover.sh` (3800-line stack detector), `populate-templates.sh`, `post-bootstrap-validate.sh`, `validate.sh`, `canary-check.sh`, `_platform.sh` (portable shell helpers — Linux/macOS/Windows), `portability-lint.sh` (GNU-only pattern detector), `integration-test.sh` (17 assertions: FRESH/UPGRADE/--check/3 guards, 3 platforms), `phase2-verify.sh`, `toggle-claude-mem.sh`, `generate-service-claudes.sh`, `generate-copilot-docs.sh`, `generate-copilot-prompts.sh`, `generate-copilot-agents.sh`, `setup-plugins.sh`, `check-creative-work.sh`, `dry-run.sh`, `merge-claude-md.sh`, `merge-claudeignore.sh`, `merge-settings.sh`, `migrate-tasks.sh`, `pre-creative-check.sh` — all in `claude/scripts/` |
-| 🤝 **GitHub Copilot config** |  45+  | Root instructions, 3 scoped instruction files (+1 template), 31+ reusable prompts, 5 custom agents, 4 lifecycle hooks — opt-in via `--copilot` flag                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| 🤝 **GitHub Copilot config** |  50+  | Root instructions, 3 scoped instruction files (+1 template), 37 reusable prompts (+1 template), 5 custom agents, 4 lifecycle hooks — opt-in via `--copilot` flag                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | 📏 **Path-scoped rules**     |  13   | Terminal safety, self-maintenance, quality gates, memory policy, domain learning, practice capture, agent orchestration, language-specific rules, template for adding your own                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | 🔌 **Plugins**               |  10   | **claude-mem** (cross-session memory) · **graphify** (architecture graph) · **rtk** (command optimizer) · **codebase-memory-mcp** (structural graph) · **cocoindex-code** (semantic search) · **code-review-graph** (risk analysis) · **playwright** (browser automation) · **codeburn** (token observability) · **caveman** (response compression) · **serena** (LSP refactoring)                                                                                                                                                                                                                                                                                                                                  |
 | ✅ **Validation checks**     | 127+  | File existence, hook executability, placeholder detection, settings consistency, cross-reference integrity, self-bootstrap protection                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
