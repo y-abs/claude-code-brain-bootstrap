@@ -120,8 +120,8 @@ The AI will:
 2. 🏗️ **Analyze** your architecture (services, domains, patterns, aliases)
 3. 📝 **Populate** all `{{PLACEHOLDER}}` values across every template file
 4. 🧠 **Generate** domain-specific knowledge docs (adaptive depth — 8 domain greps, mandatory when ≥3 domains found)
-5. 🔌 **Install** plugin (claude-mem)
-6. ✅ **Validate** everything works (`claude/scripts/validate.sh` — 127+ checks)
+5. 🔌 **Install** plugins — 10-tool stack (claude-mem, graphify, rtk, codebase-memory-mcp, cocoindex-code, code-review-graph, playwright, codeburn, caveman, serena) via `claude/scripts/setup-plugins.sh`
+6. ✅ **Validate** everything works (`claude/scripts/post-bootstrap-validate.sh` — validate + canary + auto-fix, 127+ checks)
 
 > 💡 **No Claude Code?** Paste `claude/bootstrap/PROMPT.md` into any AI chat — it works with any LLM.
 
@@ -564,7 +564,7 @@ Parallel config for Copilot users — base install works immediately; full parit
 
 #### 10. 🔌 Plugin Ecosystem
 
-Five tools are auto-installed by bootstrap — each occupies a distinct, non-overlapping niche:
+Ten tools are managed by `setup-plugins.sh` during bootstrap — each occupies a distinct, non-overlapping niche:
 
 | Tool                       | Axis                                                                                  |          Default state           |
 | :------------------------- | :------------------------------------------------------------------------------------ | :------------------------------: |
@@ -573,8 +573,13 @@ Five tools are auto-installed by bootstrap — each occupies a distinct, non-ove
 | ⚡ **rtk**                 | _Every bash command_ — transparent token optimizer, 60-90% output savings             |      ✅ Auto-active (cargo)      |
 | 🔍 **codebase-memory-mcp** | _"Who calls this function?"_ — live structural graph, 14 MCP tools, 120× fewer tokens |     ✅ Auto-installed (curl)     |
 | 🔎 **cocoindex-code**      | _"Find code related to X"_ — semantic vector search, local embeddings, no API key     | ✅ Auto-installed (Python 3.11+) |
+| 🔴 **code-review-graph**   | _"Is this PR safe to ship?"_ — risk score 0–100, blast radius, breaking changes       | ✅ Auto-installed (Python 3.10+) |
+| 🌐 **playwright**          | _"Test this form / scrape this page"_ — browser automation via accessibility tree     |  ✅ Auto-installed (Node.js 18+) |
+| 📊 **codeburn**            | _"Where did my tokens go?"_ — cost breakdown by task type, model, USD                 |        ✅ Optional CLI           |
+| 🗣️ **caveman**             | _Response-text compression_ — 65-87% shorter replies                                 |  ✅ Optional (user-level hook)   |
+| 🔧 **serena**              | _Symbol-level refactoring_ — LSP-backed rename/move/inline across all files           | ✅ Auto-registered (uvx, py 3.11+)|
 
-**MCP servers (codebase-memory-mcp, cocoindex-code) register zero hooks** — they're pure JSON-RPC stdio servers started on demand. **rtk** is a single `PreToolUse(Bash)` hook, first in chain. **graphify** adds one `PreToolUse(Glob|Grep)` hint hook (no-op when graph absent). **claude-mem** adds `PostToolUse(*)` — which is why it's disabled by default. Zero conflicts by design. See `claude/plugins.md` for the full coexistence matrix.
+**MCP servers (codebase-memory-mcp, cocoindex-code, code-review-graph, playwright, serena) register zero hooks** — they're pure JSON-RPC stdio servers started on demand. **rtk** is a single `PreToolUse(Bash)` hook, first in chain. **graphify** adds one `PreToolUse(Glob|Grep)` hint hook (no-op when graph absent). **claude-mem** adds `PostToolUse(*)` — which is why it's disabled by default. Zero conflicts by design. See `claude/plugins.md` for the full coexistence matrix.
 
 ---
 
@@ -649,7 +654,7 @@ Users configure their chosen servers post-bootstrap: `/mcp add <server>` · Regi
 
 #### Phase 4: Plugin Installation 🔌
 
-Installs **claude-mem** (disabled by default for quota protection). If installation fails, the report includes the manual install command.
+Runs `claude/scripts/setup-plugins.sh` — manages the **10-tool stack** (claude-mem, graphify, rtk, codebase-memory-mcp, cocoindex-code, code-review-graph, playwright, codeburn, caveman, serena). Each tool is installed or registered only if its prerequisites are met. **claude-mem** is disabled by default (quota protection). Strategy options: `none` / `recommended` / `full` / `personalize`. If a tool fails to install, the report includes the manual install command.
 
 #### Phase 5: Validate + Report + Cleanup (~10s) ✅
 
@@ -1031,19 +1036,27 @@ No. `git push` is blocked by default (deny rule + terminal-safety hook). The AI 
 <details>
 <summary><strong>🔌 Are plugins installed automatically?</strong></summary>
 
-Yes — Phase 4 installs **claude-mem** (disabled by default, quota protection). If installation fails, the report provides the manual install command.
+Yes — Phase 4 runs `claude/scripts/setup-plugins.sh` which manages the **10-tool stack**: claude-mem, graphify, rtk, codebase-memory-mcp, cocoindex-code, code-review-graph, playwright, codeburn, caveman, serena. Each is installed only when prerequisites are present (Python version, cargo, Node.js…). **claude-mem** is disabled by default to protect API quota. If any tool fails, the report includes the manual install command.
 
-> **obsidian-mind** is a companion Obsidian vault — not a Claude Code plugin. It's cloned separately: `git clone https://github.com/breferrari/obsidian-mind.git`
+> **obsidian-mind** is a companion Obsidian vault — not a plugin, not installed by bootstrap. Clone separately: `git clone https://github.com/breferrari/obsidian-mind.git`
 
 </details>
 
 <details>
 <summary><strong>⏭️ Can I skip plugin installation?</strong></summary>
 
-If the plugin fails to install (network, auth), it's documented in the report with the manual command. The rest of the config works perfectly without it. Install later anytime:
+Pass a strategy flag to `setup-plugins.sh` or re-run Phase 4 with `/bootstrap plugins`:
 
 ```bash
-claude plugin install claude-mem@thedotmack
+# During bootstrap — set strategy before running:
+bash claude/scripts/setup-plugins.sh --strategy=none .   # Skip all plugins
+bash claude/scripts/setup-plugins.sh --strategy=recommended .  # Core tools only
+bash claude/scripts/setup-plugins.sh --skip=graphify,cocoindex .  # Skip specific ones
+
+# Manual install of any individual tool later (examples):
+claude plugin install claude-mem@thedotmack   # claude-mem
+pip install graphifyy && graphify install      # graphify
+cargo install rtk                             # rtk
 ```
 
 </details>
@@ -1052,7 +1065,7 @@ claude plugin install claude-mem@thedotmack
 
 ## 🔌 Plugin Ecosystem — Deep Dive
 
-The bootstrap auto-installs **five complementary tools** — each axis of intelligence is independent, zero overlap, full coverage:
+`setup-plugins.sh` manages a **ten-tool stack** — each axis of intelligence is independent, zero overlap, full coverage:
 
 |                                                                                  | Type                                | Axis                                                     | Token Impact                              |        Default         |
 | :------------------------------------------------------------------------------- | :---------------------------------- | :------------------------------------------------------- | :---------------------------------------- | :--------------------: |
@@ -1062,7 +1075,12 @@ The bootstrap auto-installs **five complementary tools** — each axis of intell
 | 🔍 **[codebase-memory-mcp](https://github.com/DeusData/codebase-memory-mcp)**    | C binary + MCP server               | _"Who calls this? What breaks?"_                         | **120× fewer tokens** vs file exploration |     ✅ Auto (curl)     |
 | 🔎 **[cocoindex-code](https://github.com/cocoindex/cocoindex-code)**             | Python + MCP server                 | _"Find code related to X"_                               | Finds what grep/AST miss                  | ✅ Auto (Python 3.11+) |
 | 🔴 **[code-review-graph](https://github.com/codebase-review/code-review-graph)** | Python + MCP server                 | _"Is this PR safe to ship?"_ — risk score + blast radius | Pre-PR safety gate                        | ✅ Auto (Python 3.10+) |
-| 📖 **[obsidian-mind](https://github.com/breferrari/obsidian-mind)**              | Obsidian vault (clone separately)   | _"Why was it built this way?"_                           | ~2K tokens/session                        |        Optional        |
+| 🌐 **playwright**                                                                | Node.js + MCP server                | _"Test this form / scrape this page"_ — browser automation | LOW-MEDIUM — structured snapshots       | ✅ Auto (Node.js 18+)  |
+| 📊 **codeburn**                                                                  | Node.js CLI                         | _"Where did my tokens go?"_ — cost by task/model/USD    | Zero — reads session files, no API calls  |    ✅ Optional CLI     |
+| 🗣️ **caveman**                                                                   | Node.js hook (user-level)           | _Response-text compression_ — 65-87% shorter replies    | **Negative** — reduces response tokens    |   ✅ Optional hook     |
+| 🔧 **serena**                                                                    | Python (uvx) + MCP server           | _LSP-backed rename/move/inline across all files_         | Low — on-demand per MCP call              | ✅ Auto (uvx + py 3.11+)|
+
+> **obsidian-mind** is a **companion Obsidian vault** — not installed by bootstrap. Clone separately: `git clone https://github.com/breferrari/obsidian-mind.git`. See `claude/plugins.md` for details.
 
 ### 🔌 What Is MCP? (Start Here If You're New)
 
@@ -1136,13 +1154,15 @@ stdio (stdin/stdout) means the program lives as a subprocess — no port managem
 
 Nothing breaks. Claude Code tries to start the server, fails silently, and the `mcp__*` tools become unavailable. All other functionality works normally. Install the binary → restart Claude Code → tools appear automatically.
 
-**The three MCP servers in this bootstrap:**
+**The five MCP servers in this bootstrap:**
 
 | Server key            | Binary                        | What it gives you                                                 | Starts when                              |
 | --------------------- | ----------------------------- | ----------------------------------------------------------------- | ---------------------------------------- |
 | `codebase-memory-mcp` | `codebase-memory-mcp`         | 14 structural graph tools — call paths, dead code, blast radius   | First `mcp__codebase-memory-mcp__*` call |
 | `cocoindex-code`      | `ccc mcp`                     | 1 semantic search tool — find code by meaning                     | First `mcp__cocoindex-code__search` call |
 | `code-review-graph`   | `uvx code-review-graph serve` | 29 change risk tools — risk score, blast radius, breaking changes | First `mcp__code-review-graph__*` call   |
+| `playwright`          | `npx @playwright/mcp@latest`  | Browser automation — navigate, snapshot, click, fill web pages    | First `mcp__playwright__*` call          |
+| `serena`              | `uvx serena-agent --project .` | LSP refactoring — rename/move/inline across all files atomically  | First `mcp__serena__*` call              |
 
 **Check what's running:**
 
@@ -1163,7 +1183,7 @@ cat .mcp.json
 
 > 📚 Full MCP reference: `claude/plugins.md` → "MCP Servers" section.
 
-### Five Axes — Zero Overlap, Full Coverage
+### Ten Tools — Zero Overlap, Full Coverage
 
 ```
 Question                                    Tool                         Mechanism
@@ -1174,7 +1194,11 @@ Question                                    Tool                         Mechani
 "Is this PR safe to ship?"                  code-review-graph            detect_changes_tool() — risk 0–100
 "What did I do last Tuesday?"               claude-mem                   /mem-search
 "Why was JWT chosen over sessions?"         obsidian-mind (optional)     vault notes
+"Test this login form / scrape this doc"    playwright                   browser_snapshot() — accessibility tree
+"Where did my tokens go this week?"         codeburn                     codeburn report -p 7days
+"Rename AuthService.login across all files" serena                       rename_symbol()
 Every bash command Claude runs              rtk                          transparent rewrite (no config)
+Every Claude reply (terse mode)             caveman                      SessionStart hook
 ──────────────────────────────────────────────────────────────────────────────────
 ```
 
@@ -1184,7 +1208,11 @@ Every bash command Claude runs              rtk                          transpa
 **code-review-graph** = change risk analysis (BFS blast radius, risk score, breaking changes — the "safe to ship?" gate)
 **rtk** = execution layer (invisible token optimizer, rewrites every bash command transparently)
 **claude-mem** = temporal memory (forensic session log, what happened when)
-**obsidian-mind** = curated knowledge (the human "why" behind decisions)
+**obsidian-mind** = curated knowledge (the human "why" behind decisions — optional, clone separately)
+**playwright** = browser automation (navigate, snapshot, fill, click web pages — no vision model)
+**codeburn** = token cost observability (cost by task type, model, USD — zero API calls)
+**caveman** = response-text compression (65-87% shorter replies — negative token cost)
+**serena** = LSP refactoring (rename/move/inline across entire codebase atomically)
 
 ### graphify vs codebase-memory-mcp — When to Use Which
 
