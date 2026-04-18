@@ -32,7 +32,7 @@
 
 ## 🤔 Sound Familiar?
 
-You install Claude Code. You open your 50-service monorepo. You ask it to add a feature.
+You open your 50-service monorepo. You ask your AI coding assistant to add a feature.
 
 It doesn't know `yarn turbo build` is the right command, not `npm run build`, that you use Biome, not Prettier.
 It doesn't know your `@company/utils` package already has a `formatDate()` — so it installs `date-fns` and writes a new one.
@@ -58,19 +58,11 @@ Session after session after session...
 
 ---
 
-## ❗️ This is NOT another collection
+## 🔒 Not Suggestions — Guarantees
 
-GitHub is full of repos that give you a collection of slash commands, skills, and prompt templates to copy into your project.
+Prompt files and instruction repos hope the AI follows them. Brain doesn't hope — it **enforces**.
 
-The AI reads them if it feels like it — and forgets them when the session resets.
-
-**Brain is an enforcement system, not a suggestion box.**
-
-Corrections become permanent. Forbidden patterns get blocked _before_ they run.
-
-The knowledge base updates itself as your codebase evolves.
-
-You stop re-explaining your stack every morning. You stop fixing the same mistakes twice.
+Corrections become permanent. Forbidden patterns get blocked _before_ they run. The knowledge base updates itself as your codebase evolves. You stop fixing the same mistakes twice.
 
 **You stop babysitting — the AI just knows.**
 
@@ -82,18 +74,18 @@ Every AI coding tool reads instructions. None of them enforce those instructions
 
 **Instructions are text. Text is advisory. Advisory gets overridden.** Brain replaces text with mechanisms — hooks that block before execution, memory that persists across sessions, knowledge that stays current:
 
-| 🔁 Every session today                                                                            | 🧠 With Brain — once, forever                                                                                                                                                                                 |
-| :------------------------------------------------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| You repeat your conventions every session — package manager, build commands, code style           | Knows your entire toolchain from day one — conventions are documented, not repeated                                                                                                                           |
-| You re-explain your architecture after every context reset                                        | `architecture.md` is auto-loaded — survives compaction, restarts, everything                                                                                                                                  |
-| You correct a mistake, it apologizes, then does it again tomorrow                                 | Corrections are captured in `lessons.md` — read at every session start, never repeated                                                                                                                        |
-| The AI modifies config files to "fix" issues — linter settings, compiler configs, toolchain files | **Config protection** hook blocks edits to any protected file — forces fixing source code, not bypassing the toolchain                                                                                        |
-| A command opens a pager, launches an editor, or dumps unbounded output — session hangs            | **Terminal safety** hook intercepts dangerous patterns before they execute — pagers, `vi`, unbounded output, all blocked                                                                                      |
-| Code reviews vary wildly depending on how you prompt                                              | `/review` runs a consistent 10-point protocol every time — same rigor, zero prompt engineering                                                                                                                |
-| Research eats your main context window and you lose track                                         | `research` subagent explores in an **isolated** context — your main window stays clean                                                                                                                        |
-| Knowledge docs slowly rot as the code evolves                                                     | Self-maintenance rule + `/maintain` command detect drift and fix stale references automatically                                                                                                               |
-| You're locked into one model — switching to Haiku or a local LLM means reconfiguring everything   | Agents auto-select the **most efficient model** per task (opus for security, session model for research) — and **fall back gracefully** to whatever you're running: Haiku, Bedrock, Vertex, Ollama, LM Studio |
-| You push a PR and discover too late that your change broke 14 other files                         | **code-review-graph** scores every diff 0–100 before you push — blast radius, breaking changes, risk verdict in seconds                                                                                       |
+| 🔁 Every session today                                                                            | 🧠 With Brain — once, forever                                                                                            |
+| :------------------------------------------------------------------------------------------------ | :----------------------------------------------------------------------------------------------------------------------- |
+| You repeat your conventions every session — package manager, build commands, code style           | Knows your entire toolchain from day one — conventions are documented, not repeated                                      |
+| You re-explain your architecture after every context reset                                        | `architecture.md` is auto-loaded — survives compaction, restarts, everything                                             |
+| You correct a mistake, it apologizes, then does it again tomorrow                                 | Corrections are captured in `lessons.md` — read at every session start, never repeated                                   |
+| The AI modifies config files to "fix" issues — linter settings, compiler configs, toolchain files | **Config protection** hook blocks edits to any protected file — forces fixing source code, not bypassing the toolchain   |
+| A command opens a pager, launches an editor, or dumps unbounded output — session hangs            | **Terminal safety** hook intercepts dangerous patterns before they execute — pagers, `vi`, unbounded output, all blocked |
+| Code reviews vary wildly depending on how you prompt                                              | `/review` runs a consistent 10-point protocol every time — same rigor, zero prompt engineering                           |
+| Research eats your main context window and you lose track                                         | `research` subagent explores in an **isolated** context — your main window stays clean                                   |
+| Knowledge docs slowly rot as the code evolves                                                     | Self-maintenance rule + `/maintain` command detect drift and fix stale references automatically                          |
+| You're locked into one model — switching to Haiku or a local LLM means reconfiguring everything   | Agents pick the best model per task — **falls back** to Ollama, LM Studio, Haiku, any provider                           |
+| You push a PR and discover too late that your change broke 14 other files                         | **code-review-graph** scores every diff 0–100 before you push — blast radius, breaking changes, risk verdict in seconds  |
 
 **After a few sessions, your AI will know things about your codebase that even some team members don't.**
 
@@ -238,12 +230,12 @@ Agents declare their optimal model (`model: opus` for review/security, session m
 
 This isn't a static config that rots. It's a **living system** with six feedback loops:
 
-1. 📋 **Exit checklist** — every turn ends by capturing corrections and new patterns
+1. 📋 **Exit checklist** — captures corrections at the end of every turn, so they stick
 2. 🧠 **`lessons.md`** — accumulated wisdom, read at every session start — impossible to skip
-3. 🐛 **`CLAUDE_ERRORS.md`** — after 3+ recurrences, error patterns promote to rules
-4. 🔁 **Session hooks** — auto-inject task state on startup, resume, compaction — context survives everything
+3. 🐛 **Error promotion** — same mistake 3 times? Becomes a permanent rule automatically
+4. 🔁 **Session hooks** — context survives restarts, compaction, resume — nothing gets lost
 5. 🔍 **`/maintain`** — audits all docs for stale paths, dead references, drift
-6. 🗺️ **graphify git hooks** — auto-rebuild knowledge graph on every commit and branch switch
+6. 🗺️ **Auto-updating graph** — knowledge graph rebuilds on every commit and branch switch
 
 ---
 
@@ -253,15 +245,9 @@ Security isn't one mechanism — it's **two layers** working together:
 
 ### 🚫 Layer 1: Permissions — What the AI Can't Even Attempt
 
-`settings.json` defines hard boundaries on what Claude Code is allowed to do. Denied commands **cannot execute** — no amount of context pressure or reasoning overrides them:
+`settings.json` defines hard boundaries. The AI **can never push code** — it presents a summary and waits for your confirmation. Destructive commands (`rm -rf /`, `DROP DATABASE`, deployment scripts) are blocked at the permission layer. Only explicitly allowed tool patterns run; everything else requires your approval.
 
-| Rule                          | What it prevents                                                                    |
-| :---------------------------- | :---------------------------------------------------------------------------------- |
-| **Deny `git push`**           | The AI can never push code — it presents a summary and waits for your confirmation  |
-| **Deny destructive commands** | `rm -rf /`, `DROP DATABASE`, deployment scripts — blocked at the permission layer   |
-| **Allow-list patterns**       | Only explicitly permitted tool patterns can run — everything else requires approval |
-
-> These aren't suggestions. They're **hard permission boundaries** enforced by Claude Code itself — before the AI even sees the command.
+These aren't suggestions — they're **hard permission boundaries** enforced before the AI even sees the command.
 
 ### 🪝 Layer 2: Hooks — What Gets Intercepted at Runtime
 
@@ -279,20 +265,20 @@ Plus 13 more — session recovery, batch formatting, test reminders, identity re
 
 ## 🔌 Plugin Ecosystem
 
-The bootstrap auto-installs a **ten-tool stack** — each tool occupies a distinct, non-overlapping niche. Six core intelligence tools + four efficiency/automation tools:
+Ten plugins available — pick what fits your stack. Run `setup-plugins.sh` and choose a strategy (`recommended`, `full`, `personalize`, or `none`):
 
-| Tool                                                                                        | Axis                                                                                      |          Install           |               Impact                |
-| :------------------------------------------------------------------------------------------ | :---------------------------------------------------------------------------------------- | :------------------------: | :---------------------------------: |
-| **[graphify](https://github.com/safishamsi/graphify)**                                      | 🗺️ Architecture snapshot — god nodes, community clusters, cross-module map                |    Auto (Python 3.10+)     |  **71.5× fewer tokens** per query   |
-| **[codebase-memory-mcp](https://github.com/DeusData/codebase-memory-mcp)**                  | 🔍 Live structural graph — call traces, blast radius, dead code, Cypher queries           |        Auto (curl)         | **120× fewer tokens** vs file reads |
-| **[cocoindex-code](https://github.com/cocoindex/cocoindex-code)**                           | 🔎 Semantic search — find code by meaning via local vector embeddings (no API key)        |    Auto (Python 3.11+)     |      Finds what grep/AST miss       |
-| **[code-review-graph](https://github.com/codebase-review/code-review-graph)**               | 🔴 Change risk analysis — risk score 0–100, blast radius, breaking changes from git diffs |    Auto (Python 3.10+)     |         Pre-PR safety gate          |
-| **[rtk](https://github.com/codemod-com/rtk)**                                               | ⚡ Command efficiency — transparently rewrites bash commands for compressed output        |        Auto (cargo)        |   **60-90% output token savings**   |
-| **[claude-mem](https://github.com/thedotmack/claude-mem)**                                  | 🧠 Cross-session memory — captures every interaction, searchable across sessions          |            Auto            | ⚠️ Disabled by default (~48% quota) |
-| **[playwright](https://github.com/anthropics/anthropic-mcp/tree/main/packages/playwright)** | 🌐 Browser automation — navigate, click, fill, snapshot web pages                         |     Auto (Node.js 18+)     |        LOW-MEDIUM token cost        |
-| **[codeburn](https://github.com/eastlondoner/codeburn)**                                    | 📊 Token observability — cost breakdown by task, model, USD                               | Optional CLI (Node.js 18+) |     Zero (reads session files)      |
-| **[caveman](https://github.com/codemod-com/caveman)**                                       | 🗣️ Response compression — terse replies (65-87% savings) + input file compression         |     Optional (Node.js)     |    **Negative** — reduces tokens    |
-| **[serena](https://github.com/codefuse-ai/serena)**                                         | 🔧 LSP symbol refactoring — rename/move/inline across entire codebase atomically          | Auto (uvx + Python 3.11+)  |           Low — on-demand           |
+| Tool                                                                                        | Axis                                                                                      |      Requires      |               Impact                |
+| :------------------------------------------------------------------------------------------ | :---------------------------------------------------------------------------------------- | :----------------: | :---------------------------------: |
+| **[graphify](https://github.com/safishamsi/graphify)**                                      | 🗺️ Architecture snapshot — god nodes, community clusters, cross-module map                |    Python 3.10+    |  **71.5× fewer tokens** per query   |
+| **[codebase-memory-mcp](https://github.com/DeusData/codebase-memory-mcp)**                  | 🔍 Live structural graph — call traces, blast radius, dead code, Cypher queries           |        curl        | **120× fewer tokens** vs file reads |
+| **[cocoindex-code](https://github.com/cocoindex/cocoindex-code)**                           | 🔎 Semantic search — find code by meaning via local vector embeddings (no API key)        |    Python 3.11+    |      Finds what grep/AST miss       |
+| **[code-review-graph](https://github.com/codebase-review/code-review-graph)**               | 🔴 Change risk analysis — risk score 0–100, blast radius, breaking changes from git diffs |    Python 3.10+    |         Pre-PR safety gate          |
+| **[rtk](https://github.com/codemod-com/rtk)**                                               | ⚡ Command efficiency — transparently rewrites bash commands for compressed output        |       cargo        |   **60-90% output token savings**   |
+| **[claude-mem](https://github.com/thedotmack/claude-mem)**                                  | 🧠 Cross-session memory — captures every interaction, searchable across sessions          |         —          | ⚠️ Disabled by default (~48% quota) |
+| **[playwright](https://github.com/anthropics/anthropic-mcp/tree/main/packages/playwright)** | 🌐 Browser automation — navigate, click, fill, snapshot web pages                         |    Node.js 18+     |        LOW-MEDIUM token cost        |
+| **[codeburn](https://github.com/eastlondoner/codeburn)**                                    | 📊 Token observability — cost breakdown by task, model, USD                               | Node.js 18+ (CLI)  |     Zero (reads session files)      |
+| **[caveman](https://github.com/codemod-com/caveman)**                                       | 🗣️ Response compression — terse replies (65-87% savings) + input file compression         |      Node.js       |    **Negative** — reduces tokens    |
+| **[serena](https://github.com/codefuse-ai/serena)**                                         | 🔧 LSP symbol refactoring — rename/move/inline across entire codebase atomically          | uvx + Python 3.11+ |           Low — on-demand           |
 
 > 📚 **Full plugin reference:** [claude/plugins.md](claude/plugins.md) — usage examples, install commands, toggle scripts, token economics.
 
@@ -322,42 +308,67 @@ Three worked examples in `claude/_examples/` — API domain, database domain, me
 ## ❓ FAQ
 
 <details>
-<summary><strong>💻 Platforms, prerequisites, compatibility</strong></summary>
+<summary><strong>💻 What platforms and languages are supported?</strong></summary>
 
 **Platforms:** Linux ✅, macOS ✅, Windows WSL2 ✅, Git Bash ✅, CMD/PowerShell ❌ (Claude Code requires a Unix shell).
 
-**Prerequisites:** `git`, `bash` ≥ 3.2 (≥ 4 for `/bootstrap`), `jq`. Optional: Python 3.10+ for graphify.
+**Prerequisites:** `git`, `bash` ≥ 3.2 (≥ 4 for `/bootstrap`), `jq`. Optional: Python 3.10+ for plugins like graphify.
 
-**Languages:** 25+ — TypeScript, Python, Go, Rust, Java, Kotlin, Ruby, PHP, C#, C/C++, Swift, Dart, Elixir, and more. Knowledge docs are language-agnostic; stack-specific details are auto-detected.
+**Languages:** 25+ — TypeScript, Python, Go, Rust, Java, Kotlin, Ruby, PHP, C#, C/C++, Swift, Dart, Elixir, and more. The knowledge docs are language-agnostic; stack-specific details are auto-detected by the discovery engine.
 
-macOS note: `discover.sh` requires Bash 4+ (`brew install bash`). Run `bash install.sh --check` to verify your environment.
-
-</details>
-
-<details>
-<summary><strong>🔄 Existing config? Tokens? Local LLMs? Copilot-only?</strong></summary>
-
-**Existing config:** The installer detects it and enters **upgrade mode** — only missing pieces are added, your knowledge is never overwritten.
-
-**Token cost:** ~3-4K always-on, ~200-400 per auto-loaded rule, ~1-2K per on-demand doc. See the [Three-Layer Token Strategy](#-the-three-layer-token-strategy).
-
-**Local LLMs / smaller models:** Agents fall back to session model when the declared model is unavailable — Ollama, LM Studio, Haiku, any provider. Auto-scales to model capability.
-
-**Copilot-only:** Install with `--copilot` for 37 commands, 5 agents, 4 hooks. The `claude/*.md` docs are plain Markdown — any AI reads them.
+> 💡 macOS ships Bash 3.2 — `discover.sh` needs Bash 4+ (`brew install bash`). Run `bash install.sh --check` to verify everything in 1 second.
 
 </details>
 
 <details>
-<summary><strong>⚖️ What's the difference between this and cursor rules / .cursorrules?</strong></summary>
+<summary><strong>🔄 I already have a CLAUDE.md / claude/ config — will this overwrite it?</strong></summary>
 
-Scope. Cursor rules are a flat instruction file. This is a **multi-layered knowledge architecture** with lifecycle hooks, subagents, skills, session persistence, self-maintenance, and multi-tool support. It's the difference between a sticky note and an operating system.
+Never. The installer detects your existing config and enters **upgrade mode** — it adds only what's missing and never touches your knowledge files (`CLAUDE.md`, `lessons.md`, architecture docs, settings). A full backup is auto-created before any change.
+
+</details>
+
+<details>
+<summary><strong>💰 How much does it cost in tokens?</strong></summary>
+
+Very little. The system is designed to be **cheap by default** — your AI doesn't load 50K tokens when you ask it to fix a typo:
+
+- **Always on:** ~3-4K tokens (operating protocol + critical rules)
+- **Auto-loaded:** ~200-400 tokens per rule (only when editing matching files)
+- **On-demand:** ~1-2K tokens per doc (only when the task needs it)
+
+See the [Three-Layer Token Strategy](#-the-three-layer-token-strategy) for the full breakdown.
+
+</details>
+
+<details>
+<summary><strong>🤖 Does it work with local LLMs / Ollama / LM Studio?</strong></summary>
+
+Yes. Agents declare their optimal model but **fall back gracefully** to whatever you're running — Ollama, LM Studio, Haiku, Bedrock, any provider. The knowledge docs are plain Markdown — any model can read them. No API keys required for the core system.
+
+</details>
+
+<details>
+<summary><strong>🤝 Can I use this with Copilot only — no Claude Code?</strong></summary>
+
+Absolutely. Install with `--copilot` to get 37 slash commands, 5 custom agents, and 4 lifecycle hooks — all generated from the Claude equivalents. The `.github/` config works immediately after install. Type `/bootstrap` in Copilot Chat for the full setup.
+
+</details>
+
+<details>
+<summary><strong>⚖️ How is this different from Cursor rules / .cursorrules?</strong></summary>
+
+Scope. Cursor rules are a flat instruction file — the AI reads it _if it feels like it_. Brain is a **multi-layered enforcement architecture** with lifecycle hooks that block before execution, subagents that run in isolated contexts, skills that activate per task, session memory that persists across restarts, and self-maintenance that keeps docs current.
+
+It's the difference between a sticky note and an operating system.
 
 </details>
 
 <details>
 <summary><strong>👥 Is this just for solo developers?</strong></summary>
 
-Not at all! Version-controlled, shared across the team (**TEAM mode**, default). Not ready to share? **SOLO mode**: add `CLAUDE.md`, `claude/`, `.claude/` to `.gitignore` — `.github/` Copilot config stays committed for the team.
+Works great solo, but it's designed for teams. Everything is version-controlled and shared by default (**TEAM mode**).
+
+Not ready to share your Brain with the team? Switch to **SOLO mode**: add `CLAUDE.md`, `claude/`, `.claude/` to `.gitignore` — the `.github/` Copilot config stays committed for everyone.
 
 </details>
 
