@@ -445,7 +445,8 @@ Write the full report (use FRESH or UPGRADE template from `claude/bootstrap/REFE
 After the report is written and validated, delete the bootstrap scaffolding (it's single-use — re-clone from template for future upgrades):
 
 ```bash
-rm -rf claude/bootstrap/
+rm -rf claude/bootstrap/ claude/tasks/.discovery.env claude/tasks/*-discovery.env claude/tasks/bootstrap-report.md claude/tasks/.bootstrap-*.txt
+
 echo "✅ Bootstrap scaffolding removed"
 ```
 
