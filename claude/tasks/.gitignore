@@ -7,6 +7,12 @@ mr-*
 
 # Discovery env (regenerated on every bootstrap)
 .discovery.env
+*-discovery.env
+
+# Bootstrap artifacts (single-use, deleted at end of Phase 5)
+bootstrap-report.md
+.bootstrap-plan.txt
+.bootstrap-progress.txt
 
 # Session logs
 session-logs/
