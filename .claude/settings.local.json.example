@@ -1,5 +1,5 @@
 {
-  "$schema": "https://docs.anthropic.com/claude-code/settings-schema.json",
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "_comment": "Copy this file to .claude/settings.local.json for personal overrides. It is auto-gitignored.",
 
   "hooks": {

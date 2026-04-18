@@ -173,13 +173,16 @@ MERGED=$(jq --slurpfile tmpl "$TEMPLATE" --arg exclude "$EXCLUDE_PATTERN" '
   ) |
 
   # 8. Other fields: user wins, template fills gaps
-  # Only process top-level keys that are objects/scalars (skip already-merged complex keys)
+  # Exception: $schema is always updated to template value — a Claude Code requirement,
+  # not a user preference. Stale schema URLs cause "Settings Error" on every session start.
   . as $current |
   ($tmpl | to_entries | map(select(
     .key as $k | ["hooks","permissions","spinnerTipsOverride","companyAnnouncements","env"] | index($k) | not
   )) | reduce .[] as $e (
     $current;
-    if has($e.key) then . else . + {($e.key): $e.value} end
+    if $e.key == "$schema" then . + {($e.key): $e.value}
+    elif has($e.key) then .
+    else . + {($e.key): $e.value} end
   ))
 ' "$TARGET_FILE") || {
   echo "❌ jq merge failed" >&2
