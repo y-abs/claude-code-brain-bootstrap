@@ -446,6 +446,8 @@ After the report is written and validated, delete the bootstrap scaffolding (it'
 
 ```bash
 rm -rf claude/bootstrap/ claude/tasks/.discovery.env claude/tasks/*-discovery.env claude/tasks/bootstrap-report.md claude/tasks/.bootstrap-*.txt
+# Old bootstrap versions (pre-v2.0) left these at repo root — remove if present
+rm -f BOOTSTRAP_PROMPT.md validate.sh .yarnrc .yarnrc.yml yarn.lock bunfig.toml bun.lockb
 
 echo "✅ Bootstrap scaffolding removed"
 ```
