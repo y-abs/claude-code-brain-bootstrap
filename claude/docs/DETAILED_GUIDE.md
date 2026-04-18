@@ -7,8 +7,8 @@
   </p>
   <p align="center">
     <a href="../../LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT License"></a>
-    <a href="#"><img src="https://img.shields.io/badge/100+_files-10_categories-blueviolet" alt="100+ files"></a>
-    <a href="#"><img src="https://img.shields.io/badge/26_commands-14_hooks-brightgreen" alt="Automation"></a>
+    <a href="#"><img src="https://img.shields.io/badge/200+_files-10_categories-blueviolet" alt="200+ files"></a>
+    <a href="#"><img src="https://img.shields.io/badge/31_commands-16_hooks-brightgreen" alt="Automation"></a>
   </p>
 </p>
 
@@ -35,9 +35,9 @@
   - [🤖 AI Subagents — `.claude/agents/`](#-ai-subagents--claudeagents-5-files)
   - [🎓 Skills — `.claude/skills/`](#-skills--claudeskills-18-files)
   - [📏 Path-Scoped Rules — `.claude/rules/`](#-path-scoped-rules--clauderules-13-files)
-  - [🤝 GitHub Copilot — `.github/`](#-github-copilot--github-8-files)
+  - [🤝 GitHub Copilot — `.github/`](#-github-copilot--github-8-base-files--50-with---copilot)
   - [🧠 Memory — `claude/tasks/`](#-memory--claudetasks-5-files)
-  - [🔧 Scripts — `claude/scripts/`](#-scripts--claudescripts-14-files)
+  - [🔧 Scripts — `claude/scripts/`](#-scripts--claudescripts-22-files)
 - [🔬 Deep Dives](#-deep-dives)
   - [📂 The 10 Configuration Categories](#-the-10-configuration-categories)
   - [🔄 Bootstrap: How It Actually Works](#-bootstrap-how-it-actually-works)
@@ -58,7 +58,7 @@
 
 ## 🗺️ The Big Picture
 
-Claude Code Brain is **100+ files** organized into **10 categories** that turn your AI coding assistant from a talented stranger into a senior engineer who knows your codebase inside out.
+Claude Code Brain is **200+ files** organized into **10 categories** that turn your AI coding assistant from a talented stranger into a senior engineer who knows your codebase inside out.
 
 Here's the mental model:
 
@@ -182,7 +182,9 @@ Your repo
 ├── 🤖 .github/
 │   ├── copilot-instructions.md     ← GitHub Copilot root config
 │   ├── instructions/               ← Scoped rules (auto-loaded by glob)
-│   └── prompts/                    ← Reusable prompts (one-click)
+│   ├── prompts/                    ← 37 reusable prompts (one-click)
+│   ├── agents/                     ← 5 custom agents (with --copilot)
+│   └── hooks/                      ← 4 lifecycle hooks (with --copilot)
 │
 └── 🚫 .claudeignore                ← "Don't even look at these files"
 ```
@@ -370,9 +372,11 @@ Short, sharp rules that auto-load when the AI touches matching files:
 | 📂 `domain/_template.md`      | _(template)_               | Business domain template — copy for each domain         |
 | 📄 `_template-domain-rule.md` | _(template)_               | Copy → customize → profit                               |
 
-### 🤝 GitHub Copilot — `.github/` (8 files)
+### 🤝 GitHub Copilot — `.github/` (8 base files + 50+ with `--copilot`)
 
-Same brain, different interface. Copilot gets its own optimized config:
+Same brain, different interface. Base config works immediately after install. Full parity (agents + hooks) requires the `--copilot` flag.
+
+**Base install (always present):**
 
 | File                                           | What it does                                             |
 | :--------------------------------------------- | :------------------------------------------------------- |
@@ -385,7 +389,16 @@ Same brain, different interface. Copilot gets its own optimized config:
 | `prompts/review-rules.prompt.md`               | One-click code review against project rules              |
 | `prompts/_template.prompt.md`                  | Template for new prompts                                 |
 
-**Model selection enforcement:** Unlike Claude Code (which sets `model: opus` in agent frontmatter), Copilot has no API-level model control — the model is selected by the user in the IDE dropdown. Brain Bootstrap solves this via **instruction-level enforcement**: `copilot-instructions.md` instructs the AI to **stop and warn** if a "mini"/"flash"/"lite" model is active during planning/review/architecture tasks, requesting the user switch to the most capable model available. Quick tasks (build, lint, test, grep) run on any model. This guarantees the best available model is always used for high-reasoning work, without blocking simple tasks.
+**With `--copilot` flag (opt-in, full parity):**
+
+| Directory / Files                      | What it adds                                                                                                         |
+| :------------------------------------- | :------------------------------------------------------------------------------------------------------------------- |
+| `prompts/` (37 total)                  | All 31 base commands + 4 caveman variants + 2 extras — auto-generated from Claude Code equivalents                   |
+| `agents/` (5 files)                    | `@reviewer`, `@researcher`, `@plan-challenger`, `@security-auditor`, `@session-reviewer` — mirrors `.claude/agents/` |
+| `hooks/` (4 JSON configs)              | `session-context`, `config-protection`, `terminal-safety`, `quality-gate` — subset of the 16 Claude Code hooks       |
+| `instructions/caveman.instructions.md` | Response compression mode (disabled by default — rename to enable)                                                   |
+
+**Model selection enforcement:** Copilot has no API-level model control — the model is selected by the user in the IDE picker. Brain Bootstrap solves this via **instruction-level enforcement**: `copilot-instructions.md` stops and warns when a "mini"/"flash"/"lite" model is active for planning/review/architecture tasks. Quick tasks (build, lint, test) run on any model.
 
 ### 🧠 Memory — `claude/tasks/` (5 files)
 
@@ -399,7 +412,7 @@ The AI's persistent memory across sessions:
 | `.gitkeep`            | Ensures directory is tracked in git                                                   |
 | `.gitignore`          | Excludes temp files (counters, accumulators) from git tracking                        |
 
-### 🔧 Scripts — `claude/scripts/` (14 files)
+### 🔧 Scripts — `claude/scripts/` (22 files)
 
 The automation backbone — pure bash, zero token cost:
 
@@ -413,12 +426,20 @@ The automation backbone — pure bash, zero token cost:
 | 🛡️ `phase2-verify.sh`            | Phase 2 data-integrity check — confirms lessons/todo/settings survived Smart Merge                                                                                                                           |   ~1s   |
 | 📂 `generate-service-claudes.sh` | Auto-generates per-service `CLAUDE.md` stubs for each monorepo service directory                                                                                                                             |   ~2s   |
 | 🐙 `generate-copilot-docs.sh`    | Mirrors `claude/*.md` → `.github/copilot/` for GitHub Copilot users                                                                                                                                          |   ~2s   |
+| 💬 `generate-copilot-prompts.sh` | Auto-generates `.github/prompts/*.prompt.md` from Claude command equivalents                                                                                                                                 |   ~2s   |
+| 🤖 `generate-copilot-agents.sh`  | Auto-generates `.github/agents/*.agent.md` from Claude agent equivalents                                                                                                                                     |   ~2s   |
 | 🔌 `toggle-claude-mem.sh`        | Toggle claude-mem plugin on/off — saves API quota                                                                                                                                                            | instant |
 | 🔌 `setup-plugins.sh`            | All-in-one bootstrap plugin management — install, disable, verify, update CLAUDE.md                                                                                                                          |   ~5s   |
 | ✅ `check-creative-work.sh`      | Creative work gate check — architecture, placeholders, domain docs, IDE section                                                                                                                              |   ~1s   |
 | 🖥️ `_platform.sh`                | Portable shell helper library — detects `BRAIN_PLATFORM`, provides `sed_inplace()`, `safe_pgrep()`, `require_tool()`, `supports_unicode()`                                                                   | instant |
 | 🔍 `portability-lint.sh`         | GNU-only pattern detector — 9 checks: `head -n -N`, `grep -P`, `readlink -f`, `stat --format/stat -c`, `date -d`, bare `sed -i`, awk `\\s`/`\\w`, `< <()`. Extensible: add patterns to the top of the script |   ~1s   |
 | 🧪 `integration-test.sh`         | 17 assertions: FRESH install (9), UPGRADE (4), --check mode (1), and 3 guard scenarios: self-bootstrap, subdirectory, non-existent dir. Runs on all 3 platforms in CI                                        |  ~10s   |
+| 💾 `merge-claude-md.sh`          | Smart merge for `CLAUDE.md` during upgrades — appends missing sections with upgrade markers                                                                                                                  |   ~1s   |
+| 💾 `merge-claudeignore.sh`       | Union merge for `.claudeignore` — adds new exclusion patterns without removing existing ones                                                                                                                 | instant |
+| 💾 `merge-settings.sh`           | Deep merge for `settings.json` — merges by hook ID, your settings win on conflict                                                                                                                            |   ~1s   |
+| 📁 `migrate-tasks.sh`            | Migrates task files from old layout to current `claude/tasks/` structure                                                                                                                                     | instant |
+| 🎭 `dry-run.sh`                  | Simulate install without touching the target repo — preview what would be added/preserved                                                                                                                    |   ~2s   |
+| 🎭 `pre-creative-check.sh`       | Pre-creative gate — verifies architecture and placeholders are ready before AI creative work begins                                                                                                          |   ~1s   |
 
 ---
 
@@ -535,10 +556,11 @@ Centralized project config:
 
 #### 9. 🤝 GitHub Copilot (`.github/`)
 
-Parallel config for Copilot users:
+Parallel config for Copilot users — base install works immediately; full parity requires `--copilot`:
 
-- **Scoped instructions** — different rules for different file types
-- **Reusable prompts** — one-click test generation, code review
+- **Base:** Root instructions + 3 scoped instruction files + 2 starter prompts
+- **With `--copilot`:** 37 reusable prompts (all Claude commands + caveman variants), 5 custom agents (`@reviewer`, `@researcher`, `@plan-challenger`, `@security-auditor`, `@session-reviewer`), 4 lifecycle hooks (session context, config protection, terminal safety, quality gate)
+- **Model enforcement:** `copilot-instructions.md` stops and warns when a “mini/flash/lite” model is active for planning/review/architecture tasks
 
 #### 10. 🔌 Plugin Ecosystem
 

@@ -17,15 +17,16 @@ You're about to improve something that thousands of developers use every day to 
 
 ## 🧭 What Can I Contribute?
 
-| Area                      | Examples                                                        | Difficulty  |
-| :------------------------ | :-------------------------------------------------------------- | :---------: |
-| 🔍 **Stack detection**    | New language, framework, or package manager in `discover.sh`    |   🟢 Easy   |
-| 📚 **Documentation**      | Fix a typo, improve clarity, add a worked example               |   🟢 Easy   |
-| ⚡ **Slash commands**     | New workflow command in `.claude/commands/`                     |  🟡 Medium  |
-| 📏 **Path-scoped rules**  | New domain rule in `.claude/rules/`                             |  🟡 Medium  |
-| 🪝 **Lifecycle hooks**    | Safety patterns, quality gates in `.claude/hooks/`              | 🟠 Advanced |
-| 🤖 **Subagents / Skills** | New AI agent or skill in `.claude/agents/` or `.claude/skills/` | 🟠 Advanced |
-| 🐛 **Bug fixes**          | Something broken? Fix it!                                       |   Varies    |
+| Area                      | Examples                                                                                 | Difficulty  |
+| :------------------------ | :--------------------------------------------------------------------------------------- | :---------: |
+| 🔍 **Stack detection**    | New language, framework, or package manager in `discover.sh`                             |   🟢 Easy   |
+| 📚 **Documentation**      | Fix a typo, improve clarity, add a worked example                                        |   🟢 Easy   |
+| ⚡ **Slash commands**     | New workflow command in `.claude/commands/`                                              |  🟡 Medium  |
+| 📏 **Path-scoped rules**  | New domain rule in `.claude/rules/`                                                      |  🟡 Medium  |
+| 🪝 **Lifecycle hooks**    | Safety patterns, quality gates in `.claude/hooks/`                                       | 🟠 Advanced |
+| 🤖 **Subagents / Skills** | New AI agent or skill in `.claude/agents/` or `.claude/skills/`                          | 🟠 Advanced |
+| 🤝 **Copilot parity**     | New prompt, agent, or hook in `.github/prompts/`, `.github/agents/`, or `.github/hooks/` |  🟡 Medium  |
+| 🐛 **Bug fixes**          | Something broken? Fix it!                                                                |   Varies    |
 
 > 🎯 **Golden rule:** All contributions must be **domain-agnostic**. No project-specific content — this is a universal template that works for any repo, any language, any team.
 
@@ -65,7 +66,9 @@ Follow the patterns already in the codebase:
 | A path-scoped rule              | `.claude/rules/_template-domain-rule.md` — the template is ready for you                  |
 | A worked example                | `claude/_examples/` — three examples to follow                                            |
 | A GitHub Copilot instruction    | `.github/instructions/_template.instructions.md`                                          |
-| A reusable prompt               | `.github/prompts/_template.prompt.md`                                                     |
+| A reusable Copilot prompt       | `.github/prompts/_template.prompt.md` — mirrors the matching `.claude/commands/` file     |
+| A Copilot agent                 | Any file in `.github/agents/` — mirrors the matching `.claude/agents/` file               |
+| A Copilot hook                  | Any file in `.github/hooks/` — JSON config + script under `.github/hooks/scripts/`        |
 
 ### Step 4 — Run the validator
 
@@ -73,14 +76,14 @@ Follow the patterns already in the codebase:
 bash claude/scripts/validate.sh
 ```
 
-This runs **120+ checks** — file existence, hook executability, placeholder integrity, settings consistency, and more. **All checks must pass.**
+This runs **127+ checks** — file existence, hook executability, placeholder integrity, settings consistency, and more. **All checks must pass.**
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   ᗺB  Brain Bootstrap  ·  Validator  ·  by y-abs
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   ...
-  Results: ✅ 120 passed | ❌ 0 failed | ⚠️  0 warnings
+  Results: ✅ 137 passed | ❌ 0 failed | ⚠️  0 warnings
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
@@ -110,13 +113,15 @@ git push origin feat/my-awesome-contribution
 
 Then open a Pull Request on GitHub. The **PR template will auto-load** — fill in every section.
 
-**CI will automatically run 3 checks on your PR:**
+**CI will automatically run 5 checks on your PR:**
 
-1. ✅ **Template Validation** — `claude/scripts/validate.sh` (120+ checks)
-2. 🐚 **ShellCheck** — lints every `.sh` file for bugs
-3. 🔗 **Link Check** — verifies all internal links in docs
+1. ✅ **Template Validation** — `claude/scripts/validate.sh` (127+ checks)
+2. 🐚 **ShellCheck** — lints every `.sh` file for bugs and bashisms
+3. 🔗 **Portability Lint** — `portability-lint.sh` catches GNU-only patterns
+4. 🌍 **Cross-Platform Validation** — `validate.sh` + `install --check` on Linux, macOS, and Windows
+5. 🧪 **Integration Tests** — `integration-test.sh` (17 assertions: FRESH, UPGRADE, --check, guards)
 
-All three must pass before your PR can be reviewed.
+All five must pass before your PR can be reviewed.
 
 ---
 
@@ -336,15 +341,17 @@ Found a bug? Something confusing in the docs? Got a feature idea?
 
 When you open a PR, this checklist auto-loads. Make sure you can check every box:
 
-- [ ] `bash claude/scripts/validate.sh` passes (120+ checks, 0 failures)
+- [ ] `bash claude/scripts/validate.sh` passes (127+ checks, 0 failures)
 - [ ] Changes are domain-agnostic (no project-specific content)
 - [ ] New files are registered in `claude/scripts/validate.sh` (if applicable)
 - [ ] Documentation updated (README / DETAILED_GUIDE / relevant docs)
 - [ ] Shell scripts have `#!/bin/bash` shebang + `set -euo pipefail`
+- [ ] Shell scripts pass `bash claude/scripts/portability-lint.sh` (no GNU-only patterns)
 - [ ] Hooks are executable (`chmod +x`)
 - [ ] Commit messages follow Conventional Commits
 - [ ] New placeholders use `{{UPPER_SNAKE_CASE}}` syntax (not hardcoded values)
 - [ ] Tested in a real (or fresh test) repo
+- [ ] If adding a Copilot prompt/agent/hook: generated via `generate-copilot-prompts.sh` or following the pattern in `.github/`
 
 ---
 
@@ -370,10 +377,13 @@ Update `CHANGELOG.md`:
 
 ```bash
 bash claude/scripts/validate.sh
-# Must show: Results: ✅ 120 passed | ❌ 0 failed | ⚠️  0 warnings
+# Must show: Results: ✅ 137 passed | ❌ 0 failed | ⚠️  0 warnings
 
-shellcheck .claude/hooks/*.sh claude/scripts/*.sh .claude/skills/cross-layer-check/scripts/*.sh install.sh
-# Must show: 0 errors, 0 warnings
+shellcheck --severity=warning .claude/hooks/*.sh claude/scripts/*.sh .claude/skills/cross-layer-check/scripts/*.sh install.sh
+# Must show: 0 warnings
+
+bash claude/scripts/portability-lint.sh
+# Must show: 0 errors
 ```
 
 > 💡 Install ShellCheck: `sudo apt install shellcheck` (Linux) or `brew install shellcheck` (macOS)
@@ -386,11 +396,13 @@ git commit -m "chore: release v<VERSION>"
 git push origin release/v<VERSION>
 ```
 
-Open a PR targeting `main`. The **CI will run 3 checks automatically**:
+Open a PR targeting `main`. The **CI will run 5 checks automatically**:
 
-1. ✅ Template Validation (120 checks)
-2. 🐚 ShellCheck (28 scripts)
-3. 🔗 Link Check (documentation links)
+1. ✅ Template Validation (127+ checks)
+2. 🐚 ShellCheck
+3. 🔍 Portability Lint
+4. 🌍 Cross-Platform Validation
+5. 🧪 Integration Tests
 
 **All three must pass before merging.**
 
