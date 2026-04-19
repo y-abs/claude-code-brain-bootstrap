@@ -129,7 +129,7 @@ done < "$TMPDIR/template_patterns.txt"
 
 if [ "$ADDED" -eq 0 ]; then
   echo "✅ .claudeignore: all template patterns already present ($SKIPPED checked)"
-  exit 2
+  exit 0
 fi
 
 echo "  ➕ Adding $ADDED new pattern(s), $SKIPPED already present/filtered"

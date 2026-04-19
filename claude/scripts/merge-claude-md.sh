@@ -152,7 +152,7 @@ done < "$TMPDIR/template_headings.txt"
 if [ "$ADDED" -eq 0 ]; then
   echo ""
   echo "✅ CLAUDE.md: all template sections already covered ($SKIPPED matched)"
-  exit 2
+  exit 0
 fi
 
 # Budget check

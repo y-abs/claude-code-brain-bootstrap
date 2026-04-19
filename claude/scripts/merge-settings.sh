@@ -204,7 +204,7 @@ jq --sort-keys . "$TARGET_FILE" > "$TMPDIR/original.json"
 
 if diff -q "$TMPDIR/original.json" "$TMPDIR/merged.json" > /dev/null 2>&1; then
   echo "✅ settings.json: no changes needed"
-  exit 2
+  exit 0
 fi
 
 # ─── Report changes ───────────────────────────────────────────────
