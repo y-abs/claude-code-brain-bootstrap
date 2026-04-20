@@ -110,7 +110,7 @@ rm -rf /tmp/brain
 
 > 🔍 **Pre-flight check:** `bash /tmp/brain/install.sh --check` — verifies all prerequisites (git, bash, jq) before touching your repo. Runs in 1 second, no side effects.
 
-The installer **auto-detects** fresh install vs. upgrade — it never overwrites your knowledge (CLAUDE.md, lessons, architecture docs). Existing files stay untouched; only missing pieces are added. A backup is auto-created before any upgrade.
+The installer **auto-detects** fresh install vs. upgrade — it never overwrites your knowledge (CLAUDE.md, lessons, architecture docs). Existing files stay untouched; only missing pieces are added. A backup is auto-created before any upgrade. `settings.json` is deep-merged (your existing allowlist is preserved). Existing commands are never overwritten — Brain's versions only fill the gaps.
 
 ### Step 2 — Let the AI configure itself
 
