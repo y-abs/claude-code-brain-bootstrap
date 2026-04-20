@@ -21,10 +21,13 @@
 
 <p align="center">
   <a href="#-sound-familiar">Sound Familiar?</a> &nbsp;·&nbsp;
+  <a href="#-not-suggestions--guarantees">Guarantees</a> &nbsp;·&nbsp;
   <a href="#-what-changes-when-you-add-a-brain">Before & After</a> &nbsp;·&nbsp;
+  <a href="#-see-it-in-action--real-project-real-diff">Real Example</a> &nbsp;·&nbsp;
   <a href="#-get-started-in-5-minutes">5 Min Setup</a> &nbsp;·&nbsp;
   <a href="#-how-it-works-under-the-hood">Under the Hood</a> &nbsp;·&nbsp;
   <a href="#-whats-inside">200+ Files</a> &nbsp;·&nbsp;
+  <a href="#-it-gets-smarter-over-time">Gets Smarter</a> &nbsp;·&nbsp;
   <a href="#-safety-defense-in-depth">Guardrails</a> &nbsp;·&nbsp;
   <a href="#-plugin-ecosystem">Superpowers</a> &nbsp;·&nbsp;
   <a href="#-make-it-yours">Make It Yours</a> &nbsp;·&nbsp;
@@ -103,7 +106,15 @@ Every AI coding tool reads instructions. None of them enforce those instructions
 
 **After a few sessions, your AI will know things about your codebase that even some team members don't.**
 
-> 🔬 **Real example:** [See the exact files Brain added to a TypeScript / Go / Kafka stack →](https://github.com/y-abs/kafka-message-scheduler-admin/compare/main...y-abs:kafka-message-scheduler-admin:chore/claude-code-brain-bootstrap?expand=1)
+---
+
+### 👀 See It In Action — Real Project, Real Diff
+
+**Skeptical?** Here's the exact output on a TypeScript / Go / Kafka stack — every file Brain added, zero manual editing:
+
+**[→ kafka-message-scheduler-admin: before vs. after Brain Bootstrap](https://github.com/y-abs/kafka-message-scheduler-admin/compare/main...y-abs:kafka-message-scheduler-admin:chore/claude-code-brain-bootstrap?expand=1)**
+
+---
 
 > 🎯 **200+ files isn't complexity. It's the minimum architecture where instructions become guarantees.**
 
