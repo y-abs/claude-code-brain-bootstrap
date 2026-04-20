@@ -103,6 +103,8 @@ Every AI coding tool reads instructions. None of them enforce those instructions
 
 **After a few sessions, your AI will know things about your codebase that even some team members don't.**
 
+> 🔬 **Real example:** [See the exact files Brain added to a TypeScript / Go / Kafka stack →](https://github.com/y-abs/kafka-message-scheduler-admin/compare/main...y-abs:kafka-message-scheduler-admin:chore/claude-code-brain-bootstrap?expand=1)
+
 > 🎯 **200+ files isn't complexity. It's the minimum architecture where instructions become guarantees.**
 
 ---
