@@ -5,7 +5,7 @@
 </p>
 
 <h1 align="center">ᗺB - Brain Bootstrap</h1>
-<p align="center"><em>Your AI coding assistant is brilliant.<br>It just forgets everything, ignores your rules, and breaks your conventions.<br><strong>Brain doesn't hope the AI behaves — it makes it. Permanently.</strong></em></p>
+<p align="center"><em>Your AI coding assistant is brilliant.<br>It just ignores your rules, breaks your conventions, forgets everything.<br><strong>Brain doesn't hope the AI behaves — it makes it. Permanently.</strong></em></p>
 <p align="center"><sub>by <a href="https://github.com/y-abs">y-abs</a> · no third-party installs without your explicit approval</sub></p>
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT License"></a>
