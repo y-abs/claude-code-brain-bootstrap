@@ -108,13 +108,17 @@ fi
 # Prevents bypass via hand-edited .discovery.env.
 if ! $FORCE; then
   _HAS_MANIFEST=false
-  for _m in package.json Cargo.toml go.mod pyproject.toml pom.xml build.gradle pubspec.yaml mix.exs setup.py requirements.txt composer.json Gemfile CMakeLists.txt Makefile deno.json; do
+  for _m in package.json project.json Cargo.toml go.mod pyproject.toml pom.xml build.gradle pubspec.yaml mix.exs setup.py requirements.txt composer.json Gemfile CMakeLists.txt Makefile deno.json; do
     if [ -f "$_m" ]; then _HAS_MANIFEST=true; break; fi
   done
-  if ! $_HAS_MANIFEST && [ -f "claude/bootstrap/PROMPT.md" ] && [ -d "claude/_examples" ]; then
+  _IS_TEMPLATE_REPO=false
+  if git remote -v 2>/dev/null | grep -q 'claude-code-brain-bootstrap'; then
+    _IS_TEMPLATE_REPO=true
+  fi
+  if ! $_HAS_MANIFEST && $_IS_TEMPLATE_REPO; then
     echo ""
-    echo "🛑 SELF-BOOTSTRAP BLOCKED — No project manifest found (package.json, Cargo.toml, etc.)"
-    echo "   This appears to be the template repository, not a real project."
+    echo "🛑 SELF-BOOTSTRAP BLOCKED — This is the claude-code-brain-bootstrap template repository."
+    echo "   Running populate-templates.sh here would destroy the {{PLACEHOLDER}} tokens."
     echo "   Copy the template files into your project directory first."
     echo "   To force anyway: add --force flag."
     echo ""
