@@ -19,7 +19,7 @@
 </p>
 
 <p align="center">
-  <a href="#-sound-familiar">Sound Familiar?</a> &nbsp;·&nbsp;
+  <a href="#-what-this-is">What This Is</a> &nbsp;·&nbsp;
   <a href="#-not-suggestions--guarantees">Guarantees</a> &nbsp;·&nbsp;
   <a href="#-what-changes-when-you-add-a-brain">Before & After</a> &nbsp;·&nbsp;
   <a href="#-see-it-in-action--real-project-real-diff">Real Example</a> &nbsp;·&nbsp;
@@ -36,40 +36,30 @@
 
 ---
 
-## 🤔 Sound Familiar?
+## 💡 What This Is
 
-You open your 50-service monorepo. You ask your AI coding assistant to add a feature.
+**Brain Bootstrap is a project configuration template — a ready-made `.claude/` folder you install once into your repo. It gives Claude Code persistent memory, enforced guardrails, and 31 built-in workflows so your AI assistant finally knows your project and stops repeating the same mistakes every session.**
 
-It doesn't know `yarn turbo build` is the right command, not `npm run build`. That you use Biome, not Prettier.
-That your `@company/utils` already has `formatDate()` — so it installs `date-fns` and writes a new one from scratch.
+---
 
-**It doesn't know your codebase. It doesn't know your team. It doesn't know your rules.**
+**The problem it solves:**
 
-You write a `CLAUDE.md`. Explicit: _"never edit tsconfig.json"_, _"always use yarn"_, _"never git push --force."_
+You ask Claude to add a feature. It uses `npm run build` — but you use `yarn turbo build`. It installs `date-fns` even though `@company/utils` already has `formatDate()`. It edits `tsconfig.json` to silence a type error — the file you explicitly said never to touch.
 
-It reads them.
+You correct it. It apologizes. Next session: same mistakes.
 
-**Then ignores them when it feels like it.**
+Claude Code is stateless by design — each session starts blank. So you end up re-explaining your stack, re-enforcing the same rules, re-correcting the same errors. Every. Single. Session. **You become the AI's memory.**
 
-It edits `tsconfig.json` to silence a type error. Rewrites your `.eslintrc` to "fix" linting.
-Runs a command that opens a pager — session hangs. Nearly drops your staging DB while "helping."
+---
 
-You correct it. It apologizes. Tomorrow: **same mistakes.**
+**What Brain Bootstrap gives you instead:**
 
-**Every session starts from zero. Every correction you made: gone.**
+- **Persistent memory** — conventions, architecture, past mistakes embedded once and never forgotten
+- **Enforced rules** — bash hooks that block violations _before_ they run, no AI judgment involved
+- **Ready-to-use workflows** — 31 slash commands (`/plan`, `/review`, `/mr` and 28 more), 18 skills, 5 specialist subagents
+- **Self-updating knowledge** — the knowledge layer grows with your codebase, session by session
 
-And it keeps going:
-
-- That architecture doc you wrote six months ago? The codebase moved on. The doc didn't.
-- Code reviews are only as good as how you prompted that day. Inconsistent, unreliable.
-- You ask it to research something — it floods your entire context and you lose the thread of what you were building.
-- You push a PR. Three days later: _"this broke 14 other files."_
-
-You become a full-time AI babysitter 🍼 — repeating the same instructions, fixing the same mistakes, re-explaining the same architecture.
-
-Session after session after session...
-
-**What if you could teach it once, enforce it automatically — and never babysit again?**
+**Install once. Correct once. It never happens again.**
 
 ---
 
