@@ -1,5 +1,0 @@
-{
-  "event": "sessionStart",
-  "description": "Inject session context: current branch, last todo state, recent lessons.",
-  "command": "bash .github/hooks/scripts/session-context.sh"
-}

@@ -93,9 +93,6 @@ if [ "${VALUES[IS_TEMPLATE_REPO]}" = "true" ] && ! $FORCE; then
   echo ""
   echo "   ✅ To bootstrap a real project, copy the template files first:"
   echo "      cp -r /path/to/claude-code-brain/{CLAUDE.md,.claude,.claudeignore,.mcp.json,claude,scripts,validate.sh} /your/project/"
-  echo "      mkdir -p /your/project/.github/{instructions,prompts}"
-  echo "      cp /path/to/claude-code-brain/.github/copilot-instructions.md /your/project/.github/"
-  echo "      cp -r /path/to/claude-code-brain/.github/{instructions,prompts} /your/project/.github/"
   echo "      cd /your/project && bash claude/scripts/discover.sh . > claude/tasks/.discovery.env 2>&1"
   echo "      bash claude/scripts/populate-templates.sh claude/tasks/.discovery.env . 2>&1"
   echo ""
@@ -133,17 +130,17 @@ fi
 declare -A PLACEHOLDER_FILES
 
 # PROJECT_NAME → 9 files
-PLACEHOLDER_FILES["PROJECT_NAME"]="CLAUDE.md claude/README.md claude/decisions.md .claude/agents/research.md .claude/agents/reviewer.md .claude/agents/plan-challenger.md .claude/hooks/identity-reinjection.sh .github/copilot-instructions.md .github/instructions/general.instructions.md"
+PLACEHOLDER_FILES["PROJECT_NAME"]="CLAUDE.md claude/README.md claude/decisions.md .claude/agents/research.md .claude/agents/reviewer.md .claude/agents/plan-challenger.md .claude/hooks/identity-reinjection.sh"
 
 # Build stack
-PLACEHOLDER_FILES["PACKAGE_MANAGER"]="claude/build.md .github/instructions/general.instructions.md"
+PLACEHOLDER_FILES["PACKAGE_MANAGER"]="claude/build.md"
 PLACEHOLDER_FILES["PACKAGE_MANAGER_VERSION"]="claude/build.md"
-PLACEHOLDER_FILES["RUNTIME"]="claude/build.md .github/instructions/general.instructions.md"
+PLACEHOLDER_FILES["RUNTIME"]="claude/build.md"
 PLACEHOLDER_FILES["RUNTIME_VERSION"]="claude/build.md"
 PLACEHOLDER_FILES["RUNTIME_VER"]="claude/build.md"
 
 # Formatter / Linter
-PLACEHOLDER_FILES["FORMATTER"]="claude/build.md .github/instructions/general.instructions.md"
+PLACEHOLDER_FILES["FORMATTER"]="claude/build.md"
 PLACEHOLDER_FILES["LINTER"]="claude/build.md .claude/commands/lint.md"
 PLACEHOLDER_FILES["LINTER_CONFIG_FILE"]=".claude/commands/lint.md"
 PLACEHOLDER_FILES["FORMATTER_COMMAND"]=".claude/hooks/stop-batch-format.sh"
@@ -151,11 +148,11 @@ PLACEHOLDER_FILES["LINT_CHECK_CMD"]="claude/build.md .claude/commands/lint.md .c
 PLACEHOLDER_FILES["LINT_CHECK_PRIMARY"]=".claude/hooks/tdd-loop-check.sh"
 PLACEHOLDER_FILES["LINT_FIX_CMD"]="claude/build.md .claude/commands/lint.md"
 PLACEHOLDER_FILES["FORMAT_CMD"]="claude/build.md .claude/commands/lint.md"
-PLACEHOLDER_FILES["STYLE_RULES"]=".claude/commands/lint.md .github/instructions/general.instructions.md"
+PLACEHOLDER_FILES["STYLE_RULES"]=".claude/commands/lint.md"
 
 # Test
-PLACEHOLDER_FILES["TEST_FRAMEWORK"]=".github/instructions/testing.instructions.md .github/prompts/generate-tests.prompt.md"
-PLACEHOLDER_FILES["COVERAGE_TOOL"]=".github/instructions/testing.instructions.md"
+PLACEHOLDER_FILES["TEST_FRAMEWORK"]="claude/build.md"
+PLACEHOLDER_FILES["COVERAGE_TOOL"]="claude/build.md"
 PLACEHOLDER_FILES["TEST_CMD_ALL"]="claude/build.md .claude/commands/test.md"
 PLACEHOLDER_FILES["TEST_CMD_PRIMARY"]=".claude/hooks/tdd-loop-check.sh"
 PLACEHOLDER_FILES["TEST_CMD_SINGLE"]="claude/build.md .claude/commands/test.md"
@@ -346,18 +343,6 @@ if [ -f "$GENERATE_SCRIPT" ] && { [ "$SERVICE_COUNT" -gt 0 ] 2>/dev/null || [ -n
     echo "  📁 Would generate per-service CLAUDE.md stubs (monorepo with $SERVICE_COUNT services)"
   else
     bash "$GENERATE_SCRIPT" . 2>&1
-  fi
-fi
-
-# ─── Special: GitHub Copilot domain docs mirror ──────────────────
-# After all domain docs are populated, copy them to .github/copilot/ for Copilot users.
-# This runs AFTER creative population, so it's also called in post-bootstrap as a catch-all.
-COPILOT_SCRIPT="claude/scripts/generate-copilot-docs.sh"
-if [ -f "$COPILOT_SCRIPT" ]; then
-  if $DRY_RUN; then
-    echo "  📋 Would generate GitHub Copilot domain docs mirror"
-  else
-    bash "$COPILOT_SCRIPT" . 2>&1
   fi
 fi
 

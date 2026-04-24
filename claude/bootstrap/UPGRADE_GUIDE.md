@@ -19,7 +19,7 @@ If no backup exists (you copied template files manually without running install.
 
 ```bash
 # Only if install.sh was NOT used
-tar czf claude/tasks/.pre-upgrade-backup.tar.gz CLAUDE.md .claudeignore .claude/ claude/ .github/ 2>/dev/null || true
+tar czf claude/tasks/.pre-upgrade-backup.tar.gz CLAUDE.md .claudeignore .claude/ claude/ 2>/dev/null || true
 echo "✅ Pre-upgrade backup saved to claude/tasks/.pre-upgrade-backup.tar.gz"
 ```
 
@@ -72,6 +72,7 @@ bash claude/scripts/merge-settings.sh --template claude/bootstrap/_settings.json
 ```
 
 Validate:
+
 ```bash
 jq . .claude/settings.json > /dev/null && echo "✅ settings.json valid" || echo "❌ FIX REQUIRED"
 ```
@@ -106,12 +107,6 @@ echo "Agents: $(ls .claude/agents/*.md 2>/dev/null | wc -l | tr -d ' ')"
 
 ---
 
-## Step 3e: Add Missing GitHub Copilot Files
-
-> **Already handled by install.sh Phase D.** Missing `.github/` files were added. Existing `copilot-instructions.md` is NEVER overwritten.
-
----
-
 ## Step 4: Post-Merge Verification (MANDATORY)
 
 ```bash
@@ -133,6 +128,7 @@ bash claude/scripts/pre-creative-check.sh . 2>&1
 ```
 
 **You MUST follow the manifest output:**
+
 - **SKIP** domains: do NOT create or modify their docs (they already have ≥5 real patterns)
 - **ENRICH** domains: read source files, add real patterns to the existing doc
 - **CREATE** domains: create `claude/<domain>.md` + `.claude/rules/<domain>.md`

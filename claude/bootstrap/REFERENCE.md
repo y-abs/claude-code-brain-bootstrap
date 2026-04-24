@@ -51,30 +51,31 @@
 - **5 skills** — TDD discipline, root-cause tracing, changelog generation, session safety, cross-layer consistency
 - **[N] domain docs** — `claude/architecture.md`, `claude/build.md`[, list others]
 - **[N] per-service CLAUDE.md stubs** — auto-generated for each monorepo service directory
-- **[N] copilot domain docs** — mirrored to `.github/copilot/` for GitHub Copilot users
 - **Project-specific rules** — captured in `claude/rules.md`
 
 ## 🧠 Project-Specific Patterns Captured
 
 [List 3-5 critical safety rules discovered from the codebase, e.g.:]
+
 - [Pattern 1 — e.g., "Never block detector real-time loops with I/O"]
 - [Pattern 2 — e.g., "Config is load-once — changes require restart"]
 - [Pattern 3]
 
 ## 🔌 Plugin Status
-
 ```
+
 🔌 claude-mem v[X] — DISABLED (saves ~48% API quota)
-   What it does: Persistent cross-session memory — Claude remembers past decisions,
-   mistakes, and patterns without re-exploring your codebase each session.
-   → Enable when doing multi-session work:
-     bash claude/scripts/toggle-claude-mem.sh on
-   → Check status: bash claude/scripts/toggle-claude-mem.sh status
+What it does: Persistent cross-session memory — Claude remembers past decisions,
+mistakes, and patterns without re-exploring your codebase each session.
+→ Enable when doing multi-session work:
+bash claude/scripts/toggle-claude-mem.sh on
+→ Check status: bash claude/scripts/toggle-claude-mem.sh status
 
 🗺️ graphify — [INSTALLED/NOT INSTALLED]
-   What it does: Knowledge graph of your codebase — architecture questions cost
-   71.5× fewer tokens after first build. Auto-rebuilds on git commit/checkout.
-   → Build the graph: /graphify .  (first run ~5 min, then incremental)
+What it does: Knowledge graph of your codebase — architecture questions cost
+71.5× fewer tokens after first build. Auto-rebuilds on git commit/checkout.
+→ Build the graph: /graphify . (first run ~5 min, then incremental)
+
 ```
 
 ## 🤝 Collaboration Mode
@@ -84,7 +85,7 @@
 
 ## 🎯 What's Next — Get Productive in 60 Seconds
 
-1. 💾 **Commit the brain**: `git add CLAUDE.md .claudeignore claude/ .claude/ .github/`
+1. 💾 **Commit the brain**: `git add CLAUDE.md .claudeignore claude/ .claude/`
 2. 👀 **Review** `claude/architecture.md` — adjust as you explore deeper
 3. 🧪 **Try it** — run `/build`, `/test`, `/lint check` — they Just Work™
 4. 📚 **Grow the brain** — create domain docs as you work: `claude/<domain>.md`
@@ -149,7 +150,7 @@
 
 ## 🎯 Review Recommendations
 
-1. 💾 **Commit**: `git add CLAUDE.md .claudeignore claude/ .claude/ .github/`
+1. 💾 **Commit**: `git add CLAUDE.md .claudeignore claude/ .claude/`
 2. 👀 Scan `CLAUDE.md` for `<!-- Added by template upgrade -->` markers — verify they fit your project
 3. ⚙️ Check `.claude/settings.json` — review new permissions and hooks added
 4. 🧪 Run `/plan` to verify Claude has the full project context
@@ -162,4 +163,3 @@
 ⏱️ **Wall-clock total:** ~[N] minutes (includes Claude Code reasoning + tool overhead)
 ⏱️ **Progress trail:** [paste output of `cat claude/tasks/.bootstrap-progress.txt`]
 ```
-

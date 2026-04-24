@@ -1,5 +1,0 @@
-{
-  "event": "preToolUse",
-  "description": "Block modifications to linter/formatter/compiler config files. Forces fixing source code instead of weakening config.",
-  "command": "bash .github/hooks/scripts/config-protection.sh"
-}

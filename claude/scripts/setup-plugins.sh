@@ -71,7 +71,7 @@ fi
 
 # ─── Interactive mode detection ────────────────────────────────────
 # Default: interactive when stdin is a TTY, not in CI, and not inside an AI agent.
-# Both Claude Code and VS Code Copilot provide a TTY but have NO human on the
+# Both Claude Code and VS Code provide a TTY but have NO human on the
 # other end to respond to interactive prompts — detect them and force non-interactive.
 AI_AGENT_ENV=""
 # Claude Code detection
@@ -79,7 +79,7 @@ if [ -n "${CLAUDE_CODE:-}" ] || [ -n "${CLAUDE_CODE_ENTRYPOINT:-}" ] \
    || [ -n "${ANTHROPIC_MODEL:-}" ] || [ -n "${CLAUDE_CONVERSATION_ID:-}" ]; then
   AI_AGENT_ENV="claude-code"
 fi
-# VS Code Copilot detection (TERM_PROGRAM=vscode, VSCODE_* env vars)
+# VS Code detection (TERM_PROGRAM=vscode, VSCODE_* env vars)
 if [ -z "$AI_AGENT_ENV" ]; then
   if [ "${TERM_PROGRAM:-}" = "vscode" ] || [ -n "${VSCODE_GIT_ASKPASS_MAIN:-}" ] \
      || [ -n "${VSCODE_GIT_IPC_HANDLE:-}" ] || [ -n "${VSCODE_INJECTION:-}" ]; then
@@ -98,7 +98,7 @@ if [ "$INTERACTIVE_FLAG" = "interactive" ]; then
 elif [ "$INTERACTIVE_FLAG" = "non-interactive" ]; then
   INTERACTIVE_MODE=""
 elif [ -n "$AI_AGENT_ENV" ]; then
-  # Inside AI agent (Claude Code or VS Code Copilot) — never prompt
+  # Inside AI agent (Claude Code or VS Code) — never prompt
   INTERACTIVE_MODE=""
   if [ -z "$PLUGIN_STRATEGY" ]; then
     echo "ℹ️  Detected $AI_AGENT_ENV environment — using recommended strategy (override with --strategy=)" >&2
@@ -366,7 +366,7 @@ else
   echo "🔌 Plugin Setup — claude-mem..."
 
   # 1. Check if installed; if not, try synchronous install once
-  # run_with_timeout guards against TUI hangs in non-TTY environments (Claude Code, Copilot, CI)
+  # run_with_timeout guards against TUI hangs in non-TTY environments (Claude Code, VS Code, CI)
   run_with_timeout 15 claude plugin list > claude/tasks/.plugin-list.log 2>&1 || true
   if ! sed 's/\x1b\[[0-9;]*[A-Za-z]//g; s/\r//g' claude/tasks/.plugin-list.log 2>/dev/null | grep -qi 'claude-mem'; then
     echo "  ⏳ Installing claude-mem..."

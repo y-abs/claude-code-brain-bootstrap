@@ -577,18 +577,6 @@ Installs into `~/.claude/settings.json` (user-level, no project `.claude/setting
 
 **Hook coexistence:** caveman uses `SessionStart` + `UserPromptSubmit` hooks in `~/.claude/settings.json`. rtk uses `PreToolUse(Bash)` in `.claude/settings.json`. Different files, different events — **zero conflicts**.
 
-**Copilot equivalents (`.github/` — no hooks, prompt-based):**
-
-| Claude Code                         | Copilot                            | Notes                                             |
-| ----------------------------------- | ---------------------------------- | ------------------------------------------------- |
-| `/caveman` (4 levels)               | `/caveman` prompt                  | Per-conversation activation, all intensity levels |
-| `/caveman-commit`                   | `/caveman-commit` prompt           | Terse Conventional Commits                        |
-| `/caveman-review`                   | `/caveman-review` prompt           | One-line PR review comments                       |
-| `/caveman:compress <file>`          | `/caveman-compress` prompt         | File compression for token savings                |
-| Auto-activation (SessionStart hook) | `caveman.instructions.md.disabled` | Rename to `.md` to enable always-on terse mode    |
-
-> **Limitation:** Copilot has no session hooks — caveman mode is opt-in per conversation via `/caveman` prompt, or always-on via the instruction file. No dynamic toggle mid-session.
-
 ---
 
 ## codeburn — Token Cost Observability

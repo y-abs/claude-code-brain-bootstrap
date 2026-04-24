@@ -16,7 +16,7 @@ Bootstrap is **READ + CONFIGURE**. You document what exists. You do not initiali
 - Package manager configs for tools **not already in the project** (`.yarnrc.yml` if no yarn, `bunfig.toml` if no bun)
 - Any `.env*` file (blocked by permissions)
 
-The ONLY paths you write to: `claude/`, `.claude/`, `.github/`, `CLAUDE.md`, `.claudeignore`.
+The ONLY paths you write to: `claude/`, `.claude/`, `CLAUDE.md`, `.claudeignore`.
 
 ---
 
@@ -39,8 +39,6 @@ P3S2 checklist (mark ✓ as done):
   [ ] 2. CLAUDE.md (lookup table + critical patterns + hard constraints + key decisions + don't list)
   [ ] 3. Domain docs + .claude/rules/ per signal
   [ ] 4. .claude/commands/context.md (domain→file mapping)
-  [ ] 5. copilot-instructions.md (patterns + lookup table)
-  [ ] 5b. .github/instructions/ globs (actual service paths)
   [ ] 6. test.md + lint.md vs SECONDARY_LANGUAGES
   [ ] 7+8. rules/ + skills/ per domain (MANDATORY if ≥3 domains)
 P4: setup-plugins.sh (1 command — all automated)
@@ -141,7 +139,6 @@ Handles in one pass: `PROJECT_NAME` (8 files), build/test/lint/serve commands, p
 
 - **Per-service CLAUDE.md stubs** — `generate-service-claudes.sh` creates stubs for each monorepo service
 - **IDE Integration** — auto-detects `.idea/`/`.vscode/` → uncomments matching CLAUDE.md section
-- **GitHub Copilot docs** — `generate-copilot-docs.sh` mirrors `claude/*.md` → `.github/copilot/`
 
 **Read the output.** It lists remaining placeholders for creative work.
 
@@ -159,7 +156,7 @@ Handles in one pass: `PROJECT_NAME` (8 files), build/test/lint/serve commands, p
 
 > **⚠️ DEPTH RULE**: For repos with >10 services, read 2-3 actual source files per domain. A 20-line doc with 3 real patterns beats 100 lines of filler.
 
-> **⚠️ ALREADY AUTOMATED** (do NOT redo): per-service stubs, IDE section. After YOU create domain docs, re-run: `bash claude/scripts/generate-copilot-docs.sh . 2>&1` — this mirrors docs AND extracts key patterns into `.github/instructions/`. Review the generated files and **refine `applyTo` globs** to match actual project paths (e.g., `"src/services/auth-service/**"` is better than `"**/auth*/**"`).
+> **⚠️ ALREADY AUTOMATED** (do NOT redo): per-service stubs, IDE section.
 
 ---
 
@@ -227,15 +224,10 @@ This prevents duplicate docs while ensuring gaps are filled. The manifest overri
      - Reporting / analytics → `claude/reporting.md` + `.claude/rules/reporting.md`
      - User onboarding / registration → `claude/enrollment.md` + `.claude/rules/enrollment.md`
    - **MANDATORY**: Every path in CLAUDE.md lookup table MUST exist on disk. Create stubs if needed.
-   - Re-run after creating: `bash claude/scripts/generate-copilot-docs.sh . 2>&1`
 
 4. **`.claude/commands/context.md`** — Add domain→file mapping for each new domain doc
 
-5. **`.github/copilot-instructions.md`** — Fill `<!-- {{CRITICAL_PATTERNS}} -->` with same patterns as CLAUDE.md. Also sync the lookup table: for every row in CLAUDE.md's `Mandatory Reads` table, add a matching row to copilot-instructions.md pointing to the same `claude/<domain>.md` file. The template ships with 5 generic rows — expand to match ALL your domains.
-
-5b. **Refine `.github/instructions/` globs** — `generate-copilot-docs.sh` creates instruction files with heuristic globs (e.g., `**/webhook*/**`). Review each and replace with **actual project paths** (e.g., `"src/services/notification/**,src/lib/adapters/**"`). Precise globs = instructions load only when truly relevant.
-
-6. **Multi-language command validation** — Check `.claude/commands/test.md` and `lint.md` against `SECONDARY_LANGUAGES` from discovery. Every **actively developed** language must be reachable. **Exception**: secondary languages that are only build utilities (e.g., `py` scripts or `sh` hooks in a `pnpm`/TypeScript project) do NOT need dedicated pytest/ruff entries — adding them creates phantom commands that never run. Use `PRIMARY_LANGUAGE` + `PACKAGE_MANAGER` to distinguish dev languages from tooling languages.
+5. **Multi-language command validation** — Check `.claude/commands/test.md` and `lint.md` against `SECONDARY_LANGUAGES` from discovery. Every **actively developed** language must be reachable. **Exception**: secondary languages that are only build utilities (e.g., `py` scripts or `sh` hooks in a `pnpm`/TypeScript project) do NOT need dedicated pytest/ruff entries — adding them creates phantom commands that never run. Use `PRIMARY_LANGUAGE` + `PACKAGE_MANAGER` to distinguish dev languages from tooling languages.
 
 > The completion check runs at the end of Phase 3 (below). Continue to recommended items 7–13.
 
@@ -262,9 +254,7 @@ This prevents duplicate docs while ensuring gaps are filled. The manifest overri
 
 ##### 🔵 BONUS — If time permits.
 
-12. **Domain `.github/prompts/`** — DB migrations → `create-migration.prompt.md`; Kafka → `debug-messaging.prompt.md`; state machines → `trace-lifecycle.prompt.md`. Use `_template.prompt.md`.
-
-13. **How-To guides** (skip for simple repos) — If >15 services AND shared enums: `claude/how-to-<procedure>.md`. Structure: Prerequisites → Steps → Verification → Common Mistakes.
+12. **How-To guides** (skip for simple repos) — If >15 services AND shared enums: `claude/how-to-<procedure>.md`. Structure: Prerequisites → Steps → Verification → Common Mistakes.
 
 ---
 
@@ -274,11 +264,7 @@ This prevents duplicate docs while ensuring gaps are filled. The manifest overri
 bash claude/scripts/check-creative-work.sh . 2>&1
 ```
 
-Fix any ❌. IDE ⚠️: if `.idea/`/`.vscode/` wasn't detected (fresh clone), uncomment IntelliJ section by default. Then re-run copilot docs:
-
-```bash
-bash claude/scripts/generate-copilot-docs.sh . 2>&1
-```
+Fix any ❌. IDE ⚠️: if `.idea/`/`.vscode/` wasn't detected (fresh clone), uncomment IntelliJ section by default.
 
 **Parallelize**: items within each tier are independent — edit multiple files simultaneously.
 
@@ -323,18 +309,18 @@ Present this choice to the user (copy-paste friendly):
 
 Present each plugin with a brief description. Ask which to **skip** (default = install all):
 
-| #   | Plugin                  | Tier           | What it does                                       | Install time |
-| --- | ----------------------- | -------------- | -------------------------------------------------- | ------------ |
-| 1   | **claude-mem**          | ✅ Recommended | Cross-session memory (SQLite + ChromaDB)           | ~30s         |
+| #   | Plugin                  | Tier           | What it does                                       | Install time                          |
+| --- | ----------------------- | -------------- | -------------------------------------------------- | ------------------------------------- |
+| 1   | **claude-mem**          | ✅ Recommended | Cross-session memory (SQLite + ChromaDB)           | ~30s                                  |
 | 2   | **rtk**                 | 💡 Optional    | Token optimizer (60-90% fewer output tokens)       | ~3-7 min (Rust compilation, may fail) |
-| 3   | **codebase-memory-mcp** | ✅ Recommended | Structural graph (14 MCP tools, 120× fewer tokens) | ~10s         |
-| 4   | **graphify**            | ⚠️ Heavy       | Knowledge graph (communities, god-node detection)  | ~3-5 min     |
-| 5   | **cocoindex-code**      | ⚠️ Heavy       | Semantic vector search (~1 GB torch download)      | ~5-15 min    |
-| 6   | **code-review-graph**   | ⚠️ Heavy       | Change risk analysis (29 MCP tools)                | ~3-5 min     |
-| 7   | **playwright-mcp**      | 💡 Optional    | Browser automation (~300 MB Chromium)              | ~2-3 min     |
-| 8   | **codeburn**            | 💡 Optional    | Token cost dashboard                               | ~10s         |
-| 9   | **caveman**             | 💡 Optional    | Response compression (65-87% fewer tokens)         | ~10s         |
-| 10  | **serena**              | 💡 Optional    | LSP refactoring MCP (rename/move/inline)           | ~30s         |
+| 3   | **codebase-memory-mcp** | ✅ Recommended | Structural graph (14 MCP tools, 120× fewer tokens) | ~10s                                  |
+| 4   | **graphify**            | ⚠️ Heavy       | Knowledge graph (communities, god-node detection)  | ~3-5 min                              |
+| 5   | **cocoindex-code**      | ⚠️ Heavy       | Semantic vector search (~1 GB torch download)      | ~5-15 min                             |
+| 6   | **code-review-graph**   | ⚠️ Heavy       | Change risk analysis (29 MCP tools)                | ~3-5 min                              |
+| 7   | **playwright-mcp**      | 💡 Optional    | Browser automation (~300 MB Chromium)              | ~2-3 min                              |
+| 8   | **codeburn**            | 💡 Optional    | Token cost dashboard                               | ~10s                                  |
+| 9   | **caveman**             | 💡 Optional    | Response compression (65-87% fewer tokens)         | ~10s                                  |
+| 10  | **serena**              | 💡 Optional    | LSP refactoring MCP (rename/move/inline)           | ~30s                                  |
 
 Collect the user's answer, then build the `--skip=` flag. Examples:
 
@@ -409,7 +395,6 @@ CLAUDE.local.md
 claude/
 .claude/
 .mcp.json
-# Keep .github/ committed — Copilot config benefits the team even in SOLO mode
 GITIGNORE
 ```
 
@@ -417,7 +402,7 @@ In the report, always include both options:
 
 ```
 🤝 Mode: TEAM (default)
-   → Commit: git add CLAUDE.md .claudeignore claude/ .claude/ .github/
+   → Commit: git add CLAUDE.md .claudeignore claude/ .claude/
    → Switch to SOLO later: echo -e '\nCLAUDE.md\nclaude/\n.claude/\n.claudeignore\n.mcp.json' >> .gitignore
 ```
 

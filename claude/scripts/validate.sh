@@ -50,7 +50,7 @@ if $IS_TEMPLATE; then
   else
     fail "CLAUDE.md missing {{PROJECT_NAME}} — template was corrupted by self-bootstrap! Restore: git checkout -- CLAUDE.md"
   fi
-  _PH_COUNT=$(grep -rEc '\{\{[A-Z_]+\}\}' CLAUDE.md claude/ .claude/ .github/ 2>/dev/null | awk -F: '{s+=$2} END {print s+0}' || echo 0)
+  _PH_COUNT=$(grep -rEc '\{\{[A-Z_]+\}\}' CLAUDE.md claude/ .claude/ 2>/dev/null | awk -F: '{s+=$2} END {print s+0}' || echo 0)
   if [ "$_PH_COUNT" -ge 50 ]; then
     pass "Template has $_PH_COUNT placeholders (healthy)"
   else
@@ -200,26 +200,10 @@ for rule in terminal-safety self-maintenance _template-domain-rule quality-gates
   if [ -f ".claude/rules/$rule.md" ]; then pass "rule: $rule"; else fail "MISSING rule: $rule.md"; fi
 done
 
-# 8. GitHub Copilot files
-echo ""
-echo "🐙 GitHub Copilot..."
-COPILOT_FILES=(
-  ".github/copilot-instructions.md"
-  ".github/instructions/general.instructions.md"
-  ".github/instructions/testing.instructions.md"
-  ".github/instructions/_template.instructions.md"
-  ".github/prompts/generate-tests.prompt.md"
-  ".github/prompts/review-rules.prompt.md"
-  ".github/prompts/_template.prompt.md"
-)
-for f in "${COPILOT_FILES[@]}"; do
-  if [ -f "$f" ]; then pass "$f"; else fail "MISSING: $f"; fi
-done
-
-# 8b. Scripts are executable
+# 8. Scripts are executable
 echo ""
 echo "🔧 Scripts..."
-for script in claude/scripts/canary-check.sh claude/scripts/toggle-claude-mem.sh claude/scripts/discover.sh claude/scripts/populate-templates.sh claude/scripts/post-bootstrap-validate.sh claude/scripts/generate-service-claudes.sh claude/scripts/generate-copilot-docs.sh claude/scripts/phase2-verify.sh claude/scripts/setup-plugins.sh claude/scripts/check-creative-work.sh claude/scripts/validate.sh; do
+for script in claude/scripts/canary-check.sh claude/scripts/toggle-claude-mem.sh claude/scripts/discover.sh claude/scripts/populate-templates.sh claude/scripts/post-bootstrap-validate.sh claude/scripts/generate-service-claudes.sh claude/scripts/phase2-verify.sh claude/scripts/setup-plugins.sh claude/scripts/check-creative-work.sh claude/scripts/validate.sh; do
   if [ -f "$script" ]; then
     if [ -x "$script" ]; then pass "$script (executable)"; else fail "$script exists but NOT executable — run: chmod +x $script"; fi
   else
@@ -243,7 +227,7 @@ else
   # If a contributor accidentally runs bootstrap on the template itself,
   # project-specific data leaks into template files. This check catches that.
   FORBIDDEN_TERMS='my-company|my-project|example\.com|TODO_REPLACE'
-  TEMPLATE_PATHS="CLAUDE.md CLAUDE.local.md.example .claudeignore claude/ .claude/ .github/"
+  TEMPLATE_PATHS="CLAUDE.md CLAUDE.local.md.example .claudeignore claude/ .claude/"
   read -ra _tpath_arr <<< "$TEMPLATE_PATHS"
   HITS=$(grep -rniE "$FORBIDDEN_TERMS" "${_tpath_arr[@]}" --include='*.md' --include='*.json' --include='*.sh' 2>/dev/null | grep -v '.git/' | grep -v 'validate.sh' | grep -v '_template' | grep -v '_examples' | grep -v 'claude/tasks/' | grep -v 'claude/docs/' | grep -v 'CONTRIBUTING' || true)
   if [ -z "$HITS" ]; then
