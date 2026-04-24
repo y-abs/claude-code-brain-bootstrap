@@ -11,7 +11,6 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT License"></a>
   <a href="https://github.com/y-abs/claude-code-brain-bootstrap/actions/workflows/ci.yml"><img src="https://github.com/y-abs/claude-code-brain-bootstrap/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="#"><img src="https://img.shields.io/badge/Claude_Code-Ready-blueviolet" alt="Claude Code"></a>
-  <a href="#"><img src="https://img.shields.io/badge/GitHub_Copilot-Ready-brightgreen" alt="GitHub Copilot"></a>
   <a href="#-write-once-read-everywhere"><img src="https://img.shields.io/badge/Ollama_%7C_LM_Studio-Local_LLMs_Ready-ff6f00" alt="Local LLMs Ready"></a>
 </p>
 
@@ -61,7 +60,6 @@ You correct it. It apologizes. Tomorrow: **same mistakes.**
 
 And it keeps going:
 
-- Your teammate uses Copilot. Another uses Cursor. None share context — three assistants, three different understandings of the same codebase.
 - That architecture doc you wrote six months ago? The codebase moved on. The doc didn't.
 - Code reviews are only as good as how you prompted that day. Inconsistent, unreliable.
 - You ask it to research something — it floods your entire context and you lose the thread of what you were building.
@@ -132,9 +130,6 @@ bash /tmp/brain/install.sh your-repo/
 rm -rf /tmp/brain
 ```
 
-> 🤝 **Copilot users:** add `--copilot` to also generate GitHub Copilot agents, hooks, and prompts:
-> `bash /tmp/brain/install.sh --copilot your-repo/`
-
 > 🔍 **Pre-flight check:** `bash /tmp/brain/install.sh --check` — verifies all prerequisites (git, bash, jq) before touching your repo. Runs in 1 second, no side effects.
 
 The installer **auto-detects** fresh install vs. upgrade — it never overwrites your knowledge (CLAUDE.md, lessons, architecture docs). Existing files stay untouched; only missing pieces are added. A backup is auto-created before any upgrade. `settings.json` is deep-merged (your existing allowlist is preserved). Existing commands are never overwritten — Brain's versions only fill the gaps.
@@ -149,17 +144,6 @@ The installer **auto-detects** fresh install vs. upgrade — it never overwrites
 ```
 
 The `/bootstrap` command runs the discovery engine (`discover.sh` — pure bash, zero tokens), detects your entire stack, fills 70+ placeholders, then has the AI write architecture docs and domain knowledge specific to your codebase. Fully automated, ~5 minutes.
-
-</details>
-
-<details>
-<summary><strong>With GitHub Copilot</strong> (no Claude Code needed)</summary>
-
-The `.github/` config works **immediately** after Step 1. No extra setup needed for basic usage.
-
-For **full setup** (filling in architecture, build commands, project name): if you installed with `--copilot`, just type `/bootstrap` in Copilot Chat — same automated flow as Claude Code. Without `--copilot`, run `discover.sh` manually then paste the output prompt — see [DETAILED_GUIDE.md](claude/docs/DETAILED_GUIDE.md) for the step-by-step.
-
-> 💡 `--copilot` also generates 5 custom agents, 37 slash commands, and 4 lifecycle hooks — all from the Claude equivalents.
 
 </details>
 
@@ -195,17 +179,11 @@ Your repo
 │   ├── terminal-safety.md          ← Shell anti-patterns that cause session hangs
 │   ├── cve-policy.md               ← Security decision tree
 │   ├── plugins.md                  ← Plugin config (claude-mem + graphify + MCP)
-│   ├── scripts/                    ← 22 bootstrap & maintenance scripts
+│   ├── scripts/                    ← 19 bootstrap & maintenance scripts
 │   ├── bootstrap/                  ← 🧠 Setup scaffolding (auto-deleted after bootstrap)
 │   ├── tasks/lessons.md            ← 🧠 Accumulated wisdom (persists across sessions)
 │   ├── tasks/todo.md               ← 📝 Current task plan (survives session boundaries)
 │   └── tasks/CLAUDE_ERRORS.md      ← 🐛 Error log (promotes to rules after 3+ recurrences)
-├── 🤖 .github/
-│   ├── copilot-instructions.md     ← GitHub Copilot root instructions
-│   ├── instructions/               ← Scoped instructions (auto-loaded per file type)
-│   ├── prompts/                    ← Reusable prompts (31+ auto-generated from Claude commands)
-│   ├── agents/                     ← Custom Copilot agents (with --copilot)
-│   └── hooks/                      ← Lifecycle hooks (with --copilot)
 └── 🚫 .claudeignore                ← Context exclusions (lock files, binaries, etc.)
 ```
 
@@ -228,28 +206,26 @@ The system is designed to **minimize token cost** while maximizing context — y
 
 ## 📦 What's Inside
 
-| Category                     | Count | Highlights                                                                                                      |
-| :--------------------------- | :---: | :-------------------------------------------------------------------------------------------------------------- |
-| 📚 **Knowledge docs**        |  13   | Architecture, rules, build, CVE policy, terminal safety, templates, decisions + 3 worked domain examples        |
-| ⚡ **Slash commands**        |  31   | Build, test, lint, review, MR, debug, deploy, maintain, research, bootstrap — covers the full dev lifecycle     |
-| 🪝 **Lifecycle hooks**       |  16   | Config protection, terminal safety, commit quality, session recovery, batch formatting, exit checklist          |
-| 🤖 **AI subagents**          |   5   | Research, reviewer, plan-challenger, session-reviewer, security-auditor — each auto-selects optimal model       |
-| 🎓 **Skills**                |  18   | TDD, root-cause trace, code review, triage, brainstorming, semantic search, browser automation, LSP refactoring |
-| 🔧 **Brain scripts**         |  22   | Stack discovery (3800-line detector), template population, validation, Copilot generation, portability lint     |
-| 🤝 **GitHub Copilot config** |  50+  | Root instructions, 37 prompts, 5 agents, 4 hooks, 3 scoped instruction files — opt-in via `--copilot`           |
-| 📏 **Path-scoped rules**     |  13   | Auto-loaded per file type — terminal safety, quality gates, domain learning, agent orchestration                |
-| 🔌 **Plugins**               |  10   | Architecture graph, semantic search, risk analysis, cross-session memory, browser automation, LSP refactoring   |
-| ✅ **Validation checks**     | 127+  | File existence, hook executability, placeholder detection, settings consistency, cross-reference integrity      |
+| Category                 | Count | Highlights                                                                                                      |
+| :----------------------- | :---: | :-------------------------------------------------------------------------------------------------------------- |
+| 📚 **Knowledge docs**    |  13   | Architecture, rules, build, CVE policy, terminal safety, templates, decisions + 3 worked domain examples        |
+| ⚡ **Slash commands**    |  31   | Build, test, lint, review, MR, debug, deploy, maintain, research, bootstrap — covers the full dev lifecycle     |
+| 🪝 **Lifecycle hooks**   |  16   | Config protection, terminal safety, commit quality, session recovery, batch formatting, exit checklist          |
+| 🤖 **AI subagents**      |   5   | Research, reviewer, plan-challenger, session-reviewer, security-auditor — each auto-selects optimal model       |
+| 🎓 **Skills**            |  18   | TDD, root-cause trace, code review, triage, brainstorming, semantic search, browser automation, LSP refactoring |
+| 🔧 **Brain scripts**     |  19   | Stack discovery (3800-line detector), template population, validation, portability lint                         |
+| 📏 **Path-scoped rules** |  13   | Auto-loaded per file type — terminal safety, quality gates, domain learning, agent orchestration                |
+| 🔌 **Plugins**           |  10   | Architecture graph, semantic search, risk analysis, cross-session memory, browser automation, LSP refactoring   |
+| ✅ **Validation checks** | 127+  | File existence, hook executability, placeholder detection, settings consistency, cross-reference integrity      |
 
 ---
 
 ### 🔀 Write Once, Read Everywhere
 
-| Tool                 | What it reads                                |               Depth                |
-| :------------------- | :------------------------------------------- | :--------------------------------: |
-| **Claude Code**      | `CLAUDE.md` + `.claude/` + `claude/*.md`     |           🟢 Everything            |
-| **GitHub Copilot**   | `.github/` + `claude/*.md`                   | 🟡 + agents/hooks with `--copilot` |
-| **Any AI assistant** | `claude/bootstrap/PROMPT.md` → `claude/*.md` |      🔵 Bootstrap → knowledge      |
+| Tool                 | What it reads                                |          Depth           |
+| :------------------- | :------------------------------------------- | :----------------------: |
+| **Claude Code**      | `CLAUDE.md` + `.claude/` + `claude/*.md`     |      🟢 Everything       |
+| **Any AI assistant** | `claude/bootstrap/PROMPT.md` → `claude/*.md` | 🔵 Bootstrap → knowledge |
 
 Agents declare their optimal model (`model: opus` for review/security, session model for research). Falls back gracefully to whatever you're running — Ollama, LM Studio, Bedrock, any local endpoint.
 
@@ -317,16 +293,14 @@ Ten plugins available — pick what fits your stack. Run `setup-plugins.sh` and 
 
 Extending the Brain is simple — one file, one registration:
 
-| To add…                | Create…                                       | Registration                          |
-| :--------------------- | :-------------------------------------------- | :------------------------------------ |
-| 📚 Domain knowledge    | `claude/<domain>.md`                          | Add to `CLAUDE.md` lookup table       |
-| 📏 Path-scoped rule    | `.claude/rules/<domain>.md`                   | Automatic (matched by file path)      |
-| ⚡ Slash command       | `.claude/commands/<name>.md`                  | Automatic (discovered by Claude Code) |
-| 🪝 Lifecycle hook      | `.claude/hooks/<name>.sh`                     | Register in `.claude/settings.json`   |
-| 🤖 AI subagent         | `.claude/agents/<name>.md`                    | Automatic (discovered by Claude Code) |
-| 🎓 Skill               | `.claude/skills/<name>.md`                    | Automatic (discovered by Claude Code) |
-| 🤝 Copilot instruction | `.github/instructions/<name>.instructions.md` | Automatic (matched by glob)           |
-| 💬 Copilot prompt      | `.github/prompts/<name>.prompt.md`            | Automatic (discovered by Copilot)     |
+| To add…             | Create…                      | Registration                          |
+| :------------------ | :--------------------------- | :------------------------------------ |
+| 📚 Domain knowledge | `claude/<domain>.md`         | Add to `CLAUDE.md` lookup table       |
+| 📏 Path-scoped rule | `.claude/rules/<domain>.md`  | Automatic (matched by file path)      |
+| ⚡ Slash command    | `.claude/commands/<name>.md` | Automatic (discovered by Claude Code) |
+| 🪝 Lifecycle hook   | `.claude/hooks/<name>.sh`    | Register in `.claude/settings.json`   |
+| 🤖 AI subagent      | `.claude/agents/<name>.md`   | Automatic (discovered by Claude Code) |
+| 🎓 Skill            | `.claude/skills/<name>.md`   | Automatic (discovered by Claude Code) |
 
 Three worked examples in `claude/_examples/` — API domain, database domain, messaging domain.
 
@@ -377,13 +351,6 @@ Yes. Agents declare their optimal model but **fall back gracefully** to whatever
 </details>
 
 <details>
-<summary><strong>🤝 Can I use this with Copilot only — no Claude Code?</strong></summary>
-
-Absolutely. Install with `--copilot` to get 37 slash commands, 5 custom agents, and 4 lifecycle hooks — all generated from the Claude equivalents. The `.github/` config works immediately after install. Type `/bootstrap` in Copilot Chat for the full setup.
-
-</details>
-
-<details>
 <summary><strong>⚖️ How is this different from Cursor rules / .cursorrules?</strong></summary>
 
 Scope. Cursor rules are a flat instruction file — the AI reads it _if it feels like it_. Brain is a **multi-layered enforcement architecture** with lifecycle hooks that block before execution, subagents that run in isolated contexts, skills that activate per task, session memory that persists across restarts, and self-maintenance that keeps docs current.
@@ -397,7 +364,7 @@ It's the difference between a sticky note and an operating system.
 
 Works great solo, but it's designed for teams. Everything is version-controlled and shared by default (**TEAM mode**).
 
-Not ready to share your Brain with the team? Switch to **SOLO mode**: add `CLAUDE.md`, `claude/`, `.claude/` to `.gitignore` — the `.github/` Copilot config stays committed for everyone.
+Not ready to share your Brain with the team? Switch to **SOLO mode**: add `CLAUDE.md`, `claude/`, `.claude/` to `.gitignore`.
 
 </details>
 

@@ -11,14 +11,14 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### 🚀 First Stable Release
 
-ᗺB Brain Bootstrap graduates from pre-release to **v1.0.0** — a production-ready AI knowledge architecture for Claude Code, GitHub Copilot, and any LLM-powered IDE.
+ẂB Brain Bootstrap graduates from pre-release to **v1.0.0** — a production-ready AI knowledge architecture for Claude Code and any LLM-powered IDE.
 
 Seven months of alpha → beta development condensed into a single installable template:
 
 - **One command install** — `bash install.sh /path/to/your-repo` handles FRESH and UPGRADE
 - **31 slash commands** — `/plan`, `/review`, `/mr`, `/debug`, `/bootstrap`, `/health` and 25 more
-- **15 lifecycle hooks** — terminal safety, TDD enforcement, quality gates, session continuity
-- **11 skills** — invocable AI workflows (root-cause-trace, cross-layer-check, graphify, caveman…)
+- **16 lifecycle hooks** — terminal safety, TDD enforcement, quality gates, session continuity
+- **18 skills** — invocable AI workflows (root-cause-trace, cross-layer-check, graphify, brainstorming, codeburn, playwright, serena, subagent-driven-development, writing-skills…)
 - **5 subagents** — `reviewer` (Opus), `plan-challenger` (Opus), `security-auditor` (Opus), `research`, `session-reviewer`
 - **10-tool plugin stack** — graphify · codebase-memory-mcp · cocoindex-code · code-review-graph · claude-mem · rtk · playwright · codeburn · caveman · serena
 - **1100+ framework detections** — 25+ languages, 21 package managers, 13 CI systems via `discover.sh`
@@ -37,6 +37,7 @@ No new features — this is a stability milestone. All pre-release bug fixes are
 ### 🐛 SKIP_RTK Optional Tier
 
 ### Fixed
+
 - **`setup-plugins.sh`** — move `SKIP_RTK` to `OPTIONAL` tier so the recommended install strategy skips RTK by default (#37)
 
 ---
@@ -46,6 +47,7 @@ No new features — this is a stability milestone. All pre-release bug fixes are
 ### 🐛 Bootstrap Sleep Block & RTK Recommended Strategy
 
 ### Fixed
+
 - **`setup-plugins.sh`** — narrow sleep block scope to prevent unintended delays during non-RTK install paths (#36)
 - **`setup-plugins.sh`** — drop RTK from recommended tier; remove background install pattern that caused race conditions (#36)
 
@@ -56,6 +58,7 @@ No new features — this is a stability milestone. All pre-release bug fixes are
 ### 🐛 Merge Script Exit Codes
 
 ### Fixed
+
 - **`merge-claude-md.sh`** / **`merge-claudeignore.sh`** / **`merge-settings.sh`** — exit `2` (no-op) changed to exit `0` so callers treat a clean no-op as success, not an error (#35)
 
 ---
@@ -65,6 +68,7 @@ No new features — this is a stability milestone. All pre-release bug fixes are
 ### 🐛 Plugin Ecosystem URL Fixes
 
 ### Fixed
+
 - **`README.md`** / **`DETAILED_GUIDE.md`** — correct broken plugin ecosystem URLs that returned 404 (#34)
 
 ---
@@ -74,6 +78,7 @@ No new features — this is a stability milestone. All pre-release bug fixes are
 ### 🧹 Bootstrap Phantom File Cleanup
 
 ### Fixed
+
 - **`install.sh`** — prevent phantom files being generated during bootstrap runs (#30)
 - **`install.sh`** — add cleanup for old bootstrap package manager phantom entries that persisted across sessions (#32)
 
@@ -84,6 +89,7 @@ No new features — this is a stability milestone. All pre-release bug fixes are
 ### 🐛 Hook, Schema & Prompt Fixes
 
 ### Fixed
+
 - **`tdd-loop-check.sh`** — fix trigger condition and nx monorepo detection (#27)
 - **`settings.json`** — enforce current `claude-code-settings.json` schema `$schema` URL (#28)
 - **`bootstrap/PROMPT.md`** — clarify obsidian-mind companion vault intent (not a plugin, clone separately) (#29)
@@ -97,9 +103,11 @@ No new features — this is a stability milestone. All pre-release bug fixes are
 Extended cross-platform support beyond the hardening pass in v0.2.0 — ensuring behavioral parity across Linux, macOS, and Windows for the full plugin and hook stack.
 
 ### Added
+
 - **Cross platform parity** — additional portability fixes and parity guarantees for plugin installation and hook execution across all three platforms (#18)
 
 ### Changed
+
 - **README** — feature hierarchy clarification and accurate count sync (#19, #20–#25)
 - **`DETAILED_GUIDE.md`** — corrections and accuracy improvements (#26)
 
@@ -110,6 +118,7 @@ Extended cross-platform support beyond the hardening pass in v0.2.0 — ensuring
 ### 🐛 Bootstrap Quality Gates & Plugin Detection
 
 ### Fixed
+
 - **`setup-plugins.sh`** / **`validate.sh`** — bootstrap quality gate checks and plugin detection logic (#17)
 - **`CHANGELOG.md`** — completed all version entries, added comparison links (#16)
 
@@ -122,17 +131,19 @@ Extended cross-platform support beyond the hardening pass in v0.2.0 — ensuring
 Live end-to-end testing on a mature monorepose with an existing Claude Code configuration revealed 15 distinct issues (documented in `tasks/bootstrap-bugs-found.md`) spanning false positives in canary checks, missing guards in scripts, and UPGRADE mode edge cases. All have been fixed with a combination of script hardening, guard clauses, and improved logic.
 
 ### Added
+
 - **UPGRADE mode infrastructure** — `merge-claude-md.sh`, `merge-claudeignore.sh`, `merge-settings.sh`, `migrate-tasks.sh`, `pre-creative-check.sh`, `dry-run.sh` for bootstrapping repos with existing Claude Code configuration.
 - **`_CLAUDE.md.template`**, **`_claudeignore.template`**, **`_settings.json.template`** — standalone templates for UPGRADE merge operations.
 - **Domain alias detection** in `pre-creative-check.sh` — greps existing `claude/*.md` for domain keywords before recommending CREATE (prevents duplicate docs with different names).
 - **`--yes` flag** for `setup-plugins.sh` — non-interactive mode for CI/automation.
 
 ### Fixed
+
 - **`canary-check.sh`** — 4 false positive fixes:
   - Skill-not-in-README downgraded from per-skill FAIL to aggregated WARN (UPGRADE adds skills the user hasn't documented)
   - grep -E double-quote detector now skips comment lines (`^#`)
   - Placeholder scan excludes guard comparisons (`= '{{...}}'`) and `.instructions.md` documentation
-  - Bare-git detector excludes `case` patterns that *detect* bare git (not run it)
+  - Bare-git detector excludes `case` patterns that _detect_ bare git (not run it)
 - **`populate-templates.sh`** — `tdd-loop-check.sh` path in `PLACEHOLDER_FILES` pointed to wrong location (`claude/scripts/` → `.claude/hooks/`)
 - **`generate-service-claudes.sh`** — strip trailing slash to avoid double-slash paths in output
 - **`setup-plugins.sh`** — `--yes` flag recognized in case statement; `timeout` guards on `claude plugin` CLI calls
@@ -145,6 +156,7 @@ Live end-to-end testing on a mature monorepose with an existing Claude Code conf
 ### 🧠 Six-Tool Codebase Intelligence Stack
 
 ### Added
+
 - **code-review-graph plugin** — 29 MCP tools for change risk analysis (risk score 0–100, blast radius, breaking changes). Pre-PR safety gate via `mcp__code-review-graph__detect_changes_tool`. Requires Python 3.10+.
 - **cocoindex-code plugin** — semantic vector search via `mcp__cocoindex-code__search`. Find code by meaning, not exact names. Requires Python 3.11+. (~1 GB first install for local embeddings.)
 - **codebase-memory-mcp plugin** — live structural graph with 14 MCP tools. `trace_path`, `detect_changes`, `get_architecture` — 120× fewer tokens than file exploration.
@@ -166,13 +178,15 @@ Live end-to-end testing on a mature monorepose with an existing Claude Code conf
 - **MCP server binary validation** — `/health` now verifies each server in `.mcp.json` has its binary in PATH (with known mapping: cocoindex→`ccc`, code-review-graph→`uvx`).
 
 ### Changed
+
 - **`tdd-loop-check.sh` moved** from `claude/scripts/` → `.claude/hooks/` for consistency with all other hooks.
 - **`setup-plugins.sh`** — removed `-q` flag from cocoindex install (users see download progress for ~1 GB install); added `--lite`/`--interactive`/`--non-interactive` flags; added `ask_plugin()` interactive prompt function.
 - **README** — "Get Started in 5 Minutes" → "Get Started in 5 Minutes (+ ~15 min for full plugin setup)".
-- **Command/skill/hook counts** synced to reality: 31 commands (was 26), 11 skills (was 5/8), 15 hooks (was 12/14).
-- **DETAILED_GUIDE.md** — hooks table updated to 15 entries; skills table updated to 11 entries; all 31 commands listed.
+- **Command/skill/hook counts** synced to reality: 31 commands (was 26), 11 skills (was 5/8), 16 hooks (was 14).
+- **DETAILED_GUIDE.md** — hooks table updated to 16 entries; skills table updated to 11 entries; all 31 commands listed.
 
 ### Fixed
+
 - **`/review` and `/mr`** — removed `disable-model-invocation: true` from both. The flag prevented the model from processing the command body, silently breaking the two most value-critical commands.
 - **`/review` and `/mr` pre-fetch** — `$(git merge-base main HEAD)..HEAD` → `main...HEAD` to avoid `command_substitution` rejection.
 - **`health.md`** — added YAML frontmatter (`description`, `effort: low`, `allowed-tools`). Was the only command without metadata.
@@ -186,6 +200,7 @@ Live end-to-end testing on a mature monorepose with an existing Claude Code conf
 ### 🔧 RTK — Command Token Optimizer
 
 ### Added
+
 - **rtk plugin** — Rust binary that transparently rewrites Claude's bash commands for 60-90% output token savings. No-op when absent.
 - **`rtk-rewrite.sh`** PreToolUse hook — intercepts all Bash tool calls before execution.
 - `rtk gain` / `rtk discover` commands for ROI tracking and gap discovery.
@@ -197,16 +212,17 @@ Live end-to-end testing on a mature monorepose with an existing Claude Code conf
 ### 🧠 Graphify + Three-Tool Memory Stack
 
 ### Added
+
 - **graphify** knowledge graph — Python package + git post-commit hook for automatic AST re-indexing. Generates `GRAPH_REPORT.md` with god nodes, community structure, and surprising cross-module connections.
-- **claude-mem** plugin — persistent cross-session memory (SQLite + ChromaDB). Installed and disabled by default (quota protection: PostToolUse(*) fires after every tool call).
+- **claude-mem** plugin — persistent cross-session memory (SQLite + ChromaDB). Installed and disabled by default (quota protection: PostToolUse(\*) fires after every tool call).
 - **`toggle-claude-mem.sh`** — enable/disable claude-mem with worker lifecycle management.
 - Three-tool memory stack: graphify (architecture snapshot) + codebase-memory-mcp (live structural) + claude-mem (temporal).
 
 ### Fixed
+
 - Phantom files and attention issues impacting session context quality (#10).
 
 ---
-
 
 ## [0.2.0] — 2026-04-13 (PRs #5, #6, #7, #8)
 
@@ -234,7 +250,7 @@ Full portability pass ensuring the installer and all scripts work identically on
 - **`setup-plugins.sh`, `toggle-claude-mem.sh`** — Replaced `pgrep`/`pkill` with `safe_pgrep()` fallback for Git Bash/Windows
 - **`install.sh` (UPGRADE)** — Replaced 7 process substitutions `< <(find)` with tmpfile pattern for macOS bash 3.2 compatibility
 - **Inaccurate feature/behavior claims** — full audit of README and DETAILED_GUIDE corrected overstated or incorrect descriptions (PR #7)
-- **Model selection documentation** — added enforcement instructions for both Claude Code (agent frontmatter) and GitHub Copilot (instruction-level stop-and-warn) (PR #8)
+- **Model selection documentation** — added enforcement instructions for Claude Code agent frontmatter (PR #8)
 
 ### Changed
 
@@ -253,6 +269,7 @@ The biggest single update to `discover.sh` — framework detection expanded from
 ### Added
 
 #### JS/TS (110+ new)
+
 - **Serverless/Edge**: Cloudflare Workers, Netlify Functions, Vercel Functions, OpenFaaS
 - **CSS/Styling**: Vanilla Extract, Stitches, UnoCSS, WindiCSS, PandaCSS, PicoCSS, DaisyUI, NextUI, Fluent UI, BlueprintJS, Tremor, Ark UI
 - **Animation**: GSAP, React Spring, Lottie, Anime.js, Motion One, AutoAnimate
@@ -273,6 +290,7 @@ The biggest single update to `discover.sh` — framework detection expanded from
 - **Plus**: Sonner, React Hot Toast, Bottleneck, Rate Limiter, Bugsnag, Highlight, Honeybadger, PropelAuth, Stytch, FormatJS, Lingui, React Aria, Keyv
 
 #### Python (48+ new)
+
 - **Security/Crypto**: Cryptography, Passlib, bcrypt, python-multipart
 - **DB Drivers**: Psycopg, PyMySQL, PyMongo, Motor, Cassandra Driver, Neo4j
 - **Data Engineering**: PySpark, Dask, Vaex, Great Expectations, Delta Lake, PyArrow, SQLModel
@@ -286,6 +304,7 @@ The biggest single update to `discover.sh` — framework detection expanded from
 - **Time Series**: Prophet, Statsmodels, TimeSeries-ML
 
 #### Rust (27+ new)
+
 - **Networking/Crypto**: Rustls, ring, libp2p, Quinn-QUIC
 - **Database**: rusqlite, MongoDB-Rust, Redis-rs, Sled, RocksDB
 - **Testing**: Proptest, Mockall, Insta, Criterion
@@ -296,6 +315,7 @@ The biggest single update to `discover.sh` — framework detection expanded from
 - **Observability**: Metrics-rs, Prometheus
 
 #### Go (29+ new)
+
 - **Auth/Security**: JWT-Go, OIDC-Go, Casbin
 - **HTTP**: Go-Kit, Resty, Gorilla Schema, WebSocket-Go
 - **Database**: MongoDB-Go, BadgerDB, BoltDB, sqlx-Go, Bun-Go
@@ -307,6 +327,7 @@ The biggest single update to `discover.sh` — framework detection expanded from
 - **Service Mesh**: Envoy Control Plane
 
 #### Java/Kotlin (40+ new)
+
 - **Messaging**: ActiveMQ, Apache Pulsar, RabbitMQ, NATS
 - **Security**: Apache Shiro, BouncyCastle
 - **Serialization**: Protobuf, Apache Avro
@@ -320,6 +341,7 @@ The biggest single update to `discover.sh` — framework detection expanded from
 - **Kotlin/Android**: Exposed, SQLDelight, KSP, Detekt, MockK, Kotest, Navigation, WorkManager, Paging, DataStore, Coil, Glide, OkHttp, Moshi, Timber
 
 #### Ruby (17+ new)
+
 - **Testing**: Shoulda, SimpleCov
 - **API**: Grape Entity, Oj, Pagy
 - **Auth**: Rodauth, Warden
@@ -329,6 +351,7 @@ The biggest single update to `discover.sh` — framework detection expanded from
 - **Caching**: Memcached, Rack-Attack
 
 #### PHP (19+ new)
+
 - **Laravel Ecosystem**: Breeze, Jetstream, Cashier, Scout, Octane, Pennant, Pulse, Reverb
 - **Admin**: Nova, Backpack, EasyAdmin
 - **Testing**: Mockery, Dusk
@@ -337,6 +360,7 @@ The biggest single update to `discover.sh` — framework detection expanded from
 - **Deployment**: Deployer
 
 #### .NET (11+ new)
+
 - **Identity**: IdentityServer (Duende)
 - **CQRS**: EventFlow, Marten
 - **Database**: Npgsql, MongoDB, MySQL
@@ -344,6 +368,7 @@ The biggest single update to `discover.sh` — framework detection expanded from
 - **HTTP**: RestSharp, Refit
 
 #### Elixir (12+ new)
+
 - **Auth**: Guardian, Pow, Ueberauth
 - **HTTP**: Tesla, Finch
 - **Testing**: ExMachina, Wallaby
@@ -351,15 +376,18 @@ The biggest single update to `discover.sh` — framework detection expanded from
 - **PDF**: ChromicPDF
 
 #### Dart/Flutter (14+ new)
+
 - **Testing**: Mockito, Flutter Test, Patrol
 - **State**: MobX, Redux, Signals
 - **Networking**: Retrofit, GraphQL
 - **Storage**: SQFlite, ObjectBox, Appwrite
 
 #### Scala (5+ new)
+
 - Chimney, Quill, Cats-Effect, sttp, Refined
 
 #### C/C++ (20+ new)
+
 - **Networking**: Asio, CPR, libcurl, WebSocket++
 - **JSON**: nlohmann-json, RapidJSON
 - **Scientific**: Eigen, Armadillo
@@ -370,6 +398,7 @@ The biggest single update to `discover.sh` — framework detection expanded from
 - **Testing**: Google Benchmark, Doctest
 
 #### Cross-Language Infrastructure (25+ new)
+
 - **Observability**: Grafana, Prometheus configs, Distributed Tracing (Jaeger/Zipkin)
 - **Secret Management**: SOPS, Vault configs
 - **Containers**: Docker Compose, DevContainers, Vagrant
@@ -380,6 +409,7 @@ The biggest single update to `discover.sh` — framework detection expanded from
 - **GitOps**: FluxCD
 
 ### Changed
+
 - `discover.sh` expanded from ~2775 to ~3877 lines (+1102 lines)
 - Framework count: 480 → 1115 unique detections (+633 unique, +935 cross-language detection lines)
 - All documentation updated to reflect new counts
@@ -390,17 +420,19 @@ The biggest single update to `discover.sh` — framework detection expanded from
 
 ### 🎉 Initial Public Release
 
-The first public release of ᗺB Brain Bootstrap — a complete AI knowledge architecture for Claude Code, GitHub Copilot, and any LLM.
+The first public release of ẂB Brain Bootstrap — a complete AI knowledge architecture for Claude Code and any LLM.
 
 ### Added
 
 #### Core Architecture
+
 - **`CLAUDE.md`** — Operating protocol template: exit checklist, token strategy, terminal rules, critical patterns, review protocol, session continuity
 - **`CLAUDE.local.md.example`** — Personal override template (auto-gitignored)
 - **`.claudeignore`** — Context exclusion template (lock files, binaries, build artifacts)
 - **`.mcp.json`** — MCP server configuration template
 
 #### Knowledge Base (`claude/`)
+
 - **`architecture.md`** — Workspace layout and service catalog template
 - **`rules.md`** — 24 golden rules for AI-assisted development
 - **`build.md`** — Build, test, lint, serve, migrate command templates
@@ -416,6 +448,7 @@ The first public release of ᗺB Brain Bootstrap — a complete AI knowledge arc
 - **`bootstrap/UPGRADE_GUIDE.md`** — Smart Merge guide for existing configs
 
 #### Automation (`claude/scripts/`)
+
 - **`discover.sh`** — 3800+ line repo scanner: 25+ languages, 1100+ frameworks, 21 package managers, 13 CI systems, zero tokens
 - **`populate-templates.sh`** — Batch fills 70+ `{{PLACEHOLDER}}` values in one pass
 - **`post-bootstrap-validate.sh`** — Unified post-bootstrap validation (validate + canary + auto-fix)
@@ -423,16 +456,17 @@ The first public release of ᗺB Brain Bootstrap — a complete AI knowledge arc
 - **`canary-check.sh`** — Live config health check (token budget, stale refs, @imports)
 - **`phase2-verify.sh`** — Phase 2 data-integrity verification for Smart Merge
 - **`generate-service-claudes.sh`** — Auto-generates per-service `CLAUDE.md` stubs for monorepo services
-- **`generate-copilot-docs.sh`** — Mirrors `claude/*.md` → `.github/copilot/` for GitHub Copilot
 - **`toggle-claude-mem.sh`** — Toggle claude-mem plugin on/off with quota awareness
 - **`setup-plugins.sh`** — All-in-one bootstrap plugin management
 - **`check-creative-work.sh`** — Phase 3 creative work quality gate
 - **`tdd-loop-check.sh`** — TDD enforcement Stop hook
 
 #### Slash Commands (`.claude/commands/`) — 26 commands
+
 `/plan` · `/review` · `/mr` · `/ticket` · `/build` · `/test` · `/lint` · `/debug` · `/serve` · `/migrate` · `/db` · `/context` · `/docker` · `/deps` · `/diff` · `/git` · `/cleanup` · `/maintain` · `/checkpoint` · `/resume` · `/bootstrap` · `/mcp` · `/squad-plan` · `/research` · `/update-code-index` · `/health`
 
 #### Lifecycle Hooks (`.claude/hooks/`) — 14 hooks
+
 - **`session-start.sh`** — Injects branch, task state, and reminders on startup/resume/clear
 - **`on-compact.sh`** — Re-injects context after compaction
 - **`pre-compact.sh`** — Backs up session transcript before compaction
@@ -449,6 +483,7 @@ The first public release of ᗺB Brain Bootstrap — a complete AI knowledge arc
 - **`warn-missing-test.sh`** — Warns when source files lack tests (strict profile)
 
 #### AI Subagents (`.claude/agents/`) — 5 agents
+
 - **`research`** — Deep codebase exploration in isolated context (Sonnet, read-only)
 - **`reviewer`** — Expert 10-point MR review with severity classification (Opus)
 - **`plan-challenger`** — Adversarial plan review — finds real risks before you write code (Opus)
@@ -456,6 +491,7 @@ The first public release of ᗺB Brain Bootstrap — a complete AI knowledge arc
 - **`security-auditor`** — Security scanning with DEPLOY/HOLD/BLOCK verdict (Opus)
 
 #### Skills (`.claude/skills/`) — 5 skills
+
 - **`tdd`** — Test-first discipline (background, auto-loads on test files)
 - **`root-cause-trace`** — 5-step systematic error investigation (invocable)
 - **`changelog`** — Release notes from git commits (invocable, isolated context)
@@ -463,12 +499,11 @@ The first public release of ᗺB Brain Bootstrap — a complete AI knowledge arc
 - **`cross-layer-check`** — Symbol consistency across all monorepo layers (invocable + script)
 
 #### Path-Scoped Rules (`.claude/rules/`) — 13 rules
+
 Terminal safety · Quality gates · Self-maintenance · Memory policy · Domain learning · Practice capture · Agent orchestration · TypeScript · Python · Node.js backend · React · Domain template · Rule template
 
-#### GitHub Copilot (`.github/`) — 8 files
-Root instructions · General scoped instructions · Terminal safety instructions · Testing instructions · 2 reusable prompts · 2 templates
-
 #### Settings & Infrastructure
+
 - **`.claude/settings.json`** — Tool permissions, hook registration, env vars
 - **`install.sh`** — 570-line smart installer: FRESH and UPGRADE mode with automatic pre-upgrade backup (`claude/tasks/.pre-upgrade-backup.tar.gz`)
 - **`.shellcheckrc`** — ShellCheck configuration for CI linting
@@ -477,6 +512,7 @@ Root instructions · General scoped instructions · Terminal safety instructions
 - **`.github/PULL_REQUEST_TEMPLATE.md`** — 9-point PR checklist auto-loaded on every pull request
 
 #### Bootstrap Intelligence
+
 - **8 domain-detection greps** — Messaging, DB, lifecycle, auth, webhooks, adapters, reporting, enrollment. Each fired signal → one domain doc + one path-scoped rule
 - **Adaptive tier escalation** — Items 7+8 (domain rules/skills) automatically become MANDATORY when ≥3 domain docs detected
 - **SOLO/TEAM collaboration modes** — Report includes both options; TEAM (default) commits everything, SOLO adds sensitive files to `.gitignore`
@@ -485,6 +521,7 @@ Root instructions · General scoped instructions · Terminal safety instructions
 - **Per-service CLAUDE.md stubs** — `generate-service-claudes.sh` auto-generates service-scoped AI context for every monorepo service directory
 
 #### Plugin
+
 - **claude-mem** — Persistent cross-session memory (SQLite + ChromaDB), installed and disabled by default for quota protection
 
 ---
@@ -494,6 +531,7 @@ Root instructions · General scoped instructions · Terminal safety instructions
 ---
 
 <!-- Version comparison links -->
+
 [1.0.0]: https://github.com/y-abs/claude-code-brain-bootstrap/compare/v0.6.6...v1.0.0
 [0.6.6]: https://github.com/y-abs/claude-code-brain-bootstrap/compare/v0.6.5...v0.6.6
 [0.6.5]: https://github.com/y-abs/claude-code-brain-bootstrap/compare/v0.6.4...v0.6.5

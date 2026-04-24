@@ -1,5 +1,0 @@
-{
-  "event": "stop",
-  "description": "Quality gate: remind to run tests and check for uncommitted files before ending session.",
-  "command": "bash .github/hooks/scripts/quality-gate.sh"
-}

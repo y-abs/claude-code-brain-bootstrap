@@ -49,7 +49,7 @@ body:
         - **Shell:** (e.g., zsh, bash)
         - **Claude Code version:** (e.g., 1.0.12)
         - **Node version:** (e.g., 22.x)
-        - **AI tool:** (Claude Code / GitHub Copilot / Other)
+        - **AI tool:** (Claude Code / Other)
     validations:
       required: true
 

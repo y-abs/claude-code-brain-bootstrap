@@ -1,5 +1,0 @@
-{
-  "event": "preToolUse",
-  "description": "Block dangerous terminal patterns: interactive editors, REPLs, pagers, destructive commands.",
-  "command": "bash .github/hooks/scripts/terminal-safety.sh"
-}

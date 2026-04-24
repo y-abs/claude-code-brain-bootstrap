@@ -17,16 +17,15 @@ You're about to improve something that thousands of developers use every day to 
 
 ## 🧭 What Can I Contribute?
 
-| Area                      | Examples                                                                                 | Difficulty  |
-| :------------------------ | :--------------------------------------------------------------------------------------- | :---------: |
-| 🔍 **Stack detection**    | New language, framework, or package manager in `discover.sh`                             |   🟢 Easy   |
-| 📚 **Documentation**      | Fix a typo, improve clarity, add a worked example                                        |   🟢 Easy   |
-| ⚡ **Slash commands**     | New workflow command in `.claude/commands/`                                              |  🟡 Medium  |
-| 📏 **Path-scoped rules**  | New domain rule in `.claude/rules/`                                                      |  🟡 Medium  |
-| 🪝 **Lifecycle hooks**    | Safety patterns, quality gates in `.claude/hooks/`                                       | 🟠 Advanced |
-| 🤖 **Subagents / Skills** | New AI agent or skill in `.claude/agents/` or `.claude/skills/`                          | 🟠 Advanced |
-| 🤝 **Copilot parity**     | New prompt, agent, or hook in `.github/prompts/`, `.github/agents/`, or `.github/hooks/` |  🟡 Medium  |
-| 🐛 **Bug fixes**          | Something broken? Fix it!                                                                |   Varies    |
+| Area                      | Examples                                                        | Difficulty  |
+| :------------------------ | :-------------------------------------------------------------- | :---------: |
+| 🔍 **Stack detection**    | New language, framework, or package manager in `discover.sh`    |   🟢 Easy   |
+| 📚 **Documentation**      | Fix a typo, improve clarity, add a worked example               |   🟢 Easy   |
+| ⚡ **Slash commands**     | New workflow command in `.claude/commands/`                     |  🟡 Medium  |
+| 📏 **Path-scoped rules**  | New domain rule in `.claude/rules/`                             |  🟡 Medium  |
+| 🪝 **Lifecycle hooks**    | Safety patterns, quality gates in `.claude/hooks/`              | 🟠 Advanced |
+| 🤖 **Subagents / Skills** | New AI agent or skill in `.claude/agents/` or `.claude/skills/` | 🟠 Advanced |
+| 🐛 **Bug fixes**          | Something broken? Fix it!                                       |   Varies    |
 
 > 🎯 **Golden rule:** All contributions must be **domain-agnostic**. No project-specific content — this is a universal template that works for any repo, any language, any team.
 
@@ -65,10 +64,6 @@ Follow the patterns already in the codebase:
 | A lifecycle hook                | Any `.sh` file in `.claude/hooks/` — same structure + register in `.claude/settings.json` |
 | A path-scoped rule              | `.claude/rules/_template-domain-rule.md` — the template is ready for you                  |
 | A worked example                | `claude/_examples/` — three examples to follow                                            |
-| A GitHub Copilot instruction    | `.github/instructions/_template.instructions.md`                                          |
-| A reusable Copilot prompt       | `.github/prompts/_template.prompt.md` — mirrors the matching `.claude/commands/` file     |
-| A Copilot agent                 | Any file in `.github/agents/` — mirrors the matching `.claude/agents/` file               |
-| A Copilot hook                  | Any file in `.github/hooks/` — JSON config + script under `.github/hooks/scripts/`        |
 
 ### Step 4 — Run the validator
 
@@ -154,7 +149,7 @@ All five must pass before your PR can be reviewed.
 
 ### 🌍 Cross-Platform & Cross-IDE Compatibility
 
-Brain Bootstrap must work identically on **macOS** (Apple Silicon + Intel), **Linux** (Ubuntu, Debian, Fedora, Arch), and in **any IDE terminal** (plain shell, Claude Code, VS Code Copilot agent mode). Every shell script contribution must follow these rules:
+Brain Bootstrap must work identically on **macOS** (Apple Silicon + Intel), **Linux** (Ubuntu, Debian, Fedora, Arch), and in **any IDE terminal** (plain shell, Claude Code, JetBrains). Every shell script contribution must follow these rules:
 
 #### Shell portability rules
 
@@ -212,7 +207,7 @@ Scripts that have interactive prompts **must detect AI agent terminals** and avo
 is_ai_agent() {
   # Claude Code env vars (works in any IDE — CLI, JetBrains, VS Code)
   [ -n "${CLAUDE_CODE:-}" ] || [ -n "${ANTHROPIC_MODEL:-}" ] && return 0
-  # VS Code / Copilot env vars
+  # VS Code env vars
   [ "${TERM_PROGRAM:-}" = "vscode" ] && return 0
   # JetBrains integrated terminal
   case "${TERMINAL_EMULATOR:-}" in JetBrains-*) return 0 ;; esac
@@ -351,7 +346,6 @@ When you open a PR, this checklist auto-loads. Make sure you can check every box
 - [ ] Commit messages follow Conventional Commits
 - [ ] New placeholders use `{{UPPER_SNAKE_CASE}}` syntax (not hardcoded values)
 - [ ] Tested in a real (or fresh test) repo
-- [ ] If adding a Copilot prompt/agent/hook: generated via `generate-copilot-prompts.sh` or following the pattern in `.github/`
 
 ---
 

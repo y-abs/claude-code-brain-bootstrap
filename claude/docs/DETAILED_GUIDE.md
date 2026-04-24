@@ -35,9 +35,8 @@
   - [🤖 AI Subagents — `.claude/agents/`](#-ai-subagents--claudeagents-5-files)
   - [🎓 Skills — `.claude/skills/`](#-skills--claudeskills-18-files)
   - [📏 Path-Scoped Rules — `.claude/rules/`](#-path-scoped-rules--clauderules-13-files)
-  - [🤝 GitHub Copilot — `.github/`](#-github-copilot--github-8-base-files--50-with---copilot)
   - [🧠 Memory — `claude/tasks/`](#-memory--claudetasks-5-files)
-  - [🔧 Scripts — `claude/scripts/`](#-scripts--claudescripts-22-files)
+  - [🔧 Scripts — `claude/scripts/`](#-scripts--claudescripts-19-files)
 - [🔬 Deep Dives](#-deep-dives)
   - [📂 The 10 Configuration Categories](#-the-10-configuration-categories)
   - [🔄 Bootstrap: How It Actually Works](#-bootstrap-how-it-actually-works)
@@ -129,11 +128,11 @@ The AI will:
 
 ```bash
 bash claude/scripts/validate.sh
-git add CLAUDE.md .claudeignore claude/ .claude/ .github/
+git add CLAUDE.md .claudeignore claude/ .claude/
 git commit -m "chore: add Claude Code configuration"
 ```
 
-> 🤝 **TEAM mode (default)** — commit everything, share the AI context with your whole team. Every developer gets the same experience. Or switch to **SOLO mode** (personal, not committed): `echo -e '\nCLAUDE.md\nclaude/\n.claude/\n.claudeignore\n.mcp.json' >> .gitignore` — `.github/` stays committed for Copilot.
+> 🤝 **TEAM mode (default)** — commit everything, share the AI context with your whole team. Every developer gets the same experience. Or switch to **SOLO mode** (personal, not committed): `echo -e '\nCLAUDE.md\nclaude/\n.claude/\n.claudeignore\n.mcp.json' >> .gitignore`
 
 ### Step 4 — Ship code with superpowers
 
@@ -178,13 +177,6 @@ Your repo
 │       ├── lessons.md              ← "Never make this mistake again"
 │       ├── todo.md                 ← "Here's where I left off"
 │       └── session-logs/           ← Auto-backed up transcripts
-│
-├── 🤖 .github/
-│   ├── copilot-instructions.md     ← GitHub Copilot root config
-│   ├── instructions/               ← Scoped rules (auto-loaded by glob)
-│   ├── prompts/                    ← 37 reusable prompts (one-click)
-│   ├── agents/                     ← 5 custom agents (with --copilot)
-│   └── hooks/                      ← 4 lifecycle hooks (with --copilot)
 │
 └── 🚫 .claudeignore                ← "Don't even look at these files"
 ```
@@ -372,34 +364,6 @@ Short, sharp rules that auto-load when the AI touches matching files:
 | 📂 `domain/_template.md`      | _(template)_               | Business domain template — copy for each domain         |
 | 📄 `_template-domain-rule.md` | _(template)_               | Copy → customize → profit                               |
 
-### 🤝 GitHub Copilot — `.github/` (8 base files + 50+ with `--copilot`)
-
-Same brain, different interface. Base config works immediately after install. Full parity (agents + hooks) requires the `--copilot` flag.
-
-**Base install (always present):**
-
-| File                                           | What it does                                             |
-| :--------------------------------------------- | :------------------------------------------------------- |
-| `copilot-instructions.md`                      | Root Copilot instructions (mirrors CLAUDE.md essentials) |
-| `instructions/general.instructions.md`         | Global style/arch/safety rules (`**/*`)                  |
-| `instructions/terminal-safety.instructions.md` | Terminal safety for all files (`**/*`)                   |
-| `instructions/testing.instructions.md`         | Test file rules (`**/*.{test,spec}.*`)                   |
-| `instructions/_template.instructions.md`       | Template for new scoped instructions                     |
-| `prompts/generate-tests.prompt.md`             | One-click test generation                                |
-| `prompts/review-rules.prompt.md`               | One-click code review against project rules              |
-| `prompts/_template.prompt.md`                  | Template for new prompts                                 |
-
-**With `--copilot` flag (opt-in, full parity):**
-
-| Directory / Files                      | What it adds                                                                                                         |
-| :------------------------------------- | :------------------------------------------------------------------------------------------------------------------- |
-| `prompts/` (37 total)                  | All 31 base commands + 4 caveman variants + 2 extras — auto-generated from Claude Code equivalents                   |
-| `agents/` (5 files)                    | `@reviewer`, `@researcher`, `@plan-challenger`, `@security-auditor`, `@session-reviewer` — mirrors `.claude/agents/` |
-| `hooks/` (4 JSON configs)              | `session-context`, `config-protection`, `terminal-safety`, `quality-gate` — subset of the 16 Claude Code hooks       |
-| `instructions/caveman.instructions.md` | Response compression mode (disabled by default — rename to enable)                                                   |
-
-**Model selection enforcement:** Copilot has no API-level model control — the model is selected by the user in the IDE picker. Brain Bootstrap solves this via **instruction-level enforcement**: `copilot-instructions.md` stops and warns when a "mini"/"flash"/"lite" model is active for planning/review/architecture tasks. Quick tasks (build, lint, test) run on any model.
-
 ### 🧠 Memory — `claude/tasks/` (5 files)
 
 The AI's persistent memory across sessions:
@@ -412,7 +376,7 @@ The AI's persistent memory across sessions:
 | `.gitkeep`            | Ensures directory is tracked in git                                                   |
 | `.gitignore`          | Excludes temp files (counters, accumulators) from git tracking                        |
 
-### 🔧 Scripts — `claude/scripts/` (22 files)
+### 🔧 Scripts — `claude/scripts/` (19 files)
 
 The automation backbone — pure bash, zero token cost:
 
@@ -425,9 +389,6 @@ The automation backbone — pure bash, zero token cost:
 | 🏥 `canary-check.sh`             | LIVE config health — token budget, stale refs, rule count, @imports                                                                                                                                          |   ~2s   |
 | 🛡️ `phase2-verify.sh`            | Phase 2 data-integrity check — confirms lessons/todo/settings survived Smart Merge                                                                                                                           |   ~1s   |
 | 📂 `generate-service-claudes.sh` | Auto-generates per-service `CLAUDE.md` stubs for each monorepo service directory                                                                                                                             |   ~2s   |
-| 🐙 `generate-copilot-docs.sh`    | Mirrors `claude/*.md` → `.github/copilot/` for GitHub Copilot users                                                                                                                                          |   ~2s   |
-| 💬 `generate-copilot-prompts.sh` | Auto-generates `.github/prompts/*.prompt.md` from Claude command equivalents                                                                                                                                 |   ~2s   |
-| 🤖 `generate-copilot-agents.sh`  | Auto-generates `.github/agents/*.agent.md` from Claude agent equivalents                                                                                                                                     |   ~2s   |
 | 🔌 `toggle-claude-mem.sh`        | Toggle claude-mem plugin on/off — saves API quota                                                                                                                                                            | instant |
 | 🔌 `setup-plugins.sh`            | All-in-one bootstrap plugin management — install, disable, verify, update CLAUDE.md                                                                                                                          |   ~5s   |
 | ✅ `check-creative-work.sh`      | Creative work gate check — architecture, placeholders, domain docs, IDE section                                                                                                                              |   ~1s   |
@@ -554,30 +515,22 @@ Centralized project config:
 - **Environment** — autocompact threshold, token limits, bash timeouts
 - **Status line** — branch display in Claude Code UI
 
-#### 9. 🤝 GitHub Copilot (`.github/`)
-
-Parallel config for Copilot users — base install works immediately; full parity requires `--copilot`:
-
-- **Base:** Root instructions + 3 scoped instruction files + 2 starter prompts
-- **With `--copilot`:** 37 reusable prompts (all Claude commands + caveman variants), 5 custom agents (`@reviewer`, `@researcher`, `@plan-challenger`, `@security-auditor`, `@session-reviewer`), 4 lifecycle hooks (session context, config protection, terminal safety, quality gate)
-- **Model enforcement:** `copilot-instructions.md` stops and warns when a “mini/flash/lite” model is active for planning/review/architecture tasks
-
-#### 10. 🔌 Plugin Ecosystem
+#### 9. 🔌 Plugin Ecosystem
 
 Ten tools are managed by `setup-plugins.sh` during bootstrap — each occupies a distinct, non-overlapping niche:
 
-| Tool                       | Axis                                                                                  |          Default state           |
-| :------------------------- | :------------------------------------------------------------------------------------ | :------------------------------: |
-| 🧠 **claude-mem**          | _"What happened last Tuesday?"_ — cross-session event log (SQLite + ChromaDB)         |     ⚠️ Disabled (~48% quota)     |
-| 🗺️ **graphify**            | _"Show me the architecture"_ — static knowledge graph, 71.5× fewer tokens per query   |           ✅ On demand           |
-| ⚡ **rtk**                 | _Every bash command_ — transparent token optimizer, 60-90% output savings             |      ✅ Auto-active (cargo)      |
-| 🔍 **codebase-memory-mcp** | _"Who calls this function?"_ — live structural graph, 14 MCP tools, 120× fewer tokens |     ✅ Auto-installed (curl)     |
-| 🔎 **cocoindex-code**      | _"Find code related to X"_ — semantic vector search, local embeddings, no API key     | ✅ Auto-installed (Python 3.11+) |
-| 🔴 **code-review-graph**   | _"Is this PR safe to ship?"_ — risk score 0–100, blast radius, breaking changes       | ✅ Auto-installed (Python 3.10+) |
-| 🌐 **playwright**          | _"Test this form / scrape this page"_ — browser automation via accessibility tree     |  ✅ Auto-installed (Node.js 18+) |
-| 📊 **codeburn**            | _"Where did my tokens go?"_ — cost breakdown by task type, model, USD                 |        ✅ Optional CLI           |
-| 🗣️ **caveman**             | _Response-text compression_ — 65-87% shorter replies                                 |  ✅ Optional (user-level hook)   |
-| 🔧 **serena**              | _Symbol-level refactoring_ — LSP-backed rename/move/inline across all files           | ✅ Auto-registered (uvx, py 3.11+)|
+| Tool                       | Axis                                                                                  |           Default state            |
+| :------------------------- | :------------------------------------------------------------------------------------ | :--------------------------------: |
+| 🧠 **claude-mem**          | _"What happened last Tuesday?"_ — cross-session event log (SQLite + ChromaDB)         |      ⚠️ Disabled (~48% quota)      |
+| 🗺️ **graphify**            | _"Show me the architecture"_ — static knowledge graph, 71.5× fewer tokens per query   |            ✅ On demand            |
+| ⚡ **rtk**                 | _Every bash command_ — transparent token optimizer, 60-90% output savings             |       ✅ Auto-active (cargo)       |
+| 🔍 **codebase-memory-mcp** | _"Who calls this function?"_ — live structural graph, 14 MCP tools, 120× fewer tokens |      ✅ Auto-installed (curl)      |
+| 🔎 **cocoindex-code**      | _"Find code related to X"_ — semantic vector search, local embeddings, no API key     |  ✅ Auto-installed (Python 3.11+)  |
+| 🔴 **code-review-graph**   | _"Is this PR safe to ship?"_ — risk score 0–100, blast radius, breaking changes       |  ✅ Auto-installed (Python 3.10+)  |
+| 🌐 **playwright**          | _"Test this form / scrape this page"_ — browser automation via accessibility tree     |  ✅ Auto-installed (Node.js 18+)   |
+| 📊 **codeburn**            | _"Where did my tokens go?"_ — cost breakdown by task type, model, USD                 |          ✅ Optional CLI           |
+| 🗣️ **caveman**             | _Response-text compression_ — 65-87% shorter replies                                  |   ✅ Optional (user-level hook)    |
+| 🔧 **serena**              | _Symbol-level refactoring_ — LSP-backed rename/move/inline across all files           | ✅ Auto-registered (uvx, py 3.11+) |
 
 **MCP servers (codebase-memory-mcp, cocoindex-code, code-review-graph, playwright, serena) register zero hooks** — they're pure JSON-RPC stdio servers started on demand. **rtk** is a single `PreToolUse(Bash)` hook, first in chain. **graphify** adds one `PreToolUse(Glob|Grep)` hint hook (no-op when graph absent). **claude-mem** adds `PostToolUse(*)` — which is why it's disabled by default. Zero conflicts by design. See `claude/plugins.md` for the full coexistence matrix.
 
@@ -606,17 +559,16 @@ Runs `claude/scripts/discover.sh` — a single script that replaces 15+ individu
 
 The most important phase when upgrading. Your stuff is **sacred**:
 
-| What               | Strategy                           | Guarantee                                |
-| :----------------- | :--------------------------------- | :--------------------------------------- |
-| 📓 `lessons.md`    | **NEVER TOUCH**                    | Your accumulated wisdom is untouchable   |
-| 📝 `todo.md`       | **NEVER TOUCH**                    | Your active task state is untouchable    |
-| 📚 Domain docs     | **PRESERVE** existing, add missing | Your knowledge stays intact              |
-| ⚙️ `settings.json` | **DEEP MERGE** by hook ID          | Your settings win on conflict            |
-| ⚡ Commands        | **ADD MISSING**                    | Your commands kept, new ones added       |
-| 🪝 Hooks           | **ADD MISSING**                    | Your hooks kept, new ones added          |
-| 📋 `CLAUDE.md`     | **ENHANCE**                        | Missing sections appended with markers   |
-| 🚫 `.claudeignore` | **UNION**                          | Your exclusions kept, new ones added     |
-| 🤝 `.github/`      | **ADD MISSING**                    | Your Copilot config kept, new ones added |
+| What               | Strategy                           | Guarantee                              |
+| :----------------- | :--------------------------------- | :------------------------------------- |
+| 📓 `lessons.md`    | **NEVER TOUCH**                    | Your accumulated wisdom is untouchable |
+| 📝 `todo.md`       | **NEVER TOUCH**                    | Your active task state is untouchable  |
+| 📚 Domain docs     | **PRESERVE** existing, add missing | Your knowledge stays intact            |
+| ⚙️ `settings.json` | **DEEP MERGE** by hook ID          | Your settings win on conflict          |
+| ⚡ Commands        | **ADD MISSING**                    | Your commands kept, new ones added     |
+| 🪝 Hooks           | **ADD MISSING**                    | Your hooks kept, new ones added        |
+| 📋 `CLAUDE.md`     | **ENHANCE**                        | Missing sections appended with markers |
+| 🚫 `.claudeignore` | **UNION**                          | Your exclusions kept, new ones added   |
 
 #### Phase 3: Template Population (~3s mechanical + ~1-2m creative) 📝
 
@@ -687,7 +639,7 @@ rm -rf .claude-upgrade/.git
 # Upgraded sections are marked: <!-- Added by template upgrade [date] -->
 
 # 4. Commit
-git add CLAUDE.md .claudeignore claude/ .claude/ .github/
+git add CLAUDE.md .claudeignore claude/ .claude/
 git commit -m "chore: upgrade Claude Code configuration"
 ```
 
@@ -836,17 +788,15 @@ Build:           go build ./...
 
 Extending the Brain is simple — one file, one registration:
 
-| To add…                | Create…                                       | Registration                          |
-| :--------------------- | :-------------------------------------------- | :------------------------------------ |
-| 📚 Domain knowledge    | `claude/<domain>.md`                          | Add row to `CLAUDE.md` lookup table   |
-| 📏 Path-scoped rule    | `.claude/rules/<domain>.md`                   | Automatic (matched by file path)      |
-| ⚡ Slash command       | `.claude/commands/<name>.md`                  | Automatic (discovered by Claude Code) |
-| 🪝 Lifecycle hook      | `.claude/hooks/<name>.sh`                     | Register in `.claude/settings.json`   |
-| 🤖 Subagent            | `.claude/agents/<name>.md`                    | Automatic                             |
-| 🎓 Skill               | `.claude/skills/<name>.md`                    | Automatic (matched by `paths:` globs) |
-| 🔌 Plugin              | `claude plugin install <name>`                | Document in `claude/plugins.md`       |
-| 🤝 Copilot instruction | `.github/instructions/<name>.instructions.md` | Automatic (matched by glob)           |
-| 💬 Copilot prompt      | `.github/prompts/<name>.prompt.md`            | Automatic                             |
+| To add…             | Create…                        | Registration                          |
+| :------------------ | :----------------------------- | :------------------------------------ |
+| 📚 Domain knowledge | `claude/<domain>.md`           | Add row to `CLAUDE.md` lookup table   |
+| 📏 Path-scoped rule | `.claude/rules/<domain>.md`    | Automatic (matched by file path)      |
+| ⚡ Slash command    | `.claude/commands/<name>.md`   | Automatic (discovered by Claude Code) |
+| 🪝 Lifecycle hook   | `.claude/hooks/<name>.sh`      | Register in `.claude/settings.json`   |
+| 🤖 Subagent         | `.claude/agents/<name>.md`     | Automatic                             |
+| 🎓 Skill            | `.claude/skills/<name>.md`     | Automatic (matched by `paths:` globs) |
+| 🔌 Plugin           | `claude plugin install <name>` | Document in `claude/plugins.md`       |
 
 Three worked examples in `claude/_examples/` — study them, then delete them.
 
@@ -966,18 +916,11 @@ The wisdom from hundreds of sessions, distilled:
 ## ❓ FAQ
 
 <details>
-<summary><strong>🤝 Does this work with GitHub Copilot?</strong></summary>
-
-Yes! The `.github/` directory contains Copilot-native config: `copilot-instructions.md` (root), `instructions/` (scoped by glob), and `prompts/` (reusable). The `.claude/` directory is Claude Code specific. `claude/bootstrap/PROMPT.md` works with any AI.
-
-</details>
-
-<details>
 <summary><strong>🤝 Is this solo or team-friendly?</strong></summary>
 
 Both! **TEAM mode** (default): commit everything — every developer gets the same AI experience. Knowledge improvements from one session benefit everyone on the next `git pull`.
 
-**SOLO mode**: personal config, not committed. Add `CLAUDE.md`, `claude/`, `.claude/`, `.claudeignore`, `.mcp.json` to `.gitignore`. The `.github/` Copilot config stays committed — it benefits the whole team. Switch modes at any time.
+**SOLO mode**: personal config, not committed. Add `CLAUDE.md`, `claude/`, `.claude/`, `.claudeignore`, `.mcp.json` to `.gitignore`. Switch modes at any time.
 
 </details>
 
@@ -1022,7 +965,7 @@ No cost for unused commands — they only load when invoked. Delete what you don
 <details>
 <summary><strong>💻 Does this work with VS Code?</strong></summary>
 
-Yes. Claude Code runs in any terminal. VS Code users get the full `.claude/` experience. The `.github/` integration works with GitHub Copilot in VS Code too.
+Yes. Claude Code runs in any terminal. VS Code users get the full `.claude/` experience.
 
 </details>
 
@@ -1067,18 +1010,18 @@ cargo install rtk                             # rtk (~3-7 min, requires Rust ≥
 
 `setup-plugins.sh` manages a **ten-tool stack** — each axis of intelligence is independent, zero overlap, full coverage:
 
-|                                                                                  | Type                                | Axis                                                     | Token Impact                              |        Default         |
-| :------------------------------------------------------------------------------- | :---------------------------------- | :------------------------------------------------------- | :---------------------------------------- | :--------------------: |
-| 🧠 **[claude-mem](https://github.com/thedotmack/claude-mem)**                    | Claude Code plugin                  | _"What did I do across sessions?"_                       | ~48% API quota when enabled               |      ⚠️ Disabled       |
-| 🗺️ **[graphify](https://github.com/safishamsi/graphify)**                        | Python tool + PreToolUse hook       | _"Show me the architecture"_                             | **71.5× fewer tokens** per query          |      ✅ On demand      |
-| ⚡ **[rtk](https://github.com/rtk-ai/rtk)**                                      | Rust binary + PreToolUse(Bash) hook | _Every bash command_ — transparent rewrite               | **60-90% output token savings**           |    ✅ Auto (cargo)     |
-| 🔍 **[codebase-memory-mcp](https://github.com/DeusData/codebase-memory-mcp)**    | C binary + MCP server               | _"Who calls this? What breaks?"_                         | **120× fewer tokens** vs file exploration |     ✅ Auto (curl)     |
-| 🔎 **[cocoindex-code](https://github.com/cocoindex-io/cocoindex-code)**          | Python + MCP server                 | _"Find code related to X"_                               | Finds what grep/AST miss                  | ✅ Auto (Python 3.11+) |
-| 🔴 **[code-review-graph](https://github.com/tirth8205/code-review-graph)**       | Python + MCP server                 | _"Is this PR safe to ship?"_ — risk score + blast radius | Pre-PR safety gate                        | ✅ Auto (Python 3.10+) |
-| 🌐 **playwright**                                                                | Node.js + MCP server                | _"Test this form / scrape this page"_ — browser automation | LOW-MEDIUM — structured snapshots       | ✅ Auto (Node.js 18+)  |
-| 📊 **codeburn**                                                                  | Node.js CLI                         | _"Where did my tokens go?"_ — cost by task/model/USD    | Zero — reads session files, no API calls  |    ✅ Optional CLI     |
-| 🗣️ **caveman**                                                                   | Node.js hook (user-level)           | _Response-text compression_ — 65-87% shorter replies    | **Negative** — reduces response tokens    |   ✅ Optional hook     |
-| 🔧 **serena**                                                                    | Python (uvx) + MCP server           | _LSP-backed rename/move/inline across all files_         | Low — on-demand per MCP call              | ✅ Auto (uvx + py 3.11+)|
+|                                                                               | Type                                | Axis                                                       | Token Impact                              |         Default          |
+| :---------------------------------------------------------------------------- | :---------------------------------- | :--------------------------------------------------------- | :---------------------------------------- | :----------------------: |
+| 🧠 **[claude-mem](https://github.com/thedotmack/claude-mem)**                 | Claude Code plugin                  | _"What did I do across sessions?"_                         | ~48% API quota when enabled               |       ⚠️ Disabled        |
+| 🗺️ **[graphify](https://github.com/safishamsi/graphify)**                     | Python tool + PreToolUse hook       | _"Show me the architecture"_                               | **71.5× fewer tokens** per query          |       ✅ On demand       |
+| ⚡ **[rtk](https://github.com/rtk-ai/rtk)**                                   | Rust binary + PreToolUse(Bash) hook | _Every bash command_ — transparent rewrite                 | **60-90% output token savings**           |     ✅ Auto (cargo)      |
+| 🔍 **[codebase-memory-mcp](https://github.com/DeusData/codebase-memory-mcp)** | C binary + MCP server               | _"Who calls this? What breaks?"_                           | **120× fewer tokens** vs file exploration |      ✅ Auto (curl)      |
+| 🔎 **[cocoindex-code](https://github.com/cocoindex-io/cocoindex-code)**       | Python + MCP server                 | _"Find code related to X"_                                 | Finds what grep/AST miss                  |  ✅ Auto (Python 3.11+)  |
+| 🔴 **[code-review-graph](https://github.com/tirth8205/code-review-graph)**    | Python + MCP server                 | _"Is this PR safe to ship?"_ — risk score + blast radius   | Pre-PR safety gate                        |  ✅ Auto (Python 3.10+)  |
+| 🌐 **playwright**                                                             | Node.js + MCP server                | _"Test this form / scrape this page"_ — browser automation | LOW-MEDIUM — structured snapshots         |  ✅ Auto (Node.js 18+)   |
+| 📊 **codeburn**                                                               | Node.js CLI                         | _"Where did my tokens go?"_ — cost by task/model/USD       | Zero — reads session files, no API calls  |     ✅ Optional CLI      |
+| 🗣️ **caveman**                                                                | Node.js hook (user-level)           | _Response-text compression_ — 65-87% shorter replies       | **Negative** — reduces response tokens    |     ✅ Optional hook     |
+| 🔧 **serena**                                                                 | Python (uvx) + MCP server           | _LSP-backed rename/move/inline across all files_           | Low — on-demand per MCP call              | ✅ Auto (uvx + py 3.11+) |
 
 > **obsidian-mind** is a **companion Obsidian vault** — not installed by bootstrap. Clone separately: `git clone https://github.com/breferrari/obsidian-mind.git`. See `claude/plugins.md` for details.
 
@@ -1156,12 +1099,12 @@ Nothing breaks. Claude Code tries to start the server, fails silently, and the `
 
 **The five MCP servers in this bootstrap:**
 
-| Server key            | Binary                        | What it gives you                                                 | Starts when                              |
-| --------------------- | ----------------------------- | ----------------------------------------------------------------- | ---------------------------------------- |
-| `codebase-memory-mcp` | `codebase-memory-mcp`         | 14 structural graph tools — call paths, dead code, blast radius   | First `mcp__codebase-memory-mcp__*` call |
-| `cocoindex-code`      | `ccc mcp`                     | 1 semantic search tool — find code by meaning                     | First `mcp__cocoindex-code__search` call |
-| `code-review-graph`   | `uvx code-review-graph serve` | 29 change risk tools — risk score, blast radius, breaking changes | First `mcp__code-review-graph__*` call   |
-| `playwright`          | `npx @playwright/mcp@latest`  | Browser automation — navigate, snapshot, click, fill web pages    | First `mcp__playwright__*` call          |
+| Server key            | Binary                         | What it gives you                                                 | Starts when                              |
+| --------------------- | ------------------------------ | ----------------------------------------------------------------- | ---------------------------------------- |
+| `codebase-memory-mcp` | `codebase-memory-mcp`          | 14 structural graph tools — call paths, dead code, blast radius   | First `mcp__codebase-memory-mcp__*` call |
+| `cocoindex-code`      | `ccc mcp`                      | 1 semantic search tool — find code by meaning                     | First `mcp__cocoindex-code__search` call |
+| `code-review-graph`   | `uvx code-review-graph serve`  | 29 change risk tools — risk score, blast radius, breaking changes | First `mcp__code-review-graph__*` call   |
+| `playwright`          | `npx @playwright/mcp@latest`   | Browser automation — navigate, snapshot, click, fill web pages    | First `mcp__playwright__*` call          |
 | `serena`              | `uvx serena-agent --project .` | LSP refactoring — rename/move/inline across all files atomically  | First `mcp__serena__*` call              |
 
 **Check what's running:**
@@ -1373,7 +1316,7 @@ Brain replaces advisory text with real mechanisms:
 | ⚡ **One command replaces 15 min of prompt engineering**      | `/review` runs a 10-point protocol · `/mr` generates descriptions · `/debug` traces root causes — 31 commands, pre-built, consistent                                                      |
 | 🔍 **Your entire stack understood in 2 seconds, zero tokens** | `discover.sh` — 25+ languages, 1100+ frameworks, 21 package managers — pure bash, runs before the AI even wakes up                                                                        |
 | 🤖 **Research doesn't eat your context window**               | 5 subagents run in isolated contexts — explore 20+ files, review code, challenge plans — your main conversation stays clean                                                               |
-| 🤝 **One brain, three AI tools**                              | Write knowledge once → Claude Code, GitHub Copilot, and any LLM all read it — switch tools without starting over                                                                          |
+| 🤝 **One brain, many AI tools**                               | Write knowledge once — Claude Code and any LLM both read it — switch tools without starting over                                                                                          |
 
 > 🎯 **100+ files isn't complexity. It's the minimum architecture where instructions become guarantees.**
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 # check-creative-work.sh — Verify creative population quality before proceeding to Phase 3.5
 # Checks: architecture depth, CLAUDE.md placeholders, domain doc QUALITY, lookup table completeness,
-#         instruction file precision, copilot-instructions.md expansion, IDE section.
+#         instruction file precision, IDE section.
 # Usage: bash claude/scripts/check-creative-work.sh [project-dir]
 # Exit: 0 = all critical pass, 1 = failures found
 
@@ -181,47 +181,6 @@ if [ "$STUB_COUNT" -gt 0 ]; then
     WARNINGS=$((WARNINGS + 1))
   else
     echo "  ✅ Per-service stubs: $STUB_COUNT total ($ENRICHED enriched)"
-  fi
-fi
-
-# ─── 5. Copilot docs mirrored ──────────────────────────────────────────────────────────────────────
-COPILOT_COUNT=0
-[ -d ".github/copilot" ] && COPILOT_COUNT=$(find .github/copilot -maxdepth 1 -name '*.md' 2>/dev/null | wc -l | tr -d ' ')
-echo "  📋 $COPILOT_COUNT copilot docs in .github/copilot/"
-
-# ─── 5b. Instruction file glob precision — warn if default fallback globs remain ─────────────────
-# Default fallback from generate-copilot-docs.sh: applyTo: "**/<basename>*/**"
-# These are heuristics — should be replaced with actual project service paths.
-HEURISTIC_COUNT=0
-if ls .github/instructions/*.instructions.md >/dev/null 2>&1; then
-  for f in .github/instructions/*.instructions.md; do
-    [ -f "$f" ] || continue
-    BNAME=$(basename "$f" .instructions.md)
-    # Check for the default fallback pattern: **/<basename>*/**
-    if grep -q "applyTo:.*\*\*/${BNAME}\*" "$f" 2>/dev/null; then
-      HEURISTIC_COUNT=$((HEURISTIC_COUNT + 1))
-    fi
-  done
-  if [ "$HEURISTIC_COUNT" -gt 0 ]; then
-    echo "  ⚠️  $HEURISTIC_COUNT instruction file(s) still have default heuristic globs — refine with actual service paths (step 5b)"
-    WARNINGS=$((WARNINGS + 1))
-  else
-    echo "  ✅ Instruction file globs: no default heuristic patterns detected"
-  fi
-fi
-
-# ─── 5c. copilot-instructions.md lookup table expansion ───────────────────────────────────────────
-if [ -f ".github/copilot-instructions.md" ] && [ "$DOMAIN_DOC_COUNT" -gt 0 ]; then
-  # Detect user-managed copilot-instructions.md (>20 non-blank, non-comment content lines = mature hand-crafted file)
-  _COPILOT_CONTENT_LINES=$(awk '/^[^#><![:space:]]/ || /^\|/' .github/copilot-instructions.md 2>/dev/null | wc -l | tr -d ' ')
-  COPILOT_ROWS=$(awk '/\|.*`?claude\/[a-z_-]+\.md`?/{n++} END{print n+0}' .github/copilot-instructions.md 2>/dev/null || echo 0)
-  if [ "$_COPILOT_CONTENT_LINES" -gt 20 ] && [ "$COPILOT_ROWS" -gt 0 ]; then
-    echo "  ✅ copilot-instructions.md: user-managed ($COPILOT_ROWS lookup rows, $_COPILOT_CONTENT_LINES content lines)"
-  elif [ "$COPILOT_ROWS" -lt "$DOMAIN_DOC_COUNT" ]; then
-    echo "  ⚠️  copilot-instructions.md has $COPILOT_ROWS lookup row(s) but $DOMAIN_DOC_COUNT domain doc(s) — sync the table (item 5)"
-    WARNINGS=$((WARNINGS + 1))
-  else
-    echo "  ✅ copilot-instructions.md lookup: $COPILOT_ROWS row(s)"
   fi
 fi
 

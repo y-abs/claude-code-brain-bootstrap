@@ -7,6 +7,9 @@
 #   bash /tmp/brain/install.sh /path/to/your-repo
 #   rm -rf /tmp/brain
 #
+# For GitHub Copilot setup, use copilot-brain-bootstrap instead:
+#   https://github.com/y-abs/copilot-brain-bootstrap
+#
 # FRESH mode:  No Claude-related files exist → copies entire template.
 # UPGRADE mode: ANY Claude-related file exists → smart merge:
 #   - NEVER overwrites user files (knowledge, config, tasks, custom docs)
@@ -90,15 +93,19 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 # ── Parse flags ────────────────────────────────────────────────────
-COPILOT_MODE=false
 POSITIONAL_ARGS=()
 for arg in "$@"; do
   case "$arg" in
-    --copilot) COPILOT_MODE=true ;;
-    *)         POSITIONAL_ARGS+=("$arg") ;;
+    --copilot)
+      echo "⚠️  --copilot flag is not supported in claude-code-brain-bootstrap."
+      echo "   For GitHub Copilot setup, use copilot-brain-bootstrap:"
+      echo "   https://github.com/y-abs/copilot-brain-bootstrap"
+      exit 1
+      ;;
+    *) POSITIONAL_ARGS+=("$arg") ;;
   esac
 done
-TARGET="${POSITIONAL_ARGS[0]:?Usage: bash install.sh [--copilot] /path/to/your-repo}"
+TARGET="${POSITIONAL_ARGS[0]:?Usage: bash install.sh /path/to/your-repo}"
 
 # ── Git repo root guard ───────────────────────────────────────────
 # Brain files belong at the ROOT of a git repository.
@@ -178,9 +185,6 @@ echo ""
 echo "  Source:    $SCRIPT_DIR"
 echo "  Target:    $TARGET"
 echo "  Platform:  $BRAIN_PLATFORM"
-if [ "$COPILOT_MODE" = true ]; then
-  echo "  Copilot:   ✅ Enabled (agents, hooks, prompts)"
-fi
 echo ""
 
 # ── Self-bootstrap guard ──────────────────────────────────────────
@@ -347,58 +351,15 @@ if [ "$MODE" = "FRESH" ]; then
   cp -r "$SCRIPT_DIR/.claude" "$TARGET/.claude"
   echo "  ✅ .claude/ (full)"
 
-  # .github/ — only Copilot config (not PR/issue templates or workflows)
-  mkdir -p "$TARGET/.github/instructions" "$TARGET/.github/prompts"
-  if [ -f "$SCRIPT_DIR/.github/copilot-instructions.md" ]; then
-    cp "$SCRIPT_DIR/.github/copilot-instructions.md" "$TARGET/.github/copilot-instructions.md"
-    echo "  ✅ .github/copilot-instructions.md"
-  fi
-  for f in "$SCRIPT_DIR/.github/instructions/"*.instructions.md "$SCRIPT_DIR/.github/instructions/"*.instructions.md.disabled; do
-    [ -f "$f" ] && cp "$f" "$TARGET/.github/instructions/"
-  done
-  echo "  ✅ .github/instructions/"
-  for f in "$SCRIPT_DIR/.github/prompts/"*.prompt.md; do
-    [ -f "$f" ] && cp "$f" "$TARGET/.github/prompts/"
-  done
-  echo "  ✅ .github/prompts/"
-
-  # Copilot-extra: agents, hooks (opt-in via --copilot)
-  if [ "$COPILOT_MODE" = true ]; then
-    # Agents
-    mkdir -p "$TARGET/.github/agents"
-    for f in "$SCRIPT_DIR/.github/agents/"*.agent.md; do
-      [ -f "$f" ] && cp "$f" "$TARGET/.github/agents/"
-    done
-    echo "  ✅ .github/agents/ (Copilot)"
-    # Hooks
-    mkdir -p "$TARGET/.github/hooks/scripts"
-    for f in "$SCRIPT_DIR/.github/hooks/"*.json; do
-      [ -f "$f" ] && cp "$f" "$TARGET/.github/hooks/"
-    done
-    for f in "$SCRIPT_DIR/.github/hooks/scripts/"*.sh; do
-      [ -f "$f" ] && cp "$f" "$TARGET/.github/hooks/scripts/"
-    done
-    chmod +x "$TARGET/.github/hooks/scripts/"*.sh 2>/dev/null || true
-    echo "  ✅ .github/hooks/ (Copilot)"
-    # NOTE: generators NOT run on FRESH — all files were just bulk-copied.
-    # Generators are only useful on UPGRADE (Phase D) when users may have
-    # added custom .claude/commands/ or .claude/agents/ that need Copilot equivalents.
-  fi
-
   # Make scripts executable
   chmod +x "$TARGET/.claude/hooks/"*.sh 2>/dev/null || true
   chmod +x "$TARGET/claude/scripts/"*.sh 2>/dev/null || true
 
-  # Count ALL installed files (claude/ + .claude/ + .github/ Brain files + root files)
+  # Count ALL installed files (claude/ + .claude/ + root files)
   total=0
   for _count_dir in "$TARGET/claude" "$TARGET/.claude"; do
     [ -d "$_count_dir" ] && total=$((total + $(find "$_count_dir" -type f 2>/dev/null | wc -l)))
   done
-  # .github/ — only count Brain-installed subdirectories, not repo's existing workflows/templates
-  for _count_dir in "$TARGET/.github/instructions" "$TARGET/.github/prompts" "$TARGET/.github/agents" "$TARGET/.github/hooks"; do
-    [ -d "$_count_dir" ] && total=$((total + $(find "$_count_dir" -type f 2>/dev/null | wc -l)))
-  done
-  [ -f "$TARGET/.github/copilot-instructions.md" ] && total=$((total + 1))
   for _count_f in CLAUDE.md CLAUDE.local.md.example .claudeignore .mcp.json .graphifyignore; do
     [ -f "$TARGET/$_count_f" ] && total=$((total + 1))
   done
@@ -424,8 +385,7 @@ if [ "$MODE" = "FRESH" ]; then
   echo "✅ Fresh install complete! $total files installed."
   echo ""
   echo "👉 Next step:"
-  echo "   Open your AI assistant and run /bootstrap"
-  echo "   (Claude Code CLI, VS Code Copilot, or JetBrains Claude plugin)"
+  echo "   Open Claude Code and run /bootstrap"
   echo ""
   exit 0
 fi
@@ -510,23 +470,6 @@ if [ -d "$TARGET/.claude" ]; then
   rm -f "$_tmpinv2"
 fi
 
-# .github/ Copilot files
-if [ -f "$TARGET/.github/copilot-instructions.md" ]; then
-  echo "  🔒 .github/copilot-instructions.md"
-  PRESERVED_COUNT=$((PRESERVED_COUNT + 1))
-fi
-for dir in "$TARGET/.github/instructions" "$TARGET/.github/prompts"; do
-  [ -d "$dir" ] || continue
-  _tmpinv3=$(mktemp)
-  find "$dir" -type f > "$_tmpinv3" 2>/dev/null
-  while IFS= read -r f; do
-    [ -z "$f" ] && continue
-    echo "  🔒 ${f#"$TARGET/"}"
-    PRESERVED_COUNT=$((PRESERVED_COUNT + 1))
-  done < "$_tmpinv3"
-  rm -f "$_tmpinv3"
-done
-
 echo ""
 echo "  → $PRESERVED_COUNT existing files protected"
 echo ""
@@ -604,7 +547,7 @@ chmod +x "$TARGET/.claude/hooks/"*.sh 2>/dev/null || true
 echo ""
 
 # ── Phase D: Add missing individual files ─────────────────────────
-# Root files, knowledge docs, task templates, Copilot config.
+# Root files, knowledge docs, task templates.
 # ALL add-if-missing. NEVER overwrites existing files.
 
 echo "➕ Phase D — Adding missing files:"
@@ -685,76 +628,6 @@ if [ -f "$SCRIPT_DIR/.claude/settings.local.json.example" ]; then
   fi
 fi
 
-# .github/ Copilot files (add only missing)
-mkdir -p "$TARGET/.github/instructions" "$TARGET/.github/prompts"
-if [ -f "$SCRIPT_DIR/.github/copilot-instructions.md" ]; then
-  if copy_if_missing "$SCRIPT_DIR/.github/copilot-instructions.md" "$TARGET/.github/copilot-instructions.md"; then
-    echo "  ➕ .github/copilot-instructions.md (new)"
-    phase_d_added=$((phase_d_added + 1))
-  fi
-fi
-for f in "$SCRIPT_DIR/.github/instructions/"*.instructions.md "$SCRIPT_DIR/.github/instructions/"*.instructions.md.disabled; do
-  [ -f "$f" ] || continue
-  fname="$(basename "$f")"
-  if copy_if_missing "$f" "$TARGET/.github/instructions/$fname"; then
-    echo "  ➕ .github/instructions/$fname (new)"
-    phase_d_added=$((phase_d_added + 1))
-  fi
-done
-for f in "$SCRIPT_DIR/.github/prompts/"*.prompt.md; do
-  [ -f "$f" ] || continue
-  fname="$(basename "$f")"
-  if copy_if_missing "$f" "$TARGET/.github/prompts/$fname"; then
-    echo "  ➕ .github/prompts/$fname (new)"
-    phase_d_added=$((phase_d_added + 1))
-  fi
-done
-
-# Copilot-extra: agents, hooks (opt-in via --copilot)
-if [ "$COPILOT_MODE" = true ]; then
-  # Agents (add only missing)
-  mkdir -p "$TARGET/.github/agents"
-  for f in "$SCRIPT_DIR/.github/agents/"*.agent.md; do
-    [ -f "$f" ] || continue
-    fname="$(basename "$f")"
-    if copy_if_missing "$f" "$TARGET/.github/agents/$fname"; then
-      echo "  ➕ .github/agents/$fname (new — Copilot)"
-      phase_d_added=$((phase_d_added + 1))
-    fi
-  done
-  # Hooks (add only missing)
-  mkdir -p "$TARGET/.github/hooks/scripts"
-  for f in "$SCRIPT_DIR/.github/hooks/"*.json; do
-    [ -f "$f" ] || continue
-    fname="$(basename "$f")"
-    if copy_if_missing "$f" "$TARGET/.github/hooks/$fname"; then
-      echo "  ➕ .github/hooks/$fname (new — Copilot)"
-      phase_d_added=$((phase_d_added + 1))
-    fi
-  done
-  for f in "$SCRIPT_DIR/.github/hooks/scripts/"*.sh; do
-    [ -f "$f" ] || continue
-    fname="$(basename "$f")"
-    if copy_if_missing "$f" "$TARGET/.github/hooks/scripts/$fname"; then
-      echo "  ➕ .github/hooks/scripts/$fname (new — Copilot)"
-      phase_d_added=$((phase_d_added + 1))
-    fi
-  done
-  chmod +x "$TARGET/.github/hooks/scripts/"*.sh 2>/dev/null || true
-  # Run generators — capture output, show concise summary
-  _prompt_out="$(cd "$TARGET" && bash "$SCRIPT_DIR/claude/scripts/generate-copilot-prompts.sh" 2>/dev/null)" || true
-  _agent_out="$(cd "$TARGET" && bash "$SCRIPT_DIR/claude/scripts/generate-copilot-agents.sh" 2>/dev/null)" || true
-  _p_created="$(echo "$_prompt_out" | grep 'Created:' | grep -o '[0-9]*')" || _p_created=0
-  _p_stubs="$(echo "$_prompt_out" | grep 'Stubs overwritten:' | grep -o '[0-9]*')" || _p_stubs=0
-  _a_wrote="$(echo "$_agent_out" | grep -c 'WROTE')" || _a_wrote=0
-  _gen_total=$((_p_created + _p_stubs + _a_wrote))
-  if [ "$_gen_total" -gt 0 ]; then
-    echo "  🔄 Copilot generators: ${_p_created} prompts created, ${_p_stubs} stubs refreshed, ${_a_wrote} agents generated"
-  else
-    echo "  ✅ Copilot prompts + agents — up to date"
-  fi
-fi
-
 ADDED_COUNT=$((ADDED_COUNT + phase_d_added))
 
 if [ "$phase_d_added" -eq 0 ]; then
@@ -830,8 +703,7 @@ echo ""
 echo "┌──────────────────────────────────────────────────────┐"
 echo "│  👉 Next step:                                       │"
 echo "│                                                      │"
-echo "│  Open your AI assistant and run /bootstrap            │"
-echo "│  (Claude Code, VS Code Copilot, or JetBrains)        │"
+echo "│  Open Claude Code and run /bootstrap                 │"
 echo "│     Phase 2 (Smart Merge) will:                      │"
 echo "│     • Enhance CLAUDE.md with new template sections   │"
 echo "│     • Deep-merge settings.json (your values win)     │"

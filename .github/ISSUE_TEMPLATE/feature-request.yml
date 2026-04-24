@@ -45,7 +45,7 @@ body:
         - 🤖 Subagent / Skill
         - 📚 Documentation
         - 🔧 Scripts / Tooling
-        - 🤝 Multi-tool support (Copilot, other LLMs)
+        - 🤝 Multi-tool support (other LLMs)
         - 🔌 Plugin ecosystem
         - Other
     validations:
