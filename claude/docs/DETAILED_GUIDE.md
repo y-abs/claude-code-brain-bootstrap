@@ -35,7 +35,7 @@
   - [🤖 AI Subagents — `.claude/agents/`](#-ai-subagents--claudeagents-5-files)
   - [🎓 Skills — `.claude/skills/`](#-skills--claudeskills-18-files)
   - [📏 Path-Scoped Rules — `.claude/rules/`](#-path-scoped-rules--clauderules-13-files)
-  - [� Memory — `claude/tasks/`](#-memory--claudetasks-5-files)
+  - [🧠 Memory — `claude/tasks/`](#-memory--claudetasks-5-files)
   - [🔧 Scripts — `claude/scripts/`](#-scripts--claudescripts-19-files)
 - [🔬 Deep Dives](#-deep-dives)
   - [📂 The 10 Configuration Categories](#-the-10-configuration-categories)
@@ -364,7 +364,7 @@ Short, sharp rules that auto-load when the AI touches matching files:
 | 📂 `domain/_template.md`      | _(template)_               | Business domain template — copy for each domain         |
 | 📄 `_template-domain-rule.md` | _(template)_               | Copy → customize → profit                               |
 
-### Memory — `claude/tasks/` (5 files)
+### 🧠 Memory — `claude/tasks/` (5 files)
 
 The AI's persistent memory across sessions:
 

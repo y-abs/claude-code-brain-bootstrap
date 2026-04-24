@@ -179,7 +179,7 @@ Your repo
 │   ├── terminal-safety.md          ← Shell anti-patterns that cause session hangs
 │   ├── cve-policy.md               ← Security decision tree
 │   ├── plugins.md                  ← Plugin config (claude-mem + graphify + MCP)
-│   ├── scripts/                    ← 22 bootstrap & maintenance scripts
+│   ├── scripts/                    ← 19 bootstrap & maintenance scripts
 │   ├── bootstrap/                  ← 🧠 Setup scaffolding (auto-deleted after bootstrap)
 │   ├── tasks/lessons.md            ← 🧠 Accumulated wisdom (persists across sessions)
 │   ├── tasks/todo.md               ← 📝 Current task plan (survives session boundaries)

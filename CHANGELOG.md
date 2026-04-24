@@ -17,8 +17,8 @@ Seven months of alpha → beta development condensed into a single installable t
 
 - **One command install** — `bash install.sh /path/to/your-repo` handles FRESH and UPGRADE
 - **31 slash commands** — `/plan`, `/review`, `/mr`, `/debug`, `/bootstrap`, `/health` and 25 more
-- **15 lifecycle hooks** — terminal safety, TDD enforcement, quality gates, session continuity
-- **11 skills** — invocable AI workflows (root-cause-trace, cross-layer-check, graphify, caveman…)
+- **16 lifecycle hooks** — terminal safety, TDD enforcement, quality gates, session continuity
+- **18 skills** — invocable AI workflows (root-cause-trace, cross-layer-check, graphify, brainstorming, codeburn, playwright, serena, subagent-driven-development, writing-skills…)
 - **5 subagents** — `reviewer` (Opus), `plan-challenger` (Opus), `security-auditor` (Opus), `research`, `session-reviewer`
 - **10-tool plugin stack** — graphify · codebase-memory-mcp · cocoindex-code · code-review-graph · claude-mem · rtk · playwright · codeburn · caveman · serena
 - **1100+ framework detections** — 25+ languages, 21 package managers, 13 CI systems via `discover.sh`
@@ -182,8 +182,8 @@ Live end-to-end testing on a mature monorepose with an existing Claude Code conf
 - **`tdd-loop-check.sh` moved** from `claude/scripts/` → `.claude/hooks/` for consistency with all other hooks.
 - **`setup-plugins.sh`** — removed `-q` flag from cocoindex install (users see download progress for ~1 GB install); added `--lite`/`--interactive`/`--non-interactive` flags; added `ask_plugin()` interactive prompt function.
 - **README** — "Get Started in 5 Minutes" → "Get Started in 5 Minutes (+ ~15 min for full plugin setup)".
-- **Command/skill/hook counts** synced to reality: 31 commands (was 26), 11 skills (was 5/8), 15 hooks (was 12/14).
-- **DETAILED_GUIDE.md** — hooks table updated to 15 entries; skills table updated to 11 entries; all 31 commands listed.
+- **Command/skill/hook counts** synced to reality: 31 commands (was 26), 11 skills (was 5/8), 16 hooks (was 14).
+- **DETAILED_GUIDE.md** — hooks table updated to 16 entries; skills table updated to 11 entries; all 31 commands listed.
 
 ### Fixed
 
