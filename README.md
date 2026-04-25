@@ -38,7 +38,7 @@
 
 ## 💡 What This Is
 
-Most instruction systems hand you generic rules and hope the AI reads them. Brain Bootstrap works differently — it starts by reading *your* codebase.
+Most instruction systems hand you generic rules and hope the AI reads them. Brain Bootstrap works differently — it starts by reading _your_ codebase.
 
 Run `/bootstrap` once and a discovery engine scans your repo across 30+ languages and frameworks: your actual build commands, your real test runner, the packages you already use, the files that must never be touched. From that, it auto-generates architecture docs, a domain glossary, and build conventions specific to this project — not a generic template. Claude Code goes into every session knowing your stack, your naming conventions, your rules.
 
@@ -377,3 +377,10 @@ PRs welcome! All contributions must be **domain-agnostic**.
 ## 📄 License
 
 MIT — see [LICENSE](LICENSE).
+
+---
+
+<p align="center">
+  <em>Built by developers who were tired of re-explaining the same things to Claude every session.</em><br>
+  <sub>Part of the <a href="https://github.com/brain-bootstrap">ᗺB Brain Bootstrap</a> family — also available for <a href="https://github.com/brain-bootstrap/copilot-brain-bootstrap">GitHub Copilot</a> and <a href="https://github.com/brain-bootstrap/codex-brain-bootstrap">OpenAI Codex</a>.</sub>
+</p>
