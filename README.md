@@ -56,7 +56,7 @@ Claude Code is stateless by design — each session starts blank. So you end up 
 
 - **Persistent memory** — conventions, architecture, past mistakes embedded once and never forgotten
 - **Enforced rules** — bash hooks that block violations _before_ they run, no AI judgment involved
-- **Ready-to-use workflows** — 31 slash commands (`/plan`, `/review`, `/mr` and 28 more), 18 skills, 5 specialist subagents
+- **Ready-to-use workflows** — 31 slash commands (`/plan`, `/review`, `/mr` and 28 more), 49 skills, 5 specialist subagents
 - **Self-updating knowledge** — the knowledge layer grows with your codebase, session by session
 
 **Install once. Correct once. It never happens again.**
@@ -202,7 +202,7 @@ The system is designed to **minimize token cost** while maximizing context — y
 | ⚡ **Slash commands**    |  31   | Build, test, lint, review, MR, debug, deploy, maintain, research, bootstrap — covers the full dev lifecycle     |
 | 🪝 **Lifecycle hooks**   |  16   | Config protection, terminal safety, commit quality, session recovery, batch formatting, exit checklist          |
 | 🤖 **AI subagents**      |   5   | Research, reviewer, plan-challenger, session-reviewer, security-auditor — each auto-selects optimal model       |
-| 🎓 **Skills**            |  18   | TDD, root-cause trace, code review, triage, brainstorming, semantic search, browser automation, LSP refactoring |
+| 🎓 **Skills**            |  49   | TDD, root-cause trace, code review, triage, brainstorming, semantic search, browser automation, LSP refactoring |
 | 🔧 **Brain scripts**     |  19   | Stack discovery (3800-line detector), template population, validation, portability lint                         |
 | 📏 **Path-scoped rules** |  13   | Auto-loaded per file type — terminal safety, quality gates, domain learning, agent orchestration                |
 | 🔌 **Plugins**           |  10   | Architecture graph, semantic search, risk analysis, cross-session memory, browser automation, LSP refactoring   |
@@ -343,7 +343,7 @@ Yes. Agents declare their optimal model but **fall back gracefully** to whatever
 <details>
 <summary><strong>⚖️ How is this different from Cursor rules / .cursorrules?</strong></summary>
 
-Scope. Cursor rules are a flat instruction file — the AI reads it _if it feels like it_. Brain is a **multi-layered enforcement architecture** with lifecycle hooks that block before execution, subagents that run in isolated contexts, skills that activate per task, session memory that persists across restarts, and self-maintenance that keeps docs current.
+Scope. Cursor rules are a flat instruction file — the AI reads it _if it feels like it_. Brain is a **multi-layered enforcement architecture** with lifecycle hooks that block before execution, subagents that run in isolated contexts, 49 skills that activate per task, session memory that persists across restarts, and self-maintenance that keeps docs current.
 
 It's the difference between a sticky note and an operating system.
 

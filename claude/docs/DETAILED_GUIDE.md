@@ -87,7 +87,7 @@ Here's the mental model:
             "Here's everything we've learned together"
 ```
 
-**31 slash commands. 16 lifecycle hooks. 5 AI subagents. 18 skills. 10 tools. 127+ validation checks. 8 domain-detection greps. Zero setup friction.**
+**31 slash commands. 16 lifecycle hooks. 5 AI subagents. 49 skills. 10 tools. 127+ validation checks. 8 domain-detection greps. Zero setup friction.**
 
 > 💡 Battle-tested. Works with **any language, any framework, any repo**.
 
@@ -1328,7 +1328,7 @@ Brain replaces advisory text with real mechanisms:
 | ⚡ Slash commands                |    31 |
 | 🪝 Lifecycle hooks               |    16 |
 | 📏 Golden rules                  |    24 |
-| 🎓 Skills                        |    18 |
+| 🎓 Skills                        |    49 |
 | ✅ Validation checks             |  127+ |
 | 🏷️ Configurable placeholders     |   35+ |
 | 🔄 Bootstrap phases              |     5 |

@@ -28,7 +28,7 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - **`git`** — git workflow helpers: status, rebase, commit, amend, log, stash, branch management
 - **`health`** — verify Brain Bootstrap configuration health with pass/warn/fail per component
 - **`lint`** — run the linter and formatter check before opening a PR
-- **`maintain`** — detect and fix stale claude/*.md knowledge docs
+- **`maintain`** — detect and fix stale claude/\*.md knowledge docs
 - **`mcp`** — manage MCP servers: list tools, check status, add a new server to .mcp.json
 - **`migrate`** — run database or schema migrations: up, down, rollback, status, create new migration
 - **`mr`** — generate a PR/MR description after review passes
