@@ -38,9 +38,9 @@
 
 ## 💡 What This Is
 
-Most instruction systems hand you generic rules and hope the AI reads them. Brain Bootstrap works differently — it starts by reading _your_ codebase.
+Most instruction systems hand you generic rules and hope the AI reads them. Brain Bootstrap works differently — it starts by mapping _your_ project.
 
-Run `/bootstrap` once and a discovery engine scans your repo across 30+ languages and frameworks: your actual build commands, your real test runner, the packages you already use, the files that must never be touched. From that, it auto-generates architecture docs, a domain glossary, and build conventions specific to this project — not a generic template. Claude Code goes into every session knowing your stack, your naming conventions, your rules.
+Run `/bootstrap` once and a discovery engine scans your repo across 30+ languages: your actual build commands, your real test runner, the packages you already use, the files that must never be touched. From that, it auto-generates architecture docs, a domain glossary, and build conventions specific to this project — not a generic template. Claude Code goes into every session knowing your stack, your naming conventions, your rules.
 
 Then it keeps learning. Every correction becomes a permanent rule. Bash hooks block forbidden operations before they execute — deterministic scripts, not AI judgment. The knowledge base compounds with your codebase, session by session.
 
